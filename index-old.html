@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:m="http://www.w3.org/1998/Math/MathML">
+
+<head>
+
+	<meta charset="utf-8">
+
+	<link rel="stylesheet" href="css/jqmath-0.4.0.css">
+
+	<link rel="stylesheet" href="css/jquery-ui.css">
+	<link rel="stylesheet" href="css/nv.d3.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/style.css">
+
+	<title>Adventures in Cognitive Biases</title>
+
+	<script src="js/jquery-1.9.1.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/splitter.js"></script>
+	<!--  <script src="js/jquery.cookie.js"></script>-->
+	<script src="js/jqmath-etc-0.4.0.min.js"></script>
+
+	<script src="js/underscore.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/d3.v3.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+
+	<script src="js/jstat-mybuild.js"></script>
+	<script src="js/stripped-church.js"></script>
+	<script src="js/stat-utils.js"></script>
+	<script src="js/plotting-utils.js"></script>
+	<script src="js/game-utils.js"></script>
+	<script src="js/data.js"></script>
+	<script src="js/canvas-utils.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59181255-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+
+
+<body>
+
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Adventures in Cognitive Biases</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+<!-- 					<li class="active"><a href="#">Overconfidence Bias</a></li>
+					<li><a href="#">Base Rate Neglect</a></li>
+ -->					<!--         <li><a href="#">Sample Size Insensitivity</a></li> -->
+				</ul>
+
+				<ul class="nav navbar-nav navbar-right">
+<!-- 					<li><a href="#">About</a></li>
+ -->				
+ 				</ul>
+			</div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
+	</nav>
+
+
+	<div class="container-fluid" id="main-container">
+
+		<div class="row-fluid">
+			<div class="col-xs-6 main" id="left-container">
+
+				<div>
+					<p>
+						You have found yourself in front of a monastery....
+					</p>
+					<img src="images/monastery.png"><br>
+
+					<button id="test-button" data-stateid="100" class="btn state-plus">Knock on the door</button>
+				</div>
+
+				<div>
+					<p>
+						A monk greets you.
+					</p>
+
+					<img src="images/guru.png" width="300px"><br>
+
+					<button class="btn state-plus">Greet the monk</button>
+				</div>
+
+				<div>
+					<p>
+						MONK: Hello, young explorer....
+					</p>
+
+					<p>
+						MONK: I am training explorers like yourself to rid themselves of <a href="http://en.wikipedia.org/wiki/List_of_cognitive_biases" target="_blank">cognitive biases</a>. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
+					</p>
+
+					<button class="btn state-plus">Start training now</button>
+				</div>
+
+<!--
+ 				<div>
+				<p>
+				MONK: Ah, I apologize, but before we enroll you in monk school, I'll need a little bit of information about you.
+				</p>
+
+				<button class="btn state-plus">Take the pre-test</button>
+				</div>
+
+				<div>
+				<iframe src="https://docs.google.com/forms/d/1a0O9mHhnVyBinzWMutjoh6TBpNCWaSixBsvUX6wQbpE/viewform" style="width:100%;height:600px"></iframe>
+				<button class="btn state-plus">Pre-test complete</button>				
+				</div>
+
+	<div>
+		<p class="question">
+		What was the codeword I whispered to you at the end of our pretest?
+		</p>
+		<input type="text" data-answer="adventure" class="text-answers">
+	</div> -->
+
+				<div>
+<!-- 				<p>
+				Great, now your training can commence.
+				</p>
+ -->
+					<h3>Monk Lesson: Know thyself</h3>
+					<p>
+						It is important to know how much (or how little) you know. Most people tend to be overconfident about their answers. We will attempt to train the <a href="http://en.wikipedia.org/wiki/Overconfidence_effect" target="_blank">Overconfidence Bias</a> out of you.
+					</p>
+
+					<button class="btn state-plus" onclick="$('.confidence-training').show(); $('#inventory-container').show();">Begin</button>
+				</div>
+
+
+				<div id="trivia-questions">					
+				</div>	
+
+				<div>
+					<p>
+						Thank you for washing <span class="dish-duty"></span> days of <img src="images/dishes.png" width="50px">. Together, with your <span class="grad-units"></span> <img src="images/grad.jpg" width="50px"> credits, I think you have gained enough character to graduate from monk school.
+					</p>
+					<p>
+						MONK: By the way, I think we might have reduced your susceptibility to the Overconfidence Bias...
+					</p>
+					<button class="btn state-plus">I'm not too sure about that.</button>
+				</div>
+
+
+<!-- <div>
+Here is some data ___. Specify a 90% confidence interval around the temperature of ___.
+// what are some multipoint datasets that everyone knows about?
+- 
+
+// here is some data
+// you can click through to see some of them (randomly selected)
+// when you feel comfortable to make a X% confidence interval
+
+// ^ wonder what this would feel like. it might not be good for training overconfidence bias.
+
+</div>
+ -->
+
+<!-- 				<div>
+					Now that you have a sense of what confidence intervals should feel like, here is a different sort of question.... // todo: put in Kahneman's binary question?
+				</div>
+ -->
+
+<!-- <div>
+					<p>
+						MONK: Ha. You've done well. You should take this <strong>queasy stomach</strong> with you. I hope you will use it to remember the Overconfidence Bias. 
+					</p>
+					<img src="images/stomach.png" width="150px"><br><br>
+
+<button class="btn state-plus item-plus">Gee thanks! A queasy stomach!</button>
+</div>
+ -->
+<!-- <div>
+<p>
+MONK: I leave you with these final thoughts. Remember the moneybags when you express your confidence.
+</p>
+<p>
+MONK: It is much different to say that you are 90% sure vs 80% sure!
+</p>
+
+<p>
+MONK: And this is what you would think to be a fair bet if you ever say that you are 99% sure.
+</p>
+<img src="images/99.PNG" height="150"><br><br>
+
+<button class="btn state-plus" onclick="$('.confidence-training').hide();">Graduate from monk school</button>
+</div>
+ -->
+<div>
+<p>
+MONK: Very good.  To reach the next stage in your journey to reduce cognitive biases, you may want to seek out a figure named Kahneman. He will administer to you a test of your abilities.
+</p>
+
+<p>
+MONK: His whereabouts have been unknown for some time, so good luck finding him.
+</p>
+
+					<img src="images/guru.png" height="300px"><br>
+
+<button class="btn state-plus" onclick="$('.confidence-training').hide();">Leave the monastery</button>
+</div>
+
+
+<div>
+					<p>
+						You have found yourself graduated from monk school on a solo journey across the land to gain knowledge and find Kahneman.
+					</p>
+					<p>
+						You decide to seek help from the oracle on top of the mountain. 
+					</p>
+					<button class="btn state-plus">Climb the mountain</button>
+</div>
+
+<div>
+					<img src="images/mountain.gif">
+					<p>
+						It takes you days and days to climb to the peak of the mountain...
+					</p>
+					<button class="btn state-plus">And days</button>
+</div>
+
+<div>
+					<p>
+						And days....
+					</p>
+					<button class="btn state-plus">And days</button>
+</div>
+<div>
+					<p>
+						And even more days....
+					</p>
+					<button class="btn state-plus">And days</button>
+</div>
+
+<div>
+					<p>
+						But you finally make it.
+					</p>
+					<button class="btn state-plus">Oh good.</button>
+</div>
+
+<div>
+					<p>
+						ORACLE: So, you're searching for Kahneman? 
+					</p>
+
+					<img src="images/oracle.jpg">
+
+					<p>
+						The oracle peers into your eyes. 
+					</p>
+					<button class="btn state-plus" onclick="$('.bayes-training').show();">Peer back</button>
+</div>
+
+<div>
+<p>
+ORACLE: Well, I could tell you where he is but that would defeat the point. 
+</p>
+					<p>
+						ORACLE: Instead, I will give you hints about where he is and you have to combine the hints to form your best guess. 
+					</p>
+
+					<p>
+						ORACLE: Do you understand?
+					</p>
+
+					<button class="btn state-plus">Yes, I think so?</button>
+</div>
+
+<div>
+					<h3>Oracle Lesson: Update beliefs</h3>
+
+					<p>
+						ORACLE: Based on past experience, Kahneman is likely either at the Cave of Uncertainty or the Tavern of Decision-Making. Unfortunately, these places are weeks of travelling away from each other, so you will want to be reasonably certain before embarking.  
+					</p>
+<img src="images/cave.png" width="200px">					<img src="images/tavern.png" width="200px">
+
+<br>
+<button class="btn state-plus">How do I know which to go to?</button>
+
+	</div>
+	<div>
+					<p>
+						ORACLE: Well, Kahneman goes to the tavern to study people's decision-making abilities. He goes to the cave to process his data and write papers. In the past Kahneman has split his time between the cave and the tavern in a roughly 2 to 3 ratio (40% vs 60%).
+					</p>
+
+					<p>
+						ORACLE: You can use this information to create a visual picture of your knowledge. Drag up the bars until their relative heights reflect what you currently know about Kahneman's location.
+					</p>
+<div id="intro-prior"></div>
+
+</div>
+
+<div>
+					<p>
+						ORACLE: Correct. This picture is called your <strong>prior belief</strong>.
+					</p>
+
+					<p>
+						ORACLE: Without any additional information, the probability of Kahneman being at either location is shown by this graph. Looking at the heights of the graph, you can visually see that he is 50% more likely to be at the tavern.
+					</p>
+
+					<button class="btn state-plus">I see how the bar heights represent relative probabilities</button>
+</div>
+
+<!-- <div>
+					<p>
+						Cnce you have more information or <strong>evidence</strong> about Kahneman's whereabouts, you will be able to use it to update your belief on the right panel.
+					</p>
+					<p>
+						For now, we will continue our training exclusively on the left panel.
+					</p>
+					<button class="btn state-plus">What's next?</button>
+</div>
+ -->
+<div>
+
+					<p>
+						Suppose that the weather has been nice recently, and someone tells you that when the weather is nice Kahneman is more likely to prefer going to the cave than spending all day in a tavern. 
+					</p>
+
+<img src="images/good_weather.jpg" width="200px">
+<br><br>
+<button class="btn state-plus">This new information should change my mind</button>
+
+</div>
+
+<div>
+<p>
+ If the weather is nice, say Kahneman favors going to the cave over the tavern six times more than normal. Incorporate this new <strong>evidence</strong> into you belief by dragging up the evidence bars. 
+</p>
+
+<div id="intro-likelihood"></div>
+</div>
+
+<div>
+
+<p>
+If you think about it, the evidence bars should <strong>multiplicatively scale</strong> up your prior belief to form your <strong>new belief</strong>. This multiplication is something you can perform with your visual system. 
+</p>
+
+<p>
+What is the probability that Kahneman is in the cave if the weather is nice? (Hint: view the new belief tab to see how the widget would perform the calculation).
+</p>
+<input type="number" class="bayes-prob-input" data-answer="80">
+
+</div>
+
+
+<div>
+<p>
+ORACLE: Often times, information about our world comes in multiple parts. We have to combine these parts to form a unified belief. Logic tells you how to do this.
+</p> 
+
+<p>
+ORACLE: Pretend that you are a detective. 
+</p>
+
+<img src="images/detective.png" height="150">
+
+<p>
+ORACLE: During a case you discover some new evidence. What you think after obtaining new evidence should depend both on </p>
+<p>
+(a) <strong>what you previously believed</strong> and (b) <strong>the new evidence</strong>. 
+</p>
+
+<button class="btn state-plus">Pretty intuitive</button>
+</div>
+
+<div>
+
+<p>
+These two parts go by other names including
+</p>
+<p>
+(a) <strong>prior belief</strong> and (b) <strong>likelihood of evidence</strong>. 
+</p>
+
+<p>
+When making guesses, sometimes people use the new evidence and forget to include their prior knowledge, this is called <a href="http://en.wikipedia.org/wiki/Base_rate_fallacy" target="_blank">Base Rate Neglect</a>. Sometimes they stick too firmly to prior knowledge and forget to include the evidence, this is called <a href="http://en.wikipedia.org/wiki/Conservatism_(belief_revision)" target="_blank">Bayesian Conservatism</a>. 
+</p>
+
+<!-- <button class="btn">I want to see the math</button>
+ -->
+
+ <button class="btn state-plus">Sounds reasonable</button>
+
+</div>
+
+
+<div>
+<p>
+As long as you use the widget I have given you, you will remember to use both your prior belief and the likelihood of evidence to form your new opinion.
+</p>
+
+<p>
+Take this widget into your right sidebar so that you can update your beliefs on Kahneman's location as you get new information.
+</p>
+
+<p>
+At this point, all you have is the 2:3 prior on Kahneman's location. The weather evidence was hypothetical.
+</p>
+
+ <button class="btn state-plus" onclick="$('#kahneman-location-container').show();">Take the widget</button>
+
+</div>
+
+<!-- <div id="optional-bayes" style="display:none">
+// todo c/p this from old versions
+<p>
+In other words, Bayes Rule gives you a method of systematically incorporating new information into your beliefs. It tells you how much or how little your beliefs should change when receiving new information.
+</p>
+
+</div>
+ -->
+<div>
+	<p>
+		ORACLE: Well, that's all I can tell you. You better get off this mountain before you freeze.
+	</p>
+
+	<p>
+		ORACLE: This won't keep you warm. But here's a pair of glasses for seeing beliefs as graphs that you might want for your journey.  
+	</p>
+
+	<img src="images/graph-glasses.png" width="150px"> <br><br>
+
+<button class="btn state-plus item-plus">These make things look unclear!</button>
+
+</div>
+
+
+<div>
+					<img src="images/forest.jpg" height="300">
+
+					<p>
+						You descend the other side of the mountain into a dark forest.
+					</p>
+
+<button class="btn state-plus">Enter the forest</button>
+</div>
+
+<div>
+					<p>
+						A shadowy figure approaches you. 
+					</p>
+					<img src="images/monk.gif">
+
+					<p>
+						SHADOW FIGURE: You have an unusual power of inference about you. I do too and infer that you are looking for someone.
+					</p>
+
+
+					<button class="btn state-plus">I am looking for Kahneman. Do you know where he is?</button>
+</div>
+
+
+<div>
+					<p>
+						SHADOW FIGURE: Ha! Well, I don't know where he is. 
+					</p>
+
+					<p>
+						SHADOW FIGURE: But I've searched for him in the past, and you also need a Thing.  
+					</p>
+
+					<button class="btn state-plus">A thing?</button>
+</div>
+
+<div>
+<p>
+SHADOW FIGURE: Well, he doesn't take visitors easily. You want to take the test of your abilities, I assume. 
+</p>
+
+<p>
+SHADOW FIGURE: But usually you can't get him to see you just by declaring that. I would suggest either saying that you are selling cookies or that you are selling beer. You need to infer which type of food he is interested in before you see him. 
+</p>
+
+<img src="images/cookies.jpg" width="200px"><img src="images/beer.gif" width="200"><br>
+
+<button class="btn state-plus">Why can't I just offer him both beer and cookies?</button> 
+</div>
+
+<div>
+<p>
+SHADOW FIGURE: Because it's part of the test to infer what he likes!
+</p>
+
+<button class="btn state-plus">Okay... can you tell me the prior belief I should have over beer and cookies?</button>
+</div>
+
+<div>
+<p>
+SHADOW FIGURE: Ah, I see you have been trained by the Bayesian Oracle. 
+</p>
+
+<p>
+SHADOW FIGURE: Well prior beliefs are a bit subjective, but I would say that for most people, you should expect 2 : 5 beer versus cookies (29% vs 71%).
+</p>
+
+<p>
+SHADOW FIGURE: After all, who doesn't like cookies?
+</p>
+
+<button class="btn state-plus" onclick="$('#beer-cookies-container').show();">Add the picture to your mental beliefs</button>
+</div>
+
+<div>
+<p>
+You attempt to thank the shadowy figure, but he has vanished.
+</p>
+
+<button class="btn state-plus">Creepy... let's get out of this forest.</button>
+</div>
+
+
+<div>
+<img src="images/village.png" width="300">
+<p>
+You have made it out of the shadow forest and into the neighboring town. You are still over a week of journeying from both the tavern and the cave.
+</p>
+<button class="btn state-plus">Enter the town</button>
+
+</div>
+
+<div>
+
+<img src="images/farmer.png" height="300px">
+<p>
+And there is a somewhat distressed looking farmer on the side of the road.
+</p>
+<button class="btn state-plus">Ask her what's wrong</button>
+
+</div>
+
+<div>
+<p>
+FARMER: There have been thefts from my chicken coop. The local animal population consists of 7 raccoons to every 3 foxes (70% raccoons, 30% foxes). Judging by the type of marks on the door alone, the marks look five times more likely to be caused by a fox than a raccoon.</p>
+
+<p>
+FARMER: I want to trap the animal, but I only have traps for foxes. If a raccoon goes in, it will get hurt. If I set up the trap, what is the probability that the animal I will catch will be a fox?
+</p>
+
+<p class="question">
+Show the farmer the appropriate new belief.
+</p>
+
+<span id="raccoon-fox"></span> <br>
+
+<!--<button class="btn state-plus">It looks like this</button>-->
+
+</div>
+
+<div>
+<p>
+FARMER: So what is the numerical probability that it will be a fox?
+</p>
+<input type="number" class="bayes-prob-input" data-answer="68">
+</div>
+
+<div>
+<p>
+FARMER: Wow, thanks a lot, traveller! 
+</p>
+
+<p>
+FARMER: Can I invite you home for breakfast?
+</p>
+
+<button class="btn state-plus">You haven't eaten for over 40 clicks. Go eat with the farmer!</button>
+</div>
+
+<div>
+
+<!-- <h4>Have a gut sense daydream</h4>
+<p>
+Over the course of breakfast, you look at the farmer eating sausage and fall into a daydream....
+</p>
+
+<img src="images/sausage.png" width="200px">
+
+<p>
+In your dream state you observe that when there are only two pieces of information (the prior belief and new evidence), if both pieces of information are in favor of one hypothesis, that hypothesis will be more likely. If the pieces of information point to different hypotheses, the stronger (or more skewed) of the two pieces will win out.  
+</p>
+
+<p>
+Intuitively, if both pieces of information point in the same direction, the calculated probability using both pieces of information should be more in favor of that hypothesis than any individual piece of information alone. 
+</p>
+
+<p>
+In the farmer's raccoon and fox problem, </p>
+
+<p>
+// should put some images here 
+
+The prior belief pointed in the direction of:
+<button class="btn right">raccoons</button>
+<button class="btn wrong">foxes</button>
+</p>
+
+<p>
+The new evidence pointed in the direction of:
+<button class="btn wrong">raccoons</button>
+<button class="btn right">foxes</button>
+</p>
+
+
+<p>
+The odds ratio offered by the 
+<button class="btn wrong">prior belief</button>
+<button class="btn right">evidence</button>
+was stronger.
+</p>
+
+<p>
+Right, in the farmer's raccoon and fox problem, the two pieces of information pointed in opposite directions. The final conclusion was that foxes were more likely, since the evidence had a stronger ratio than the prior.
+</p>
+
+<p>
+However, the final conclusion of ____ but will be weaker than the original piece of information (since you now have two conflicting pieces of information).
+</p>
+
+<p>
+You realize that you should check that whenever you do Bayes calculations, you should make sure the answer jibes with your gut sense.
+</p> -->
+
+<p>
+You realize that you have been happily staring off into space thinking these thoughts, and have been a pretty lousy meal companion. After a hearty homecooked meal, the farmer hints that you should continue on your way.
+</p>
+
+<button class="btn state-plus">Have you seen any other travellers around who I could talk to?</button>
+</div>
+
+<div>
+<p>
+FARMER: You should see the mayor. His office is yonder.
+</p>
+
+<button class="btn state-plus">Head toward the mayor's office</button>
+</div>
+
+
+<!-- <div>
+<p>
+A gut sense check is important to do. 
+</p>
+
+<p>
+For instance, information isn't always relevant___. 
+</p>
+
+// can talk about independence
+// discuss likelihood vs odds
+<p>
+</p>
+
+</div>
+ -->
+
+<div>
+<img src="images/thinking-man.jpg" width="300">
+
+<p>
+It's a small town so you are able to walk straight into the mayor's office. The mayor is rubbing his beard with a furrow on his brow.
+</p>
+
+<button class="btn state-plus">Talk to the mayor</button>
+</div>
+
+<div>
+<img src="images/trebuchet.png">
+<p>
+MAYOR: I am trying to choose a builder for a rock throwing machine. The two handymen in the town are Billy and Bob. 60% of the time Billy's quality is better than Bob's. However, Bob seems really excited about building a rock throwing machine, and I have reason to believe that on this occasion, his odds are two times better than normal to outperform Billy. What is the probability that excited Bob will produce the better result?
+</p>
+<button class="btn state-plus">I think I can help</button>
+</div>
+
+<div>
+
+<p class="question">
+Show the mayor the appropriate belief.
+</p>
+
+<span id="billy-bob"></span> <br>
+</div>
+
+<div>
+<p>
+MAYOR: So what is the probability that Bob will do a better job than Billy?
+</p>
+<input type="number" class="bayes-prob-input" data-answer="57">
+</div>
+
+<div>
+<p>
+MAYOR: Hey, thanks, adventurer!
+</p>
+
+<p>
+MAYOR: You're not from around these parts are you?
+</p>
+
+<p>
+You tell the Mayor that you're searching for Kahneman or other travellers who might know of his whereabouts.
+</p>
+
+<p>
+MAYOR: Oh Kahneman? So many people have been looking for him these days. 
+</p>
+<button class="btn state-plus">Do you know where he is?</button>
+</div>
+
+<div>
+<p>
+MAYOR: NOPE.
+</p>
+<button class="btn state-plus">Do you know if he likes beer or cookies?</button>
+</div>
+
+<div data-checkpoint="mayor-cookies">
+<p>
+MAYOR: Cookies. Definitely cookies. 
+</p>
+
+<p>
+MAYOR: I'd say that he likes cookies 2 times more than the average person. And he's about average for beer. 
+</p>
+
+<p class="question">
+Use the mayor's information to update your beliefs about Kahneman.
+</p>
+</div>
+
+<div>
+<p>
+You thank the mayor and wish him best of luck with his rock thrower. 
+</p>
+<button class="btn state-plus">Keep journeying</button>
+</div>
+
+<!-- <div>
+<img src="images/blacksmith.gif" width="300">
+<p>
+You enter a village of blacksmiths and woodworkers. You encounter someone industriously rushing back from lunch to head back to the shop. What is the probability that this person is a blacksmith?
+</p>
+
+<p>
+// traveller
+// pack lightly
+// pack heavily
+
+
+// someone is rushing around frantically (hospital)
+There are two hospitals 
+
+One is closer and is used to treat smaller injuries.
+
+The other is further and is used to treat __.
+
+// need one more story
+</p>
+<span id="blacksmith-woodworker"></span> <br>
+
+<input type="number" class="bayes-prob-input" data-answer="10">
+</div> -->
+
+<div>
+<p>
+As you journey through villages, acquiring the goodwill of all you meet through your powers of rational inference, news begins to spread about you. 
+</p>
+
+<button class="btn state-plus">Keep a moderate head so as not to succumb to the overconfidence bias</button>
+</div>
+
+<div>
+<p>
+An adventurer approaches you.
+</p>
+<img src="images/adventurer.jpg" width="200">
+<p>
+ADVENTURER: I hear you are looking for Kahneman.
+</p>
+<p>
+ADVENTURER: I am 90% sure that Kahneman is at the cave of uncertainty!
+</p>
+<button class="btn state-plus">Oh dear, he probably hasn't been through overconfidence training</button>
+</div>
+
+<div data-checkpoint="kahneman-loc-man">
+<p>
+You talk to the adventurer in attempt to find out his intentions. He seems to have no ill wishes to you. 
+</p>
+
+<p>
+Discounting for his questionable reliability, you think that it is more reasonable to assume that the man is correct with 75% probability (3 : 1) instead of 90% (9 : 1). 
+</p>
+
+<p class="question">
+Use the adventurer's information to update your belief on Kahneman's location.
+</p>
+</div>
+
+<div>
+<p>
+Nice. Your belief of Kahneman's location has proportionally been updated. 
+</p>
+
+<button class="btn state-plus">You think a bit more about Kahneman's location and realize...</button>
+</div>
+
+<div data-checkpoint="kahneman-loc-news">
+<p>
+That you have travelled around quite a bit but news about Kahneman has been rather quiet. You infer that this is more likely if he were in a secluded cave than in a tavern with other people. 
+</p>
+
+<p>
+You are uncertain but think that this level of quiet might be evidence to suggest that Kahneman is more likely to be at the Cave (1.5 : 1). 
+</p>
+
+<p class="question">
+Combine your observation with the adventurerr's information to further skew your evidence and produce a new belief on Kahneman's location.
+</p>
+
+</div>
+
+<div>
+
+<p>
+Correct! You multiplied to combine two pieces of evidence into one likelihood.
+</p>
+
+<p>
+You were able to do that because the two pieces of information were <strong>independent</strong>. 
+</p>
+
+<p>
+You think that Kahneman is probably at:
+<button class="btn right">The Cave</button>
+<button class="btn wrong">The Tavern</button>
+</p>
+</div>
+
+
+<div>
+<p>
+And you think that you might want to bring some:
+<button class="btn wrong">Beer</button>
+<button class="btn right">Cookies</button>
+</p>
+</div>
+
+<div>
+<p>
+You shift course and proceed directly to the Cave of Uncertainty.
+</p>
+<button class="btn state-plus">Go forth</button>
+</div>
+
+<div>
+<img src="images/cave.png" width="450px">
+<p>
+After almost a week, you make it to the cave with cookies in hand....
+</p>
+<button class="btn state-plus">Enter the cave</button>
+</div>
+
+<div>
+<p>
+"Hello, Kahneman?" you venture tentatively. 
+</p>
+<button class="btn state-plus">Wait for a response</button>
+</div>
+
+<div>
+<img src="images/scroll.jpg" width="300">
+<p>
+You just hear your echo. But in the cave of uncertainty, lies a fluttering scroll with a test. 
+</p>
+
+<button class="btn state-plus">Take the test</button>
+</div>
+
+
+<div>
+<iframe src="https://docs.google.com/forms/d/15SQSBgRhIB9CAFwts4nB9oCCdW8tCjFfV_zXQZEuI38/viewform" style="width:100%; height:600px"></iframe>
+
+<p class="question">
+What was the codeword scrawled at the end of the test?
+</p>
+<input type="text" data-answer="cliffhanger" class="text-answers">
+</div>
+
+
+<div>
+	<p>
+	As you complete the test, the walls of the cave begins to shudder and hiss. The walls begin to fold in, and you are suddently uncertain that this was truly the Cave of Uncertainty. 
+	</p>
+
+	<p>If you would like, email Cassandra (cssndrx@gmail.com) to be notified as more of the adventure is added.</p>
+<!--	<input type="email" style="width:200px">
+	<button class="btn state-plus">Submit</button>-->
+
+	<h3>To be continued....</h3>
+
+</div>
+
+<div>
+
+
+<!-- <p>
+This game was built by Cassandra Xia as part of a masters thesis with the MIT Media Lab's Fluid Interfaces Group.
+</p>
+
+<p>
+Warm thanks and hugs to the friends and advisors who helped me ___: Dor Abrahamson, Ned Burnell, Gary Chan, Yasemin Gokce, Cory Li and Ruwen Liu, Pattie Maes, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, Bret Victor, Michael Wu, Victoria Xia, and Sophia Youn.
+</p>
+
+<p>
+Ideas in the game were heavily influenced by two classes at MIT (9.660 by Prof. Josh Tenenbaum) and (6.437 by Prof. Lizhong Zheng) and a workshop taught by the Center for Applied Rationality. 
+</p>
+
+<p>
+Built with: jquery/jqueryui, bootstrap, jqmath, underscorejs.
+</p>
+ -->
+</div>
+				</div> <!--end left container-->
+
+
+				<div class="col-xs-6 col-xs-offset-6" data-spy="affix" id="right-container">
+
+<!-- 						<div id="inventory-container">
+							<h3>Inventory</h3>
+							<div id="inventory" style="display:block; height:50px;">
+								<span id="user-moneybags">
+									<img src="images/empty_inventory.png" class="inventory-item">
+								</span>
+							</div>
+						</div>
+ -->
+
+						<div class="confidence-training">
+						<h3>Current quest: Train against overconfidence with the monk</h3>
+<!-- 						<p>
+							An older student whispers to you, "Psst... You graduate from monk school when you get 4 questions in your interval, have 3 green moneybags, get a streak of 3 questions right, or when the monk runs out of questions."
+						</p>
+ -->
+
+						<table style="margin: 0 auto;">
+							<tr><td style="padding-right: 40px"><strong><img src="images/grad.jpg" width="50px"> units</str	ong></td><td class="grad-units">0</td></tr>
+							<tr><td style="padding-right: 40px"><strong><img src="images/dishes.png" width="50px"> duty</strong></td><td class="dish-duty">0</td></tr>
+						</table>
+
+
+<!-- 						<div id="overconfidence-feedback" style="display:none">
+						<h4>Feedback</h4>
+						<p>
+							<strong>Overconfidence</strong> That confidence interval might have been too narrow. One way to make your confidence intervals more realistic is to imagine ways in which you could be wrong (in business, this is called doing a project <a href="http://hbr.org/2007/09/performing-a-project-premortem/ar/1" target="_blank">premortem</a>).
+						</p>
+						</div>
+
+						<div id="underconfidence-feedback" style="display:none">
+						<h4>Feedback</h4>
+						<p>
+							<strong>Underconfidence</strong> That confidence interval was very wide. While the true answer is very likely to be within a wide interval, remember that a realistic confidence interval means that some of answers will fall outside of the range.  
+						</p>
+						</div>
+
+						<div id="gaming-system-feedback" style="display:none">
+						<h4>Feedback</h4>
+						<p>
+							The confidence intervals you make continue to be wide. I might now start randomly take the opposite side of the bet -- so you lose moneybags when the answer is in the interval. Since you think the bet is fair, this should not be a problem for you.
+						</p>
+						</div>
+ -->
+						</div> <!--end confidence-training-->
+
+
+						<div class="bayes-training">
+							<h3>Current quest: Train with the Bayes Oracle</h3>
+
+							<p>
+								In this part, the story moves forward only when your perform the correct sequence of actions. <strong>If the game seems stuck</strong>, or a button doesn't seem to work, double-check that your choice is both mathematically correct and matches your gut sense. 
+							</p>
+
+	<!-- 						<p>
+								You hear a little voice in you head: "Hrm, does that make sense?"
+								Your intestines grumble. Did you check with your gut sense on this answer?
+								// ask questions about intuition on the post-test
+							</p>
+ -->
+							<div id="kahneman-location-container" style="display:none;">
+								<h4>Widget: Infer Location <img src="images/cave.png" width="40px"><img src="images/tavern.png" width="40px"></h4>
+								<div id="kahneman-location"> </div>
+							</div>
+
+							<div id="beer-cookies-container" style="display:none;">
+								<h4>Widget: Infer Food of Choice <img src="images/beer.gif" width="40px"><img src="images/cookies.jpg" width="40px"></h4>
+								<div id="beer-cookies"></div>
+							</div>
+
+						</div>
+
+					</div> <!--end right container-->
+
+</div><!--end fluid row-->
+</div><!--end main container-->
+
+
+
+<!--widgets to clone -->
+<div class="trivia-question" style="display:none;">
+	<p class="question">
+	</p>
+	<input class="input-medium" type="number">
+	<button class="btn">Guess</button>
+</div>
+
+<div class="trivia-widget" style="display:none; position:relative">
+	<div class="containment"><canvas width="600" height="150"></canvas></div>
+	<table style="display:none; position:absolute; right:-10px; top: 10px; background-color:grey;color:white;">
+		<tr> <td style="width:10px; background-color:#1B4063;"></td><td>Your initial guess</td></tr>
+		<tr> <td style="width:10px; background-color:#215370;"></td><td>Your confidence interval</td></tr>
+		<tr> <td style="width:10px; background-color:#C0E1E9;"></td><td>Correct answer</td></tr>
+	</table>
+	<br>
+
+<button class="btn">Submit belief graph</button>
+
+</div>
+
+
+<span class="bayes-widget" style="position:relative; display:none;">
+<span height="20"> 
+	<span class="tab active">Prior belief</span>
+	<span class="tab">Evidence</span>
+	<span class="tab">New belief</span>
+</span><br>
+<canvas width="600" height="150" style="display:block;"></canvas>
+</span>
+
+
+
+
+
+<div class="moneybag-widget" style="display:none">
+<table>
+<tr>
+<td width="35%" vertical-align="top" class="question">
+	How confident are you that the true answer is contained within your <span class="low"></span> to <span class="high"></span> interval?
+</td>
+<td style="padding-left:10px">
+   <button class="btn">50%</button>
+   <button class="btn">60%</button>
+   <button class="btn">70%</button>
+   <button class="btn">80%</button>
+   <button class="btn">90%</button>
+
+</td>
+
+<tr>
+<td>
+	That level of confidence is equivalent to you believing that this is a fair bet:
+</td>
+<td>
+	<div class="confidence-illustration"></div>
+</td>
+</tr>
+</table>
+</div> <!--end moneybag widget-->
+
+
+<div class="payoff-widget" style="display:none">
+	<p>The correct answer was <span class="correct-answer"></span>.The height of the correct answer on your normalized belief graph was <span class="p-correct"></span>. </p>
+
+	<p class="unit-feedback">Thereby you accumulate <span class="p-correct"></span> units towards graduation. <img src="images/grad.jpg" width="50px"></p> 
+	<p class="dish-feedback">You have <img src="images/dishes.png" width="50px"> duty.</p>
+	<button class="btn state-plus">Onwards</button>
+</div>
+
+
+</body>
+
+<script>
+
+
+
+// // test of funnness
+// // how good are you at giving conf intervals for various dists?
+// // seems generating dist dependent?
+// // again needs to be grounded with a real-world scenario
+// // how are a and b chosen
+// var stretch = Math.random() * 1000;
+// var x = Math.random()*stretch;
+// var y = Math.random()*stretch;
+// var a = Math.min(x, y);
+// var b = Math.max(x, y);
+
+// // generate a test of uniformness
+// function show_me(){
+// 	console.log(uniform(a, b));
+// }
+
+var trivia_record = [0, 0];
+var streak_length = 0;
+
+var user_moneybags = 0;
+
+function update_user_money(){
+	$('#user-moneybags').empty();
+	render_moneybags('#user-moneybags', user_moneybags);
+}
+
+var dish_duty = 0;
+var grad_units = 0;
+
+
+
+function make_payoff_widget(selector, question_num){
+	var $widget = $('.payoff-widget').last().clone();
+	$widget.css('display', 'block');
+
+	$(selector).append($widget);
+}
+
+
+function update_payoff_widget(question_num, conf_low, conf_high, p_correct){
+	var $widget = $($('.payoff-widget').get(question_num));
+
+	var correct_answer = trivia_questions[question_num].answer;
+	$widget.find('.correct-answer').text(correct_answer);
+
+	// var $data_source = $widget.prev().find('button');
+	// var conf_low = $data_source.data('low');
+	// var conf_high = $data_source.data('high');
+	// var p_correct = format_number($data_source.data('p_correct'f), 2);
+
+
+	// check if the answer is out of bounds
+	if (correct_answer > conf_high || correct_answer < conf_low){
+		$widget.children('.unit-feedback').hide();
+		$widget.find('.p-correct').text(0);
+
+		dish_duty++;
+	}
+	else{
+		$widget.children('.dish-feedback').hide();	
+		$widget.find('.p-correct').text(format_number(p_correct, 3));
+
+		// calculate the amount of credits earned
+		grad_units += p_correct;
+	}
+//	debugger;
+
+	function graduate_from_school(){
+
+		// find the remaining trivia questions and delete them
+		$('#left-container').children('.trivia-question:hidden').remove();
+		$('#left-container').children('.trivia-widget:hidden').remove();
+		$('#left-container').children('.payoff-widget:hidden').remove();
+
+	}
+
+	function update_trivia_record(){
+		$('.dish-duty').text(dish_duty);
+		$('.grad-units').text(format_number(grad_units, 3));
+	}
+
+	function is_graduate(){
+		return false;
+	}
+
+	update_trivia_record();
+
+//	give_confidence_feedback(correct_answer, conf_high-conf_low);
+	if (is_graduate()){
+		graduate_from_school();
+	}
+
+	scroll_window();
+}
+
+
+// function make_moneybag_widget(selector, question_num){
+
+// 	function is_graduate(){
+// 		// check for graduation requirements
+// 		var grad_right = 7;
+// 		var grad_profit = 4;
+// 		var grad_streak = 5;
+
+// 		// when he has some number of questions right
+// 		if(trivia_record[0] >= grad_right){
+// 			return true;
+// 		}
+
+// 		// when he has a high enough profit
+// 		if (user_moneybags >= grad_profit){
+// 			return true;
+// 		}
+
+// 		// when he is doing much better
+// 		// as measured by streak of length streak_length
+// 		if (streak_length >= grad_profit){
+// 			return true;
+// 		}
+
+// 		return false;
+// 	}
+
+// 	function graduate_from_school(){
+
+// 		// find the remaining trivia questions and delete them
+// 		$('#left-container').children('.trivia-question:hidden').remove();
+// 		$('#left-container').children('.trivia-widget:hidden').remove();
+// 		$('#left-container').children('.moneybag-widget:hidden').remove();
+
+
+// 		// // tell them what happens with the money or debt??
+// 		// var $final_div = $('<div style="display:none;"></div>')
+// 		// if (user_moneybags > 0){
+// 		// 	$final_div.append('<p>The money is yours to keep. It may or may not be useful to you in the future.</p>');
+// 		// 	var $take_money = $('<button class="btn">Great.</button>');
+// 		// 	$take_money.click(function(){
+// 		// 		state_plus();
+// 		// 		$(this).addClass('disabled');
+// 		// 	});
+// 		// 	$final_div.append($take_money);
+// 		// }
+// 		// if (user_moneybags < 0){
+// 		// 	$final_div.append('<p>Unfortunately, you have racked up a debt. I will clear it if you agree to pay it forward and use your knowledge to help the people of the land.</p>');
+// 		// 	var $clear_debt = $('<button class="btn">I agree</button>'); 
+// 		// 	$clear_debt.click(function(){
+// 		// 		user_moneybags = 0;
+// 		// 		update_user_money();
+// 		// 		$(this).addClass('disabled');
+// 		// 	});
+// 		// 	$final_div.append($clear_debt);
+// 		// }
+
+// 		// $widget.append($final_div);
+
+// 	}
+
+// 	function update_trivia_record(){
+// 		$('#trivia-right').text(trivia_record[0]);
+// 		$('#trivia-wrong').text(trivia_record[1]);
+// 	}
+
+// 	var $widget = $('.moneybag-widget').last().clone();
+// 	$widget.css('display', 'block');
+
+// 	$(selector).append($widget);
+
+// 	var images = ['50.PNG', '60.PNG', '70.PNG', '80.PNG', '90.PNG', '100.PNG'];
+
+// 	var $illustration = $widget.find('.confidence-illustration');
+// 	var $buttons = $widget.find('button');
+// 	$buttons.hover(function(){
+// 		var ind = $(this).parent().children('button').index(this);
+// 		$illustration.html('<img height="100px" src="images/' + images[ind] + '">');
+// 		scroll_window();
+// 	});
+
+// 	function give_confidence_feedback(correct_answer, user_spread){
+// 		// give feedback as necessary
+// 		var hits = trivia_record[0];
+// 		var miss = trivia_record[1];
+// 		var chances = hits + miss;
+
+// 		var $feedback;
+// 		if (chances >= 3 && miss / chances >= .75){
+// 			$('#overconfidence-feedback').show();
+// 			$('#underconfidence-feedback').hide();
+// 		}
+// 		else if (correct_answer / user_spread < .1){
+// 			$('#underconfidence-feedback').show();
+// 			$('#overconfidence-feedback').hide();
+// 		}
+// 	}
+
+
+// 	$buttons.click(function(){
+// 		var ind = $(this).parent().children('button').index(this);
+
+// 		var confs = [50, 60, 70, 80, 90];
+// 		var debts = [1, 1.5, 2.3, 4, 9];
+
+// 		var conf = confs[ind];
+// 		var debt = debts[ind];
+// 		$buttons.off(); // remove click and hover events
+
+
+// 		var correct_answer = trivia_questions[question_num].answer;
+// 		// how to get the conf interval out
+// 		var conf_low = $widget.prev().find('button').data('low');
+// 		var conf_high = $widget.prev().find('button').data('high');
+
+// 		$widget.append("<p>MONK: I'll take you on that bet.</p>"); // + debt + " to 1 bet.</p>");
+
+// 		var text_string = 'The answer is ' + correct_answer + '. More importantly, ';
+// 		var conf_string = 'confidence interval of ' + conf_low + ' to ' + conf_high;
+
+// 		var $payout_button = $('<br><button class="btn" onclick="update_user_money();"></button>');
+// 		$payout_button.click(function(){
+// 			state_plus();
+// 			$(this).off();
+// 			$(this).addClass('disabled');
+// 		});
+
+// 		if (correct_answer >= conf_low && correct_answer <= conf_high){
+// 			text_string += 'this was within your ' + conf_string + '. So I will give you 1 moneybag as per our ' + conf + '% confidence bet.';
+// 			$widget.append('<p>' + text_string + '</p>');
+// 			render_moneybags($widget, 1);
+
+// 			user_moneybags++;
+// 			trivia_record[0]++;
+// 			streak_length++;
+// 			$payout_button.text('Take your winnings');
+// 		}else{
+// 			text_string += 'this was not in your ' + conf_string + '. So you owe me ' + debt + ' moneybags as per our ' + conf + '% confidence bet.';
+// 			$widget.append('<p>' + text_string + '</p>');
+// 			render_moneybags($widget, -debt);
+
+// 			user_moneybags -= debt;
+// 			trivia_record[1]++;
+// 			streak_length = 0;
+// 			$payout_button.text('Pay the monk the moneybags');
+// 		}
+
+// 		$widget.append($payout_button);
+// 		update_trivia_record();
+
+// 		give_confidence_feedback(correct_answer, conf_high-conf_low);
+// 		if (is_graduate()){
+// 			graduate_from_school();
+// 		}
+
+// 		scroll_window();
+// 	});
+// }
+
+
+function check_input_answer(){
+	// console.log('fox prob ' + $(this).val());
+	var correct_answer = $(this).data('answer');
+
+	// if it's the correct value
+	if ($(this).val() == correct_answer || $(this).val() == correct_answer/100 ){
+		// show the feedback
+		$(this).after('<p>Exactly!</p>');
+
+	state_plus();
+	$(this).off();
+	}
+};
+
+$('.bayes-prob-input').keyup(check_input_answer);
+$('.bayes-prob-input').change(check_input_answer);
+
+
+function check_text_answer(){
+	var correct_answer = $(this).data('answer');
+
+	// if it's the correct value
+	if ($(this).val() == correct_answer || $(this).val() == '"' + correct_answer + '"' ){
+		// show the feedback
+		$(this).after('<p>Exactly!</p>');
+
+	state_plus();
+	$(this).off();
+	}
+}
+$('.text-answers').keyup(check_text_answer);
+$('.text-answers').change(check_text_answer);
+
+
+// dark to light
+//https://kuler.adobe.com/220px-50ShadesofGreyCoverArt-color-theme-3603196/
+var colors = ['#192127', '#1B4063', '#2F77A1', '#C0E1E9', '#ECEEF0'];
+//215370
+//2A6A8F
+
+var padding_top = 20;
+var padding_bottom = 20;
+
+
+
+function render_moneybags(selector, number){
+	if (number == 0){
+		$(selector).append('<img src="images/no_money.png" width="50px">');					
+		return;
+	}
+
+	var graphic = number < 0 ? 'red_money.png' : 'green_money.png';
+	var num_whole = Math.floor(Math.abs(number));
+	for (var i=0; i< num_whole; i++){
+		$(selector).append('<img class="money-bag" src="images/' + graphic + '" style="max-width:50px; max-height:50px">');			
+	}
+
+	function approx(a, b){
+		var epsilon = .0001;
+		return Math.abs(a-b) < epsilon;
+	}
+
+	// render fractional 
+	// todo: this only does red bags
+	var fractional = Math.abs(number) - num_whole;
+	if (approx(fractional, 1/2)){
+		$(selector).append('<img class="money-bag" src="images/' + 'half.png' + '" style="max-width:50px; max-height:50px">');	
+	}
+	if (approx(fractional, .3)){ //rounded from .33
+		$(selector).append('<img class="money-bag" src="images/' + 'third.png' + '" style="max-width:50px; max-height:50px">');	
+	}
+}
+
+
+function make_trivia_widgets(){
+
+	function add_trivia_question(selector, question_num){
+		var $q_widget = $('.trivia-question').last().clone();
+		$(selector).append($q_widget); 
+		$q_widget.css('display', 'block');
+
+		$q_widget.children('p').text(trivia_questions[question_num].question);
+		 // clicking the guess button, loads up the widget
+		var $button = $q_widget.children('button').first();
+
+		 $button.click( function(){
+		 	// check if this is a number of not
+		 	if ($q_widget.find('input').val() == ''){
+		 		$(this).after('<p>Go ahead, make a guess!</p>');
+		 		scroll_window();
+		 		return;
+		 	}
+
+	state_plus();
+	$(this).off();
+		});
+
+		 return $q_widget.children('input').first();
+
+	}
+
+	var num_questions = trivia_questions.length;
+	var $main = $('#trivia-questions');
+
+	for (var i=0; i<num_questions; i++){
+
+		// add the trivia question
+		var $input = add_trivia_question('#trivia-questions', i);
+		// add the widget
+		fixed_beta_spreader('#trivia-questions', $input, i);
+
+		//make_moneybag_widget('#trivia-questions', i);
+		make_payoff_widget('#trivia-questions', i);
+	}
+
+	// remove the trivia questions container
+	var $children = $('#trivia-questions').children().detach();
+	$children.insertAfter('#trivia-questions');
+	$('#trivia-questions').remove();
+
+
+	// add in training text
+	$('.trivia-question').first().prepend('<p>Answer this question to the best of your ability.</p>');
+
+
+	var payoff_text = '<p>Drag down the circle so that your belief covers all answers that you think are reasonable. This diagram is your <strong>belief graph</strong>. You will earn monastery graduation credits <img src="images/grad.jpg" width="30px"> based on the height of your graph over the correct answer. </p> <p> But be careful... if you assign zero probability to the correct answer, you will get monastery dish duty <img src="images/dishes.png" width="30px">. </p>';
+
+	var $button = $('.trivia-widget').children('button').first();
+
+	$button.before(payoff_text);
+
+	//Now grab hold of your belief and drag down to specify a 90% confidence interval. A 90% confidence interval means that you are 90% sure that the true answer lies within your interval.
+
+}
+make_trivia_widgets();
+
+
+
+// function beta_spreader(selector, $input, question_num){
+
+// 	// left-right should change the shape of the beta
+// 	// up-down should expand the axis, making the beta flatter
+
+// 	 var $widget = $('.trivia-widget').last().clone();
+// 	 $(selector).append($widget);
+// 	 $widget.css('display', 'block');
+// 	 var canvas = $widget.find('canvas')[0];
+// 	 var context = canvas.getContext("2d");
+
+// 	 var $marker;
+// 	 var diameter = 10;
+
+// 	 var width = 600;
+// 	 var height = 150-20;
+// 	 // change the axis to be math axis
+
+// 	 var guess = _.isNumber($input.val()) ? $input.val() : 0;
+// 	 var conf = [guess, guess];
+
+// 	 var beta_a = 4;
+// 	 var beta_b = 4;
+
+// 	 var y_scale = 50;
+
+// 	 function base_width(){
+// 		// some number between 50 and width
+// 		return lerp(conf[1]-conf[0], 0, 100, 50, width);
+// 	 }
+
+// 	function plot(){
+// 		function plot_figure(){
+// 			context.clearRect(0, 0, width, height);
+
+// //			context.setTransform(width, 0, 0, -y_scale, 0, height);
+// 			context.setTransform(base_width(), 0, 0, -y_scale, (width-base_width())/2, height);
+			
+// 			var x_coords = range(0, 1, .01);
+// 			var y_coords = x_coords.map(function(x){
+// 				return [x, jStat.beta.pdf(x, beta_a, beta_b)];
+// 			});
+// 			y_coords.push([1, y_coords[0][0]]);
+
+// 			plot_coords(context, y_coords, 'rgba(27,64,99,.2)');			
+// 		}
+// 		plot_figure();
+
+
+// 		function plot_axis(){
+// 			context.setTransform(1, 0, 0, 1, 0, 0);
+// 			context.clearRect(0, height, width, 100);
+
+// 			var font = "18px Arial";
+// 			var txtfont = '12px Arial';
+
+// 			var yoff = 15;
+
+// 		    var low = Math.max((width - base_width())/2, 0);
+// 		    var high = Math.min( (width + base_width())/2 - 5, width-20 );
+// 		    add_text(context, '[', [low, height], font);
+// 		    add_text(context, conf[0], [low, height+yoff], txtfont);
+
+// 		    add_text(context, ']', [high, height], font);
+// 		    add_text(context, conf[1], [high, height+yoff], txtfont);
+
+// 		    var mode = (beta_a-1) / (beta_a + beta_b - 2);
+// 		    if (conf[1] - conf[0] > 0  && conf[1] - mode > 2){
+// 			    var pos = lerp(mode, 0, 1, low, high);
+// 			    var val = Math.round(lerp(mode, 0, 1, conf[0], conf[1]));
+// 			    add_text(context, '|', [pos, height], font);
+// 			    add_text(context, val, [pos, height+yoff], txtfont);		    	
+// 		    }
+
+// 		}
+
+// 		plot_axis();
+		
+// 	}
+// 	plot();
+
+// 	function calc_top(x){
+// 		// need to calc_top better given that it may not have a full base
+
+// 		// need to make sure that it doesn't fall off the shape
+// 		var true_x = lerp(x, (width-base_width())/2, (width+base_width())/2, 0, 1);
+
+// 		// x between 0 and 1
+// 		var y = jStat.beta.pdf(true_x, beta_a, beta_b) * y_scale;
+// 		return Math.max(0, height-y - diameter/2);
+// 	}
+
+// 	function add_draggable(){
+// 		$marker = $('<div class="draggable-marker" style="position: absolute; display:block"></div>');
+
+// 		$marker.draggable( {
+// 			drag: function(e){
+// 				var top = $(this).position().top;
+
+// 				var peakiness = (height - top) / height * 10;
+// 				beta_a = peakiness;
+// 				beta_b = beta_a;
+
+
+// 				var left = $(this).position().left;
+// 				var skew = left/width;
+// 				beta_a = skew*beta_a;
+// 				beta_b = (1-skew)*beta_b;
+
+// 				beta_a = Math.max(1.1, beta_a);
+// 				beta_b = Math.max(1.1, beta_b)
+
+// 				// update conf
+// 				var spread = Math.round(top/height * 30);
+// 				var low = guess - spread;
+// 				var high = guess + spread;
+// 				conf[0] = Math.max(0, low);
+// 				conf[1] = Math.max(conf[0], high);
+
+// 	 			plot();
+// 	 		},
+// 	 		stop: function(){				
+// 				// snap the draggable to the mode
+// 				var mode_x = (beta_a -1)/(beta_a+beta_b-2);
+// 				var x = lerp(mode_x, 0, 1, (width - base_width())/2, (width + base_width())/2 );
+
+// 				$(this).css('left', x - diameter/2);
+// 				$(this).css('top', calc_top(x));
+
+// 				update_conf_binding();
+
+// 			},
+// 			containment: 'parent', //"#containment-wrapper", 
+// 		});
+
+// 		position_marker();
+// 		$widget.find('.containment').first().append($marker);
+// 	}
+// 	add_draggable();
+
+
+// 	function position_marker(){
+// 		$marker.css('left', width/2 - diameter/2);
+// 		$marker.css('top', calc_top(width/2));
+// 	}
+
+// 	$input.change(function(x){
+// 		var new_value = Number($(this).val());
+// 		if (_.isNumber(new_value)){
+// 			guess = new_value;
+// 			conf = [guess, guess];
+
+// 			plot();			
+// 			update_conf_binding();
+// 			position_marker();
+// 		}
+// 	});
+
+
+// 	var $button = $widget.children('button').first();
+// 	var issuedWarning = false;
+// 	$button.click(function(){
+// 			if ((conf[1] - conf[0]) == 1 && !issuedWarning){
+// 				$(this).after('<p>Are you sure that you think ' + guess + ' is the only possible answer? If not, you should drag down the marker and spread your belief to include more possibilities.</p>');
+// 				scroll_window();
+
+// 				issuedWarning = true;
+// 				return;
+// 			}
+
+// 			state_plus();
+// 			$(this).off();
+// 			scroll_window();
+// 		});
+
+// 	function update_conf_binding(){
+// 		// update the data binding for others to read
+// 		$button.data('low', conf[0]);
+// 		$button.data('high', conf[1]);
+
+// 		// update what the next widget says
+// 		var $money_widget = $widget.next();
+// 		$money_widget.find('.low').text(conf[0]);
+// 		$money_widget.find('.high').text(conf[1]);
+// 	}
+
+// }
+
+
+
+
+function fixed_beta_spreader(selector, $input, question_num){
+
+	// left-right should change the shape of the beta
+	// up-down should expand the axis, making the beta flatter
+
+	// keeps the mode of the beta the same
+
+	 var $widget = $('.trivia-widget').last().clone();
+	 $(selector).append($widget);
+	 $widget.css('display', 'block');
+	 var canvas = $widget.find('canvas')[0];
+	 var context = canvas.getContext("2d");
+
+	 var $marker;
+	 var diameter = 10;
+
+	 var width = 600;
+	 var height = 150-20;
+
+	 // values
+	 var guess = _.isNumber($input.val()) ? $input.val() : 0;
+	 var conf = [guess, guess];
+
+	 // shape
+	 var beta_a = 4;
+	 var beta_b = 4;
+	 var y_scale = 50;
+	 function base_width(){
+		// some number between 50 and width
+		return lerp(conf[1]-conf[0], 0, 100, 50, width);
+	 }
+
+
+	function plot(){
+		function plot_figure(){
+			context.clearRect(0, 0, width, height);
+
+			context.setTransform(base_width(), 0, 0, -y_scale, (width-base_width())/2, height);
+			
+			var x_coords = range(0, 1, .01);
+			var y_coords = x_coords.map(function(x){
+				return [x, jStat.beta.pdf(x, beta_a, beta_b)];
+			});
+			y_coords.push([1, y_coords[0][0]]);
+
+			plot_coords(context, y_coords, 'rgba(27,64,99,.2)');			
+		}
+		plot_figure();
+
+
+		function plot_axis(){
+			context.setTransform(1, 0, 0, 1, 0, 0);
+			context.clearRect(0, height, width, 100);
+
+			var font = "18px Arial";
+			var txtfont = '12px Arial';
+
+			var yoff = 15;
+
+		    var low = Math.max((width - base_width())/2, 0);
+		    var high = Math.min( (width + base_width())/2 - 5, width-20 );
+		    add_text(context, '[', [low, height], font);
+		    add_text(context, Math.round(conf[0]), [low, height+yoff], txtfont);
+
+		    add_text(context, ']', [high, height], font);
+		    add_text(context, Math.round(conf[1]), [high, height+yoff], txtfont);
+
+		    var mode = (beta_a-1) / (beta_a + beta_b - 2); 
+		    if (conf[1] - conf[0] > 0  && conf[1] - guess > 2){
+			    var pos = lerp(mode, 0, 1, low, high);
+			    var val = Math.round(lerp(mode, 0, 1, conf[0], conf[1]));
+			    add_text(context, '|', [pos, height], font);
+			    add_text(context, val, [pos, height+yoff], txtfont);		    	
+		    }
+		}
+		plot_axis();
+	}
+	plot();
+
+	function calc_top(x){
+		// need to calc_top better given that it may not have a full base
+
+		// need to make sure that it doesn't fall off the shape
+		var true_x = lerp(x, (width-base_width())/2, (width+base_width())/2, 0, 1);
+
+		// x between 0 and 1
+		var y = jStat.beta.pdf(true_x, beta_a, beta_b) * y_scale;
+		return Math.max(0, height-y - diameter/2);
+	}
+
+	function add_draggable(){
+
+		$marker = $('<div class="draggable-marker" style="position: absolute; display:block"></div>');
+
+		$marker.draggable( {
+			drag: function(e){
+				var top = $(this).position().top;
+
+				var peakiness = (height - top) / height * 10;
+				beta_a = peakiness;
+				beta_b = beta_a;
+
+
+				var left = $(this).position().left;
+				var skew = left/width;
+				beta_a = skew*beta_a;
+				beta_b = (1-skew)*beta_b;
+
+				beta_a = Math.max(1.1, beta_a);
+				beta_b = Math.max(1.1, beta_b)
+
+				// update conf
+				
+				// [0, 1] -> [0, 30]
+				//var spread = Math.round(top/height * 30);
+				var scale = d3.scale.pow().exponent(3).range([0, 100]);
+				var spread = scale(top/height);
+
+				// var low = guess - spread;
+				// var high = guess + spread;
+				// conf[0] = Math.max(0, low);
+				// conf[1] = Math.max(conf[0], high);
+
+				var mode = (beta_a - 1)/(beta_a + beta_b - 2);
+				conf[0] = guess - mode*spread;
+				conf[1] = guess + (1-mode)*spread;
+			    var val = Math.round(lerp(mode, 0, 1, conf[0], conf[1]));
+				//console.log('mode ' + mode + ' spread ' + spread + ' conf[0] ' + conf[0] + ' conf[1] ' + conf[1] + ' val ' + val);
+
+				if (conf[0] < 0){
+					conf[0] = 0;
+					conf[1] = spread;
+				}
+
+	 			plot();
+	 		},
+	 		stop: function(){				
+				// snap the draggable to the mode
+				var mode_x = (beta_a -1)/(beta_a+beta_b-2);
+				var x = lerp(mode_x, 0, 1, (width - base_width())/2, (width + base_width())/2 );
+
+				$(this).css('left', x - diameter/2);
+				$(this).css('top', calc_top(x));
+
+				update_conf_binding();
+
+			},
+			containment: 'parent', //"#containment-wrapper", 
+		});
+
+		position_marker();
+		$widget.find('.containment').first().append($marker);
+	}
+	add_draggable();
+
+
+	function position_marker(){
+		$marker.css('left', width/2 - diameter/2);
+		$marker.css('top', calc_top(width/2));
+	}
+
+	$input.change(function(x){
+		var new_value = Number($(this).val());
+		if (_.isNumber(new_value)){
+			guess = new_value;
+			conf = [guess, guess];
+
+			plot();			
+			update_conf_binding();
+			position_marker();
+		}
+	});
+
+
+	var $button = $widget.children('button').first();
+	var issuedWarning = false;
+	$button.click(function(){
+			if ((conf[1] - conf[0]) == 0 && !issuedWarning){
+				$(this).after('<p>Are you sure that you think ' + guess + ' is the only possible answer? If not, you should drag down the marker and spread your belief to include more possibilities.</p>');
+				scroll_window();
+
+				issuedWarning = true;
+				return;
+			}
+
+			state_plus();
+			$(this).off();
+
+			var correct_answer = trivia_questions[question_num].answer;
+
+			var true_x = lerp(correct_answer, conf[0], conf[1], 0, 1);
+			var p_correct = jStat.beta.pdf(true_x, beta_a, beta_b) / (conf[1]-conf[0]);
+
+			if (conf[0] == conf[1] && conf[1] == correct_answer){
+				p_correct = 10000; // should be Inf
+			}
+
+			console.log(correct_answer + ' ' + conf[0] + ' ' + conf[1] + ' ' + true_x + ' ' + beta_a + ' ' + beta_b + ' ' + p_correct);
+			update_payoff_widget(question_num, conf[0], conf[1], p_correct);
+
+			scroll_window();
+		});
+
+	function update_conf_binding(){
+		// // update the data binding for others to read
+		// $button.data('low', Math.round(conf[0]));
+		// $button.data('high', Math.round(conf[1]));
+
+		// // // update what the next widget says
+		// // var $money_widget = $widget.next();
+		// // $money_widget.find('.low').text(Math.round(conf[0]));
+		// // $money_widget.find('.high').text(Math.round(conf[1]));
+
+		// // bind the probability of the correct answer
+		// var correct_answer = trivia_questions[question_num].answer;
+
+		// var true_x = lerp(correct_answer, (width-base_width())/2, (width+base_width())/2, 0, 1);
+		// var p_correct = jStat.beta.pdf(true_x, beta_a, beta_b);
+		// $button.data('.p-correct', p_correct);
+
+	}
+
+}
+
+
+function make_binary_bayes(selector, config){
+
+	var hyps = config.hyps;
+	var hyps_long = isdefined(config.hyps_long) ? config.hyps_long : config.hyps;
+
+
+	var correct_prior = config.correct_prior;
+	var correct_likelihood = isdefined(config.correct_likelihood) ? config.correct_likelihood : [-1, -1]; // some unachievable likelihood
+
+
+	var $widget = $('.bayes-widget').last().clone(); 
+	$(selector).append($widget); 
+	$widget.css('display', 'inline-block');
+
+	var top_offset = 20; // $widget.children('.tabs').height();
+
+	var canvas = $widget.children('canvas')[0];
+	var context = canvas.getContext("2d");
+
+	var width = 200;
+	var height = 150 - 20;
+
+	var bar_width = 40;
+	var bar_centers = [width/2-bar_width-10, width/2+bar_width+10];
+
+	var unit = 12;
+	var spacing = 2;
+
+	var label_height = height + 10;
+	var fudge = 2.8;
+	add_text(context, hyps[0], [bar_centers[0]-fudge*hyps[0].length, label_height] );
+	add_text(context, hyps[1], [bar_centers[1]-fudge*hyps[1].length, label_height] );
+
+	var curr_stage;
+
+//	var stage; // = 0;
+
+	var prior = isdefined(config.prior) ? config.prior : [1, 1];
+	var likelihood = [1, 1];
+	var posterior = [1, 1];
+
+
+	var user_data = [prior, likelihood, posterior];
+	var correct_data = [correct_prior, correct_likelihood, discrete_posterior(correct_prior, correct_likelihood)];
+
+	var called_state_plus = false;
+
+	var likelihood_it;
+	var likelihood_sequence;
+	if (isdefined(config.likelihood_sequence)){
+		likelihood_it = 0;
+		likelihood_sequence = config.likelihood_sequence;
+	}
+
+	function widget_passed(){
+		if (!called_state_plus){
+			// debugger;
+			// console.log('CALLING STATE PLUS!!!! ' + config);
+
+			state_plus();					
+			called_state_plus = true;
+		}
+	}
+
+	function is_scale_match(stage){
+		var user_datum = user_data[stage];
+		var correct_datum = (stage == 1 && isdefined(config.likelihood_sequence)) ? config.likelihood_sequence[likelihood_it] : correct_data[stage];
+
+		var scale = user_datum[0]/correct_datum[0];
+		return (scale != 0) && (scale == (user_datum[1]/correct_datum[1])); 
+	}
+
+	function check_correctness(stage){
+		if (is_scale_match(stage)){
+
+			consolidate_bars(stage);
+
+			if (stage == 2 || (isdefined(config.early_advance) && config.early_advance == stage) ){
+
+				widget_passed();
+			} 
+
+			if ( isdefined(config.likelihood_sequence) ){
+
+				// the text of the checkpoint matches the text here
+				if ($('#left-container').children(':visible').last().data('checkpoint') === config.checkpoints[likelihood_it]){
+					state_plus();	
+
+					// increment and wait for the next likelihood
+					likelihood_it = Math.min(likelihood_it+1, likelihood_sequence.length-1);								
+					}
+			}
+		}
+	}
+
+	function add_numbers(stage){
+		var font = "16px Arial";
+		var text_string;
+
+		var x_offset = width+40;
+		var y_offset = 45;
+
+		if (stage == 0 || stage == 2){
+			text_string = [prior[0], hyps_long[0], ':', prior[1], hyps_long[1], '(prior belief)'].join(' ');
+		    add_text(context, text_string, [x_offset, y_offset], font);			
+		}
+		if (stage == 1 || stage == 2){
+			text_string = [likelihood[0], 'X', hyps_long[0], ':', likelihood[1], 'X', hyps_long[1], '(likelihood of evidence)'].join(' ');
+		    add_text(context, text_string, [x_offset-10, y_offset+25], font);			
+		}
+		if (stage == 2){
+			posterior = discrete_posterior(prior, likelihood);
+			text_string = [posterior[0], ':', posterior[1], ' (belief after evidence)'].join(' ');
+		    add_text(context, '--------------------------------------------------', [x_offset-30, y_offset+35], font);
+		    add_text(context, text_string, [x_offset-10, y_offset+55], font);			
+		}
+	}
+
+
+	function add_draggable(){
+		function prior_drag(){
+			var ind = $widget.children('.draggable-marker').index(this);
+
+ 			var top = $(this).position().top - top_offset;
+ 			var bar_height = height - top;
+
+ 			var nearest = Math.round(bar_height/unit);
+
+		    // snap to the nearest increment
+		    user_data[curr_stage][ind] = nearest;
+
+		    $(this).css('top', height-nearest*unit + top_offset);
+		    plot(curr_stage, ghost_ind=ind);
+
+		}
+
+		function prior_stop(){
+			var ind = $widget.children('.draggable-marker').index(this);
+
+			$(this).css('top', height-user_data[curr_stage][ind]*unit + top_offset);
+			plot(curr_stage);
+	
+		    check_correctness(curr_stage);
+		}
+
+		var $marker = $('<div class="bayes-marker draggable-marker" style="position:absolute"></div>');
+
+		$marker.draggable( {
+			axis: 'y',
+			drag: prior_drag,
+			stop: prior_stop,
+			containment: 'parent',
+		}); 
+
+	 	$widget.append($marker);
+	 }
+
+	 function plot(stage, ghost_ind){
+	 	context.clearRect(0, 0, 600, height);
+
+
+		if (stage < 2){
+			// discrete manipulations
+			// show ghosts of what could be (show double the number maybe)
+			if (isdefined(ghost_ind)){
+				for (var i=0; i<height/unit-1; i++){
+					plot_coords(context, rect_coords(width, height, bar_width, unit-spacing, bar_centers[ghost_ind], unit/2+i*unit), 'white');	
+				}		
+			}
+			// plot the bars for each of the hypotheses
+			range(2).forEach(function(ind){
+				var user_datum = user_data[stage];
+				for (var i=0; i<user_datum[ind]; i++){
+					plot_coords(context, rect_coords(width, height, bar_width, unit-spacing, bar_centers[ind], unit/2+i*unit));
+				}
+			});			
+		}else{
+			// we want to plot the normalized bars here?
+			posterior = discrete_posterior(prior, likelihood);
+			var normed = normalize_discrete(posterior);
+			range(2).forEach(function(x, ind){
+				plot_coords(context, rect_coords(width, height, bar_width, normed[ind]*height, bar_centers[ind]));
+
+				// add percentage text on top
+				var pct = format_number(normed[ind]*100, 0);
+				add_text(context, pct+'%', [bar_centers[ind] - 10, height - normed[ind]*height - 5] );				
+
+				// add multiplication txt on bottom
+				add_text(context, prior[ind]+' x '+likelihood[ind], [bar_centers[ind] - 15, height - normed[ind]/2*height] );				
+			});
+			user_data[stage] = posterior;
+		}
+		add_numbers(stage);
+	}
+
+	add_draggable();
+	add_draggable();
+//	plot(curr_stage);
+
+	var $buttons = $widget.find('.tab');
+	$buttons.click(function(){
+		var ind = $widget.find('.tab').index(this);
+		change_stage(ind);
+	});
+
+	function consolidate_bars(stage){
+		if (stage == 2){
+			return;
+		}
+		// animate a consolidating of the priors
+		range(2).forEach(function(ind){
+			var user_datum = user_data[stage];
+			plot_coords(context, rect_coords(width, height, bar_width, user_datum[ind]*unit, bar_centers[ind]));
+		});
+	}
+
+	var $draggables = $widget.children('.draggable-marker');
+	function set_draggable(stage){
+		var user_datum = user_data[stage];
+		$($draggables.get(0)).css('left', bar_centers[0] - 5);
+		$($draggables.get(1)).css('left', bar_centers[1] - 5);
+
+		$($draggables.get(0)).css('top', height - user_datum[0]*unit + top_offset);
+		$($draggables.get(1)).css('top', height - user_datum[1]*unit + top_offset);
+	}
+//	set_draggable();
+
+	function change_stage(new_stage){
+		curr_stage = new_stage;
+
+		$buttons.removeClass('active');
+		$($buttons.get(new_stage)).addClass('active');
+
+		// do the setup for the particular stage
+		plot(new_stage);
+		check_correctness(new_stage)
+
+
+		if (new_stage == 2 || ( isdefined(config.lock_prior) && new_stage == 0) ){
+			$draggables.hide();
+		}else{
+			$draggables.show();
+			set_draggable(new_stage);			
+		}
+	}
+
+	// if (isdefined(config.prior)){
+	// 	//check_correctness();
+	// 	consolidate_bars(0);
+	// }
+
+	if (isdefined(config.default_stage)){
+		change_stage(config.default_stage);
+	}else{
+		// initialize on the "prior" tab
+		change_stage(0);		
+	}
+
+
+}
+
+
+function make_bayes_widgets(){
+
+	make_binary_bayes('#intro-prior',  {hyps: ['cave', 'tavern'],
+				correct_prior: [2, 3],
+				correct_likelihood: [1, 1], 
+				early_advance: 0,
+				 });
+
+	make_binary_bayes('#intro-likelihood',  {hyps: ['cave', 'tavern'],
+				correct_prior: [2, 3],
+				prior: [2, 3],
+				correct_likelihood: [6, 1], 
+
+				lock_prior: true,
+				default_stage: 1,
+				early_advance: 1,
+				 });
+
+	make_binary_bayes('#kahneman-location',  {hyps: ['cave', 'tavern'],
+				correct_prior: [2, 3],
+				prior: [2, 3],
+				correct_likelihood: [-1, -100],  // impossible to reach
+
+   			  	likelihood_sequence: [[3, 1], [9, 2]],
+   			  	checkpoints: ['kahneman-loc-man', 'kahneman-loc-news'],
+   			  	lock_prior: true,
+				 });
+
+	make_binary_bayes('#raccoon-fox',  {hyps: ['raccoon', 'fox'],
+										correct_prior: [7, 3],
+										correct_likelihood: [1, 5]});
+	make_binary_bayes('#billy-bob',  {hyps: ['Billy', 'Bob'],
+										correct_prior: [3, 2], 
+										correct_likelihood: [1, 2]});
+	make_binary_bayes('#beer-cookies',  {hyps: ['beer', 'cookies'],
+												 prior: [2, 5],
+												  correct_prior: [2, 5],
+												  correct_likelihood: [-1, -100], // impossible to reach
+
+												  likelihood_sequence: [[1, 2],],
+												  checkpoints: ['mayor-cookies'],
+												  lock_prior: true,
+												});
+
+
+	// hide some features on the first widget for training 
+	var $widget = $('.bayes-widget').first();
+	var $buttons = $widget.find('.tab');
+	$($buttons[1]).hide();
+	$($buttons[2]).hide();
+
+}
+make_bayes_widgets();
+
+
+var game_state=-1;
+
+var scrollTimer; 
+var isScrolling = false;
+
+var isDebug = false;
+var showAll = isDebug;
+
+function scroll_window(){
+	if (isDebug){
+		return;
+	}
+	if (isScrolling){
+		return;
+	}
+
+	isScrolling = true;
+	scrollTimer = setInterval(function(){
+		var y = window.scrollY;
+		window.scrollBy(0, 50);
+		if (window.scrollY == y){
+			clearInterval(scrollTimer);
+			isScrolling = false;
+		}
+	}, 25);	
+}
+
+$(document).ready(function (){
+	$('.item-plus').click(function(){
+		item_plus();
+		$(this).off();
+	});
+
+	$('.state-plus').click(function(){
+		state_plus();
+		$(this).off();
+
+		$(this).addClass('disabled');
+	});
+
+	$('.right').click(function(){
+		state_plus();
+		$(this).off();
+
+		$(this).addClass('disabled');
+	});
+
+	// try to grab the divs and hide them
+	if (isDebug === false){		
+		$('#left-container').children().css('display', 'none');
+
+		$('#right-container').children().hide();
+	}
+
+	state_plus();
+
+//	jump_to(10);
+});
+
+var num_items = 0;
+function item_plus(){
+	// var items = ['stomach.png', 'graph-glasses.png'];
+	// if (num_items < items.length){
+	// 	var item = items[num_items];
+	// 	$('#inventory').append('<img class="inventory-item" src="images/' + item + '">');
+	// 	num_items++;
+	// }
+}
+
+
+function state_plus(){
+	// hide current
+	console.log('incrementing state');
+	if (isDebug === false){
+		var	sections = $('#left-container').children();
+
+		$(sections).css('display', 'none');
+		game_state++;
+
+		// reveal next
+		// show all the ones from before 
+		for (var i=0; i<=game_state; i++){
+			$(sections[i]).css('display', '');	
+		}
+
+		scroll_window();		
+	}
+}
+
+
+function jump_to(state_num){
+	var	sections = $('#left-container').children();
+	game_state = state_num;
+	for (var i=0; i<=game_state; i++){
+		$(sections[i]).css('display', '');	
+	}
+}
+
+if (showAll){
+	$('#right-container').show();
+	$('#right-container').children().show();
+	$('.bayes-training').children().show();
+}
+
+
+</script>

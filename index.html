@@ -1,0 +1,2631 @@
+<!doctype html>
+
+
+<head>
+<meta charset="utf-8" />
+<!--<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700,900" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">-->
+
+<!--
+font-family: 'VT323', monospace;
+font-family: 'Princess Sofia', cursive;
+font-family: 'Indie Flower', cursive;
+font-family: 'Dokdo', cursive;
+font-family: 'East Sea Dokdo', cursive;
+font-family: 'Creepster', cursive;
+font-family: 'Bungee Hairline', cursive;
+font-family: 'Bungee', cursive;
+font-family: 'Bungee Shade', cursive;
+font-family: 'Bungee Inline', cursive;
+font-family: 'Cormorant Garamond', serif;
+-->
+
+<!-- todo: strip and remove the unused -->
+<link href="https://fonts.googleapis.com/css?family=Schoolbell|Dokdo|Fira+Sans:300,700" rel="stylesheet">
+
+<script src="js/lodash.min.js"></script>
+<script src="js/d3.v5.min.js"></script>
+<script src="js/d3-array.v2.min.js"></script>
+
+<script src="js/vue.js"></script>
+<script src="js/vuex.js"></script>
+<script src="js/jstat-mybuild.js"></script>
+
+<script src="js/utils.js"></script>
+<script src="js/monk.js"></script>
+
+<style>
+
+.moneybag-widget {
+  display:inline-grid;
+  grid-template-columns: 180px 1fr; /* chosen to get 10 moneybags on rhs*/
+  grid-template-rows: 44px 1fr;
+}
+
+.pset  img{
+    display: block;
+  }
+.samples-chart{
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+}
+
+.bayes-comp{
+  border: 4px dashed #777;
+  display: inline-block;
+  position:relative;
+  width: 180px;
+  height: 250px;
+  vertical-align: top;
+  text-align: center;
+
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+}
+.bayes-comp .label *{
+  font-size: 14px;
+  text-align: center;
+}
+.bayes-comp .rainbow{
+  position:absolute; 
+  left: 8px;
+  width:90%; 
+  opacity:0.5
+}
+
+.dot{
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  background-color: blue;
+  cursor: ns-resize;
+}
+
+text{
+  font-size: 13px;
+/*  font-family: 'Schoolbell', cursive;*/
+}
+
+*{
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+}
+
+ul{
+  list-style-type:none;    
+}
+div{
+  margin-bottom: 16px;
+}
+
+.normal-div, .normal-div div{
+  margin-bottom: 0px;
+}
+/* font-family: 'Gaegu', cursive; -- cute child like handwriting */
+/* font-family: 'Dokdo', cursive; -- funky */
+/* font-family: 'Bungee Shade', cursive; -- pop art caps */
+ul{
+  margin-top: 0px;
+}
+h4{
+  font-size: 18px;
+  font-weight: 500;
+}
+a{
+  color: #337ab7; /* bootstrap blue */
+  text-decoration: none;
+  cursor: pointer;
+}
+.note, .note *{
+  color:#999;
+  cursor: pointer;
+}
+.note .word{
+  font-weight: 700;
+}
+.note:hover .word{
+  text-decoration: underline;
+}
+
+
+img{
+  max-width: 400px;
+}
+.handwriting, .handwriting *{
+/* font-family: 'Dokdo', cursive; */   
+  font-family: 'Schoolbell', cursive;
+}
+.dialog-text, .dialog-text *{
+/*  font-family: 'Dokdo', cursive;  */
+  font-family: 'Schoolbell', cursive;
+  font-size: 28px;
+  width: 340px;
+}
+
+.small-text, .small-text *{
+  font-size: 16px;
+}
+.small-dialog-text, .small-dialog-text *{
+/*  font-family: 'Dokdo', cursive;  */
+  font-family: 'Schoolbell', cursive;
+  font-size: 22px;
+}
+.centered, .centered *{
+  font-size: 22px;
+}
+
+.small-buton button{
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px; 
+  padding: 4px 8px;
+  margin: 4px;
+}
+
+button{
+  cursor: pointer;
+  background-color: white;
+  border-radius: 4px;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px; 
+  padding: 8px 16px;
+  margin: 8px;
+}
+.question button:hover, .question .clicked-button{
+  color: white;
+  background-color: black;
+}
+.bold{
+  font-weight: 700;
+}
+.centered{
+  display: grid;
+  grid-template-columns: 1fr 500px 1fr;
+  grid-template-rows: 1fr auto 1fr;
+  grid-template-areas: 
+    ". . ."
+    ". centered-content ."
+    ". . .";
+  height: 500px;
+}
+.centered-content {
+  grid-area: centered-content;
+}
+.centered button{
+  margin: 0 auto;
+  margin-bottom: 8px;
+}
+.hidden-at-first{
+  opacity: 0;
+  transition: opacity 1s;
+}
+.spin-and-pulse{
+  position: absolute;
+  animation: spin-and-pulse 5s ease 0s 1;
+}
+@keyframes spin-and-pulse {
+  0% {
+    transform: rotate(1turn);
+  }
+  5% {
+    transform: rotate(0turn);
+  }
+  7% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.2);
+  }
+  13% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.1);
+  }
+  18% {
+    transform: scale(1);
+  }
+}
+.wobble{
+  position: absolute;
+  animation: wobble 5s ease 0s infinite;
+}
+@keyframes wobble {
+  0% {
+    transform: rotate(0turn);
+  }
+  5% {
+    transform: rotate(0.003turn);
+  }
+  10% {
+    transform: rotate(0turn);
+  }
+  12% {
+    transform: rotate(0.003turn);
+  }
+  15% {
+    transform: rotate(0turn);
+  }
+}
+.bounce{
+  position: absolute;
+  animation: bounce 5s ease 0s infinite;
+}
+@keyframes bounce {
+  0% {
+    transform: translateY(20px);
+  }
+  3% {
+    transform: translateY(-30px);
+  }
+  6% {
+    transform: translateY(10px);
+  }
+  10% {
+    transform: translateY(-10px);
+  }
+  12% {
+    transform: translateY(0px);
+  }
+}
+@keyframes mad-bounce {
+  0% {
+    transform: translateY(20px);
+  }
+  1% {
+    transform: translateY(-30px);
+  }
+  2% {
+    transform: translateY(10px);
+  }
+  3% {
+    transform: translateY(-10px);
+  }
+  4% {
+    transform: translateY(0px);
+  }
+}
+.mad-bounce{
+  position: absolute;
+  animation: bounce 4s ease 0s infinite;  
+}
+.walk-drift{
+  position: absolute;
+  transition: left 3s;
+}
+.walk-bounce{
+  position: absolute;
+  animation: walk-bounce 0.8s ease 0s infinite;
+}
+@keyframes walk-bounce {
+  0% {
+    transform: translateY(0px);
+  }
+  25%{
+    transform: translateY(-12px);    
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  75%{
+    transform: translateY(-12px);    
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+@keyframes fallover{
+  100% {
+    transform: rotate(0.3turn);
+  }
+}
+.fallover{
+  position: absolute;
+  animation: fallover 1s ease-in 0s 1; /* to not stand back up:  normal forwards;  */
+}
+.point-container{
+  width: 350px;
+  display:flex; 
+  justify-content:space-between; 
+  margin: 0 auto;
+}
+.point{
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+/*  border-radius: 50%;*/
+  border: 2px solid black;
+  margin-top: 4px;
+  transition: all .5s ease;
+}
+.active-point{
+  background-color: black;
+  width: 20px;
+  height: 20px;
+  margin-top: 0px;
+}
+.circle{
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+}
+.circle.active-point{
+  width: 20px;
+  height: 20px;  
+}
+:not(.circle).active-point{
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+
+.point:hover{
+  background-color: #333;
+}
+.has-tooltip{
+  position: relative;
+}
+.has-tooltip span{
+  display: none;
+  position:absolute;
+  font-size: 10px;
+  top: 24px;
+  white-space: nowrap;
+  background-color: rgba(0,0,0,0.5);
+  padding: 8px;
+  border-radius: 8px;
+  color: white;
+}
+.has-tooltip:hover span{
+  display: inline-block;
+}
+.extra-info, .extra-info *{
+/*  font-size: 14px;*/
+}
+.smaller-children, .smaller-children *{
+  font-size: 16px;
+}
+/* https://w3bits.com/rainbow-text/ */
+.rainbow-text {
+  background-image: repeating-linear-gradient(45deg, violet, indigo, blue, green, orange, red, violet);
+  text-align: center;
+  background-size: 800% 800%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 4s ease infinite;
+}
+@keyframes rainbow { 
+    0%{background-position:0% 50%}
+    50%{background-position:100% 25%}
+    100%{background-position:0% 50%}
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to {
+  transform: translateY(-300px);
+  opacity: 0;
+}
+.story-point-silhouette{
+  -webkit-filter: contrast(0%) brightness(90%);
+  filter: contrast(0%) brightness(90%);
+  cursor: pointer;
+}
+.story-point-silhouette:hover{
+  -webkit-filter: none;
+  filter: none;
+}
+.cropcircle{
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+/*    background: #000 no-repeat center;*/
+    background-size: cover;
+    border: 4px solid black;
+}
+
+.small-avatar{
+  width: 80px;
+}
+.coin{
+  display: inline-block;
+  width: 150px;
+  cursor: pointer;
+  vertical-align: top;
+  word-wrap: break-word;
+
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
+}
+
+/* https://forum.vuejs.org/t/add-transitions-to-slide-up/27446/4 */
+.slide-up-enter-active {
+  transition: all .6s ease;
+}
+.slide-up-leave-active {
+  transition: all .6s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-up-enter, .slide-fade-leave-to {
+  transform: translateY(100vh);
+  opacity: 0;
+}
+
+.nope{
+  color:red; 
+  font-size: 14px; 
+}
+
+.intro-to-distributions .distribution{
+  display: inline-block;
+}
+
+.intro-to-distributions .icon{
+  width: 50px;
+}
+
+.question-table td:nth-child(2){
+  width: 200px;
+}
+
+.sideways{
+  transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.font16, .font16 *{
+  font-size: 15px;
+}
+
+.toc-chapter{
+  display: grid;
+  grid-template-columns: 50px auto;
+}
+
+.toc-chapter:hover{
+  background-color: #ddd;
+}
+
+.toc-chapter:hover img{
+    -webkit-filter: none;
+  filter: none;
+}
+
+</style>
+
+<body>
+
+
+
+<div id="app" style="position:relative;left: 60px;width:calc(100% - 60px);">
+
+
+  <div 
+  :style="{'background-color': showTOC ? '#777' : '#ddd', 'color': showTOC ? 'white': 'black'}"
+  style="width:60px;position: fixed; top:0px; left:0px; height: 100%; text-align: center; padding-top:8px"
+  :style="{}">
+    <img v-if="!showTOC" src="images/menu.png" style="cursor: pointer" @click="showTOC = !showTOC">
+    <img v-if="showTOC" src="images/x.png" style="cursor: pointer" @click="showTOC = !showTOC">
+    <span class="sideways handwriting" style="white-space: nowrap;" v-if="currentChapter.name">Chapter{{chapterInd}}: {{currentChapter.name}}</span>
+
+
+<!--    <div v-for="(chapter, ind) in chapters"
+         @click="chapterInd = ind"
+         style="display:inline-block;">
+      <img :class="{'story-point-silhouette': currentChapter !== chapter}"
+          :src="'images/' + chapter.image" 
+          style="width:50px">
+      <span style="top:60px;">{{chapter.name}}</span>
+    </div> -->
+  </div> 
+  <div v-if="showTOC" class="normal-div" style="position:fixed; z-index:1; width:200px;top:0px; left:60px; top:0;
+    bottom:0;
+overflow-y:scroll;padding-top:8px; background-color: #eee;">
+    <div v-for="(chapter, ind) in chapters"
+         @click="showTOC = false; chapterInd = ind"
+         class="toc-chapter"
+         style="padding:4px">
+      <img :class="{'story-point-silhouette': currentChapter !== chapter}"
+          :src="'images/' + chapter.image" 
+          style="max-width:50px; max-height:100px">
+      <span style="top:60px; font-size:12px; display: inline-block; margin:8px;"><bold style="font-size:12px">Chapter {{ind}}</bold><br> {{chapter.description}}</span>
+    </div>
+  </div>
+
+
+<!--
+<transition name="slide-fade">
+<div v-if="show" style="background-color: blue; width:200px; height:200px;"></div>
+</transition>
+  <button @click="show = !show">
+    Toggle render
+  </button>
+<button class="rainbow-text">Test</button>
+<story :visible="true">
+Are you here?
+If so, you are in the <a @click="show('waiting')">right place</a>.
+What is the probability that you will succeed?
+</story>
+<once-group>
+<once-button>1/2</once-button>
+<once-button>1/4</once-button>
+<once-button>1/8</once-button>
+</once-group>
+<story ref="waiting">
+I have been <a @click="show('changing')">waiting</a> for you. 
+</story>
+<story ref="changing">
+The times are changing.
+The prophecies are unclear, but the times are changing.
+This planet is <a @click="show('new-world')">changing</a>.
+</story>
+<story ref="new-world">
+<div>
+You are going to bring us into this new world of <span class="animated infinite jello" style="display:inline-block">uncertainty</span>.
+</div>-->
+
+
+<keep-alive>
+  <component v-bind:is="visibleScreen"></component>
+</keep-alive>
+
+
+
+</div> <!-- end #app -->
+
+
+<!-- begin templates -->
+
+<script type="text/x-template" id="interstitial-template">
+<centered>
+   <div class="cropcircle" style="margin:0 auto; margin-bottom:16px" :style="cropCircleStyle"></div>
+  <slot></slot>
+</centered>
+</script>
+
+
+<script type="text/x-template" id="centered-template">
+<div class="centered">
+  <div class="centered-content"><slot></slot></div> 
+</div>
+</script>
+
+<script type="text/x-template" id="bold-template">
+<span class="bold"><slot></slot></span> 
+</script>
+
+<script type="text/x-template" id="pset-template">
+  <div class="pset">
+    <slot></slot>
+  </div>
+</script>
+
+
+<script type="text/x-template" id="distribution-template">
+<div class="distribution">
+<div v-if="title" class="handwriting" style="text-align: center;">{{title}}</div>
+
+<svg :width="chartWidth+margin.left+margin.right" 
+     :height="chartHeight+margin.top+margin.bottom">
+    <g v-if="isCreated" 
+      class="container"
+      :transform="'translate(' + margin.left + ',' + margin.top + ')'">
+      <rect v-for="outcome in outcomes"
+          :x="xScale(outcome.x)"
+          :y="yScale(outcome.y)"
+          :width="xScale.bandwidth()"
+          :height="chartHeight - yScale(outcome.y)"
+          :key="outcome.x"
+          fill="#001681"/>
+
+      <!-- top of bar -->
+      <text v-for="outcome in outcomes" 
+        :x="xScale(outcome.x) + xScale.bandwidth()/2 - 8"
+        :y="yScale(outcome.y) - 2">
+        {{ outcome.y }}
+      </text>
+
+    </g>
+</svg>
+</div>
+</script>
+
+<!-- 
+  <triple-bayes 
+  :hypotheses="['Nice', 'Evil']" 
+  :config="{prior: {view: 'faded', dist: [1, 4]}, likelihood: {view: 'active', dist: [1, 10]}, posterior: {}}"></triple-bayes>
+
+-->
+<script type="text/x-template" id="triple-bayes-template">
+  <div>
+
+<!--<div style="text-align:center">prior × likelihood ∝ posterior</div> -->
+
+<div v-if="hasKey('prior')" class="bayes-comp" :style="compStyle('prior')">
+  <div class="label normal-div">
+    <div style="font-weight:700">Prior belief</div>
+    <div>What you think before the evidence</div>
+  </div>
+  <img v-if="isCompRight('prior')" src="images/rainbow.png" class="rainbow"> 
+
+  <samples-chart 
+  :xdomain="hypotheses"
+  :dist="arrToDist(priorArr)"
+  :isDraggable="isDraggable('prior')"
+  :chartHeight="chartHeight" :chartWidth="chartWidth"
+  @dist-changed="priorChanged" /> 
+</div>
+
+
+<div v-if="hasKey('likelihood')" class="bayes-comp" :style="compStyle('likelihood')">
+  <div class="label normal-div">
+    <div style="font-weight:700">Likelihood ratio</div>
+    <div>Likelihood ratio of the evidence</div>
+  </div>
+  <img v-if="isCompRight('likelihood')" src="images/rainbow.png" class="rainbow"> 
+
+  <samples-chart
+  :xdomain="hypotheses"
+  :dist="arrToDist(likelihoodArr)"
+  :isDraggable="isDraggable('likelihood')"
+  :chartHeight="chartHeight" :chartWidth="chartWidth"
+  @dist-changed="likelihoodChanged" /> 
+</div>
+
+<div v-if="hasKey('posterior')" class="bayes-comp" :style="compStyle('posterior')">
+  <div class="label normal-div">
+    <div style="font-weight:700">Posterior belief</div>
+    <div>What you think after the evidence</div>
+  </div>
+  <samples-chart 
+  :xdomain="hypotheses"
+  :dist="posteriorDist"
+  :chartHeight="chartHeight" :chartWidth="chartWidth"
+  ref="posterior-samples-chart" /> 
+</div>
+
+<div v-if="showFeedback && !allCorrect" style="background-color: #372F26; color: white; padding: 8px;" class="handwriting normal-div">
+  <div>Not quite. Try again!</div>
+  <slot name="hint"></slot>
+</div>
+
+
+<div v-if="showFeedback && allCorrect" class="handwriting normal-div">
+  <div>Correct!</div>
+  <slot name="yay"></slot>
+</div>
+
+<div v-if="(isDraggable('prior') || isDraggable('likelihood')) && !(showFeedback && allCorrect)" class="normal-div">
+<buton @click="submitClicked">Submit</buton>
+</div>
+
+  </div>
+</script>
+
+<script type="text/x-template" id="samples-chart-template">
+<div style="position:relative; display:inline-block" class="samples-chart">
+
+<svg :width="chartWidth+margin.left+margin.right" 
+     :height="chartHeight+margin.top+margin.bottom">
+    <g v-if="isCreated && counts" 
+      class="container"
+      :transform="'translate(' + margin.left + ',' + margin.top + ')'">
+<!--      <rect v-for="(count, x) in counts"
+          :x="xScale(x)"
+          :y="chartHeight - yScale(count)"
+          :width="xScale.bandwidth()"
+          :height="yScale(count)"
+          :key="x"
+          fill="#E9BE2C"/>  -->
+
+        <g v-for="x in xdomain">
+          <rect v-for="countInd in counts[x]"
+          :x="xScale(x)"
+          :y="chartHeight - yScale(counts[x]) + yScaleBandwidth*(countInd-1)+2"
+          :width="xScale.bandwidth()"
+          :height="yScaleBandwidth-2"
+          :key="x + countInd"
+          fill="#E9BE2C"/>
+        </g>
+
+
+      <text v-for="x in xdomain" 
+        :x="xScale(x)+ xScale.bandwidth()/2 - 4"
+        :y="chartHeight - yScale(counts[x]) - (isDraggable ? 8 : 2)">
+        {{ counts[x] }}
+      </text>
+
+    </g>
+</svg>
+
+  <div v-for="x in xdomain" 
+      v-if="isDraggable && counts"
+      class="dot"
+      style="position:absolute"
+      draggable="true"
+      @dragstart="dragstart(x)"
+      @dragend="dragend"
+      @drag="drag(x, $event)"
+      :style="{left: xScale(x)+ xScale.bandwidth()/2+ 4 + 'px', bottom: yScale(counts[x]) + 2 + 'px'}"></div>
+
+
+</div>
+</script>
+
+<script type="text/x-template" id="avatar-template">
+<div style="position: relative; width:600px; margin:0 auto; margin-top:16px">
+
+<!--
+<transition name="slide-fade">
+ <div v-if="showOverlay && hasSlot('overlay')"
+     style="position:absolute; z-index:1; height: 500px; width:100%; opacity:0.9; background-color: white; color:black;">
+  <centered>
+      <slot name="overlay"></slot>
+  </centered>
+</div>
+</transition> -->
+
+<img v-if="showRainbow" src="images/rainbow.png">
+
+<img :src="imgSrc" 
+     :class="imgClasses"
+     style="height: 300px; left: 0px; position:absolute; top:0px;">
+
+<!-- Dialog box -->
+<div style="position:absolute; left: 200px; top:0px;"
+  v-if="showLiveText">
+  <img src="images/dialog.png" :style="imgStyle" style="width:642px">
+  <div style="position: absolute; left:40px; top:23px;" 
+    class="dialog-text"
+    ref="dialog-text"
+    :class="dialogClass">
+    <live-text  
+        ref="initial-text"
+        key="initial-text"
+        @live-text-complete="showQuestion=true">
+        <slot name="dialog"></slot>
+      {{text}}
+    </live-text> 
+  </div>
+</div>
+
+<!-- Mini dialog 
+<div v-if="showMiniDialog" style="position:absolute; left: 100px; top:300px;">
+  <img src="images/mini_dialog.png" style="width:150px">
+  <div style="position: absolute; left:40px; top:40px;" class="small-dialog-text">
+    Yep!
+  </div>
+</div>-->
+
+
+<!-- bottom -->
+<div style="position:absolute; left: 0px; top: 330px; width: 600px;">
+
+<div v-if="nopeText || showHint || showPS" style="background-color: #372F26; color: white; padding: 16px;" class="handwriting">
+  <!-- Hint via nopeText or nope slot -->
+  <div v-if="nopeText" style="margin-top:16px">{{nopeText}}</div>
+  <div v-if="showHint && !showPS">
+    <slot name="hint"></slot>
+  </div> 
+  <div v-if="showPS">
+    <div><slot name="ps"></slot></div>
+    <buton @click="clickpsButton">Next</buton>
+  </div>
+</div>
+
+<div class="question" :style="{'text-align':textAlign}">
+  <transition name="fade" mode="out-in">  
+    <div v-if="showQuestion">  
+      <slot></slot>
+    </div>
+  </transition>
+</div>
+
+</div> <!-- end bottom -->
+
+
+</div>
+</script>
+
+
+
+<script type="text/x-template" id="story-template">
+<div v-if="isVisible"><slot></slot></div>
+</script>
+
+<script type="text/x-template" id="live-text-template">
+  <div>
+    <transition-group name="fade" tag="span">
+      <span v-for="(token, i) in visibleTokens" :key="i" v-html="token">
+      </span>
+    </transition-group>
+  </div>
+</script>
+
+
+<script type="text/x-template" id="monk-head-template">
+<div class="handwriting normal-div"
+      style="display:inline-block; position:relative; white-space: nowrap;">
+  <img src="images/monk_head.png" style="width:80px;">
+
+  <!-- speech pointing to left -->
+  <div v-if="hasSlot('lhs')">
+    <div style="width:22px; border:1px solid black; transform:rotate(50deg); position:absolute; top:-14px; left:10px;"></div>
+    <div style="position:absolute; top: -40px; left:0px;">
+      <slot name="lhs"></slot>
+    </div>
+  </div>
+
+  <!-- speech pointing to right -->
+  <div v-if="hasSlot('rhs')">
+    <div style="width:24px; border:1px solid black; transform:rotate(310deg); position:absolute; top:-14px; left:50px;"></div>
+    <div style="position:absolute; top: -40px; left: 60px;">
+      <slot name="rhs"></slot>
+    </div>
+  </div>
+
+</div>
+</script>
+
+<script type="text/x-template" id="note-template">
+<span class="note" @click="showExpansion=!showExpansion">
+<span class="word"><slot></slot>
+</span> 
+<span v-if="showExpansion" class="text">({{text}}<slot name="text">)</slot></span>
+</span>
+</script>
+
+
+<script type="text/x-template" id="exp-template">
+<var>{{base}}<sup>{{pow}}</sup></var>
+<!--<span>{{base}}<sup>{{pow}}</sup></span>-->
+</script>
+
+
+<script type="text/x-template" id="big-frac-template">
+<div style="display: inline-block; text-align:center" class="normal-div">
+    <div style="border-bottom:1px solid">{{num}}<slot name="num"></slot></div>
+    <div>{{den}}<slot name="den"></slot></div>
+  </td>
+</div>
+</script>
+
+<script type="text/x-template" id="frac-template">
+<var><sup>{{num}}</sup>&frasl;<sub>{{den}}</sub></var>
+</script>
+
+<script type="text/x-template" id="buton-template">
+<span style="margin-bottom:0px; position:relative; display:inline-block">
+  <div v-if="showX" 
+       class="handwriting" 
+       style="display:inline-block; position:absolute; color:red; font-size: 64px; left: calc(50% - 20px); top:-4px">X</div>
+  <button 
+    @click="butonClicked()" v-on="$listeners" 
+    :class="{'rainbow-text': showRainbowText, 'clicked-button': clickedButton}" 
+    class="handwriting"
+    :style="buttonStyle"><slot></slot>
+  </button>
+<!--  <transition name="fade">
+    <div v-if="showNopeText" class="nope" style="margin-bottom:8px; position:relative; top:-4px;">
+      {{nope}}
+    </div>
+  </transition>-->
+</span>
+</script>
+
+
+<script type="text/x-template" id="input-box-template">
+  <div style="display:inline-block; position:relative;">
+    <input v-model="val" placeholder="?" style="width:50px; display:inline" v-on:keyup.enter="answerSubmit">
+    <slot></slot>
+    <buton style="display:inline" @click="answerSubmit">Go</buton>
+  
+    <transition name="fade">
+      <span v-if="showFeedback" class="nope" style="position:absolute; bottom: -8px; margin-bottom:0px" :style="feedbackStyle">
+        {{feedbackString}}
+      </span>
+    </transition>
+  </div>
+</script>
+
+
+<script type="text/x-template" id="next-template">
+  <buton @click="next()"><slot></slot></buton>
+</script>
+
+<script type="text/x-template" id="intro-scene-template">
+<pset>
+
+  <div>
+    <div>
+      You have found yourself in front of a monastery...
+    </div>
+    <img src="images/monastery.png">
+    <next>Next</next>
+  </div>
+
+  <div>
+    A monk greets you.
+    <img src="images/monk.png">
+    <next>Next</next>
+  </div>
+
+
+  <div>
+    <div>
+      MONK: Hello, young explorer....
+    </div>
+
+    <div>
+    MONK: I am training explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
+    </div>
+  </div>
+
+</pset>
+
+</script>
+
+<script type="text/x-template" id="fulcrum-template">
+
+<!-- 
+show this visually. left column has 7 rows of 1 moneybag. right column has 3 rows of 2.3 moneybags
+
+If you are right 70% of the time and win 1 moneybag when you are right. You lose 30% of the time, and lose 2.3 moneybags. Averaging over many times, you break even. 
+
+animate each moneybag coming in
+when each moneybag comes in, trigger the wobble animation
+-->
+
+
+<div class="normal-divs" style="position:relative; width: 100%; height: 200px;">
+
+
+  <!-- black bar and items -->
+  <div :class="{'left-wobble': shouldLeftWobble, 'right-wobble': shouldRightWobble}" 
+        :style="{width: width + 'px'}"
+        style="position:absolute; border-bottom: 5px solid black; bottom:50px;">
+
+    <!-- left side items -->
+    <div style="position:absolute; left: 0px; bottom:0px;">
+      <slot name="left"></slot>
+      <!--<div v-for="n in numLeftRows">
+        <money-bags></money-bags>
+      </div> -->
+    </div>
+
+    <!-- right side items -->
+    <div style="position:absolute; right: 0px; bottom:0px;">
+      <slot name="right"></slot>
+      <!-- <div v-for="n in numRightRows">
+        <money-bags :number="2.3"></money-bags>
+      </div> -->
+    </div>
+
+  </div>
+
+  <!-- triangle fulcrum -->
+  <div class="fulcrum smooth" 
+    style="position:absolute; bottom:0px;"
+    :style="fulcrumStyle">
+    <div class="bold" style="position:absolute; width:30px; font-size:18px; color:white; left:-22px; top:22px">{{percent}}</div>
+  </div>
+
+<!--<button @click="animate">Animate</button>-->
+
+</div>
+
+</script>
+
+
+<script type="text/x-template" id="draggable-dist-template">
+<div>
+    <div>beta({{betaA}} , {{betaB}})</div>
+  <div>conf: {{conf}}</div>
+  <div>mode: {{mode}}</div>
+  <div>(dotLeft, dotTop): {{dotLeft}}, {{dotTop}}</div>
+  <div>isDragging: {{isDragging}}</div>
+
+<div class="draggable-dist" style="position:relative; border: 1px solid blue">
+  <canvas ref="canvas" width="600" height="150"></canvas>
+<!--  <div class="dot"
+    style="position:absolute"
+    draggable="true"
+    @dragstart="dragstart"
+    @dragend="dragend"
+    @drag="drag($event)"
+    :style="dotStyle"></div> -->
+
+  <div class="dot"
+    v-if="!isDragging"
+    style="position:absolute; background-color:red"
+    @mousedown="isDragging=true"
+    :style="redDotStyle"
+    draggable="true"></div>    
+
+  <!-- ghost red dot -->
+  <div class="dot" v-if="isDragging"
+    style="position:absolute; background-color:green"
+    @dragstart="dragstart"
+    @dragend="dragend"
+    @drag="drag($event)"
+
+    :style="ghostDotStyle"></div>    
+</div>
+</div>
+
+</script>
+
+<script type="text/x-template" id="beliefs-as-dists-template">
+<div>
+  <draggable-dist />
+</div>
+</script>
+
+<script type="text/x-template" id="fair-bet-viz-template">
+<fulcrum :style="fulcrumStyle" ref="fulcrum">
+
+  <template v-slot:left>
+    <div style="display:inline-block; position:relative">
+
+      <div v-for="_ in numTimesRightOutOf10" > 
+        <money-bags></money-bags>
+      </div>
+
+      <div style="position:absolute; color: #bbb; font-size: 10px; white-space: nowrap; top: 0px; left: 32px; text-align:left">
+        {{numTimesRightOutOf10}} times out of 10: <br> 
+        <span class="bold">+1 moneybag</span>
+      </div>
+    </div>
+  </template>
+
+  <template v-slot:right>
+    <div style="display:inline-block; position:relative">
+      <div v-for="_ in (10-numTimesRightOutOf10)" > 
+        <money-bags :number="numLoseIfWrong"></money-bags>
+      </div>
+
+      <div style="position:absolute; color: #bbb; font-size: 10px; white-space: nowrap; top: 0px; left:-110px; text-align: right">
+        {{10-numTimesRightOutOf10}} times out of 10<br> 
+        <span class="bold">-{{numLoseIfWrong}} moneybag</span>
+      </div>
+    </div>
+  </template>
+
+</fulcrum>
+</script>
+
+
+<script type="text/x-template" id="overconfidence-template">
+<pset>
+
+<fair-bet-viz></fair-bet-viz>
+
+<certainty-widget />
+
+<!-- <moneybag-widget  :isInteractive="true"/> -->
+
+
+  <img src="images/monk.png">
+
+  <div>
+    Most important is to know how much (or how little) you know.
+  </div>
+
+  <div>
+    For instance, most people who say they are __% sure turn out to be __% right. This is called the Overconfidence Bias.
+  </div>
+
+  <div>
+    First, answer these 5 questions to see how you do without any calibration.
+  </div>
+
+<div v-for="question in questions">
+
+<!--  <div>
+    {{question.text}}
+  </div>
+  <div>
+    <buton v-for="choice in question.choices">{{choice}}</buton>
+  </div>
+-->
+
+<!--  <div>
+    And, how sure are you about your answer?
+  </div>
+
+  <certainty-widget />
+-->
+</div>
+
+<div>
+  Now, answer these 5 slightly different questions...
+</div>
+
+
+<div v-for="question in questions">
+  <div>
+    For the question you just answered, what is the maximum moneybags would you be willing to lose when you're wrong... if you will win one moneybag when you're right? 
+  </div>
+
+  <moneybag-widget :isInteractive="true"/>
+</div>
+
+</pset>
+</script>
+
+
+<script type="text/x-template" id="certainty-widget-template">
+<div>
+  <buton
+    :key="certainty"
+    v-for="certainty in certainties" 
+    @click.native="submitCertainty(certainty)"
+    @mouseenter.native="onHover(certainty)"
+    >{{$root.renderAsPercent(certainty)}}</buton>
+</div>
+</script>
+
+<script type="text/x-template" id="money-bags-template">
+<span style="position:relative; display:inline-block;">
+  <img v-for="n in Math.ceil(number)" 
+       :style="{width: width+'px', display: isHorizontal ? 'inline-block': 'block'}" 
+       style="margin-right:2px"
+       src="images/moneybag.png">
+
+  <!-- cover up to make a fractional moneybag -->
+   <span v-if="positiveFraction > 0.01"
+         style="background-color:rgba(255,255,255,0.8); position:absolute; right: 0px; bottom:4px;" 
+         :style="fractionalCoverStyle"></span>
+</span>
+
+</script>
+
+<script type="text/x-template" id="moneybag-widget-template">
+
+<div style="user-select:none;" class="small-text normal-divs">
+
+  <div style="display:inline-block; width: 150px">
+    <div>Win if right ({{numWinIfRight}})</div>
+    <money-bags :number="numWinIfRight"></money-bags>
+  </div>
+
+  <div style="display:inline-block">
+    <div>Lose if wrong ({{numLosingMoneybags}})</div>
+    <money-bags :number="numLosingMoneybags"></money-bags>
+  </div> 
+
+  <div>
+    <buton></buton>
+  </div>
+
+</div>
+
+</script>
+
+<!-- end templates -->
+
+
+<script>
+
+
+const mcQuestions = [
+
+{
+  text: 'What percent of food and drink sold in the US is organic?',
+  choices: [5, 25],
+  answer: 5,
+}, 
+
+{
+  text: 'What percent of the population is left handed?',
+  choices: [4, 8],
+  answer: 4,
+},
+
+{
+  text: 'How many bones are there in the human body?',
+  choices: [206, 315],
+  answer: 206,
+},
+
+{
+  text: 'Which of the following compounds can be used to kill bedbugs?',
+  choices: ['Ginseng', 'Diatomaceous earth'],
+  answer: ['Diatomaceous earth']
+},
+
+{
+  text: 'Which of the following is used as a tea for reducing anxiety?',
+  choices: ['Tulsi', 'Gingko'],
+  answer: ['Tulsi'],
+},
+
+{
+  text: 'Which of the following has antimicrobial properties?',
+  choices: ['Garlic', 'Bull thistle'],
+  answer: ['Garlic']
+},
+
+{
+  text: 'Which of the following is older?',
+  choices: ['Etruscan Gold Book', 'Madrid Codex'],
+  answer: ['Etruscan Gold Book'],
+  images: ['etruscan_gold_book.jpg', 'madrid_codex.jpg']
+},
+
+{
+  text: 'Which of these plants is edible?',
+  choices: ['Cat tail', 'Angel\'s Trumpet'],
+  answer: ['Cat tail'],
+  images: [],
+}, 
+
+// https://www.foodandwine.com/fwx/slideshow/wild-berries-you-can-eat-without-dying#saskatoon-berries
+{
+  text: 'Which of these berries is poisonous?',
+  choices: ['Poke weed', 'Dew berries'],
+  answer: ['Poke weed'],
+  images: [],
+}
+
+];
+
+
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+// https://alligator.io/vuejs/global-event-bus/
+const bus = new Vue();
+
+
+const store = new Vuex.Store({
+  state: {
+    flipStringHeight: 20,
+  },
+  // sync // store.commit('name', payload)
+  mutations: {
+    flipStringHeight(state, height){
+      state.flipStringHeight = height;
+    },
+  },
+  // async  // state.dispatch('name', payload);
+  actions: {
+  }, 
+  // Put shared logic 
+  getters: {
+  }
+});
+
+
+var sounds = {
+  'coin': {clip: new Audio('sounds/gold1.wav')},
+  'heads': {clip: new Audio('sounds/gold0.wav')},
+  'tails': {clip: new Audio('sounds/gold1.wav')},
+
+  'speech': {clip: new Audio('sounds/speech_louder.wav')},
+  //'speech': {clip: new Audio('sounds/drums_text.wav')},
+
+  'buton': {clip: new Audio('sounds/button.wav')},
+  'wrong': {clip: new Audio('sounds/wrong.wav')},
+  'chimes': {clip: new Audio('sounds/chimes.wav')},
+  // 'right': {clip: new Audio('sounds/right_soft.wav'), duration: 1000},
+  'glitch': {clip: new Audio('sounds/glitch.wav')},
+  'spell': {clip: new Audio('sounds/spell.wav')},
+  'coy': {clip: new Audio('sounds/laugh.wav')},
+  'right': {clip: new Audio('sounds/swish1.wav')},
+  'curious': {clip: new Audio('sounds/curious.wav')},
+  'achievement': {clip: new Audio('sounds/achievement.wav')},
+
+  'remove': {clip: new Audio('sounds/swish1.wav')},
+};
+
+Vue.component('next', {
+  methods: {
+    next(){
+      const pset = firstAncestorOfComponent(this, 'pset');
+      if (pset){
+        pset.next();
+      }      
+    }
+  },
+  template: '#next-template'
+});
+
+Vue.component('input-box', {
+  props: {
+    right: {type: Number, default: 0},
+    hints: {
+      type: Array, 
+      default: function(){ return ['Try again', 'Nope']; },
+    },
+    // onRight: {
+    //   type: Function,
+    //   default: function(){},
+    // },
+
+    // Default to no feedback bc avatar takes care of it, but sometimes we want to use this as a standalone component.
+    feedback: {type: Boolean, default: true},
+  },
+  computed: {
+    feedbackString: function(){
+      if (this.isYay){
+        return 'Yay!';
+      }
+      return this.hints[this.numWrong % this.hints.length];
+    },
+    feedbackStyle: function(){
+      return {'color': this.isYay ? 'green' : 'red'};
+    },
+    isYay: function(){
+      return this.val == this.right;
+    },
+    isNope: function(){
+      return !this.isYay;
+    }
+  },
+  data: function(){
+    return {
+      val: null,
+      showFeedback: false,
+      numWrong: 0,
+    }
+  },
+  methods: {
+    answerSubmit: async function(){
+      if (this.feedback){
+        this.showFeedback = true;
+        await wait(500);
+      }
+
+      bus.$emit('answer-submitted', this);
+      // look at the value in the input.
+      if (this.isYay){
+        await wait(1000);
+        this.$emit('yay'); //onRight();
+
+        const pset = firstAncestorOfComponent(this, 'pset');
+        if (pset){
+          pset.next();
+        }
+      } else {
+        this.numWrong++;
+      }
+
+    }
+  },
+  template: '#input-box-template'
+});
+
+
+function firstAncestorOfComponent(node, componentName){
+  while(node !== undefined){
+    node = node.$parent;
+    if (node !== undefined && node.$options.name === componentName){
+      return node;
+    }
+  }
+  return undefined;
+}
+function isDescendant(ancestor, maybeChild){
+  var node = maybeChild.$parent;
+  while(node !== undefined){
+    if (node === ancestor){
+      return true;
+    }
+    node = node.$parent;
+  }
+  return false;
+}
+Vue.component('avatar', {
+  props: {
+    image: {type: String}, // 'girl.png'
+    text: {type: String, default: ''},
+    textAlign: {type: String, default: 'right'},
+    animation: {type: String, default: 'wobble'},
+    sound: {type: String},
+  },
+  data: function(){
+    return {
+      showQuestion: false,
+      showMiniDialog: false,
+      showLiveText: false,
+      showHint: false,
+      showRainbow: false,
+      showFall: false,
+      reactionImage: null,
+      nopeText: null,
+      showPS: false,
+      psButton: null,
+
+      maxLen: 180,
+    };
+  },
+  mounted: async function(){
+    // Add a blink
+    var this_ = this;
+    if (this.sound){
+      this.$root.play(this.sound);
+      await wait(sounds[this.sound].duration || 500);
+    }
+    await wait(500);
+    this_.showLiveText = true;
+    bus.$on('avatar-react', function(params){
+      this_[params.key] = params.value;
+    });
+    bus.$on('answer-submitted', function(input){
+      this_.reactToInput(input);
+    });
+    bus.$on('chapter-changed', function(){
+      this_.showRainbow = false;
+    });
+    // setInterval(async function(){
+    //   // change it to the blink
+    //   console.log('blinking');
+    //   this_.reactionImage = 'monster_blink.png';
+    //   await wait(100);
+    //   this_.reactionImage = null;
+    // }, 3000);
+  },
+  computed: {
+    imgClasses: function(){
+      var classes = {fallover: this.showFall};
+      classes[this.animation] = true;
+      return classes;
+    },
+    imgSrc: function(){
+      return 'images/'+ (this.reactionImage || this.image);
+    },
+    imgStyle(){
+      const height = 330;
+      if (this.useSmallFont){
+        return {'height' : _.clamp(lerp(this.textLength, 180, 300, .6, 1), .5, 1) * height + 'px'};
+      }
+      return {'height' : _.clamp(lerp(this.textLength, 60, 180, .5, 1), .5, 1) * height + 'px'};
+    },
+    textLength(){
+      var lengths = [this.text.length];
+      if (this.hasSlot('dialog') && this.$slots['dialog'][0].text){
+        lengths.push(this.$slots['dialog'][0].text.length);
+      }
+      if (this.hasSlot('dialog') && this.$slots['dialog'][0].children && this.$slots['dialog'][0].children[0].text){
+        lengths.push(this.$slots['dialog'][0].children[0].text.length); 
+      }
+      return _.max(lengths);
+    },
+    useSmallFont(){
+      return this.textLength > this.maxLen;
+    }, 
+    dialogClass: function(){
+      return {'small-dialog-text': this.useSmallFont};
+    }
+  },
+  methods: {
+    hasSlot: function(name){
+      return !!this.$slots[ name ] || !!this.$scopedSlots[ name ];
+    },
+    // For some reason, this need to be a separate fn, rather than inside the bus.
+    // when the player clicks on a nope button, if the button has nope text, that is rendered.
+    // otherwise, if the avatar has a hint slot that is shown.     
+    reactToInput: function(input){
+      // when the player clicks on a nope button, if the button has nope text, that is rendered.
+      // otherwise, if the avatar has a hint slot that is shown. 
+      if (input.nopeText){  
+        this.nopeText = input.nopeText;
+      } else if(input.isNope && this.hasSlot('hint')){
+        this.showHint = true;
+      }
+    },
+    clickpsButton(){
+      this.psButton.butonClicked();
+    }
+  },
+  template: '#avatar-template'
+});
+// Just like a button, but with some special abilities.
+// When clicked it looks at it's parent to see if it's a buton-group.
+// Executes the onClick event if so.
+// e.g.
+// <buton-group onClick="doSomethingSecond">
+//   <buton @click="doSomethingFirst">Click me</buton>
+// </buton-group>
+// However, if the buton is a nope buton the buton-group does not get triggered.
+// <buton nope="stop and think">Tricked ya</buton>
+// <buton nope>Tricked ya</buton>
+// Buttons may also have a yay attribute.
+// Which causes the button to turn rainbow-text after it gets clicked.
+Vue.component('buton', {
+  props: {
+    nope: {type: String}, // Text for why the answer is wrong. Blocks progression.
+    // moved to attr
+    //yay: {type: Boolean, default:false}, // Causes cool animation to happen when clicked.
+  },
+  data: function(){
+    return {
+      showNopeText: false,
+      showRainbowText: false,
+      showX: false,
+      clickedButton: false,
+    }
+  },
+  computed: {
+    nopeText: function(){
+      return this.nope;
+    },
+    // Returns true for: <buton nope> or <buton nope="why not">
+    isNope: function(){
+      return this.nope || this.nope==="";
+    },
+    isYay: function(){
+      return 'yay' in this.$attrs;
+    },
+    buttonStyle: function(){
+      if (this.$slots.default){
+        return {'font-size': this.$slots.default[0].text.length > 40 ? '16px' : ''};        
+      }
+    }
+  },
+  methods: {
+    butonClicked: async function(){
+      this.$root.play('buton');
+      this.clickedButton = true;
+      const avatar = firstAncestorOfComponent(this, 'avatar');
+
+      // Tell those listening on the bus that the buton has been clicked... unless it's a buton within an input-box.
+      if(!firstAncestorOfComponent(this, 'input-box')){
+        // Don't emit again if this is the buton inside PS either.
+        if (avatar && avatar.psButton !== this){
+          bus.$emit('answer-submitted', this);        
+        }
+      }
+
+      // Mark the buton as wrong.
+      if (this.isNope){
+        this.showX = true;
+      } else {
+
+        // Check if it has a PS. Early return if so, we don't want to hit event handling.
+        if (avatar && avatar.hasSlot('ps') && avatar.showPS === false){
+          avatar.showPS = true;
+          avatar.psButton = this;        
+          return;
+        }
+      }
+
+      // Event handling.
+      await wait(1000);
+      this.$emit('clik');
+      if (!this.isNope && this.$parent.onClick !== undefined){
+        // Add delay so any custom handlers on the buton execute before the generic buton-group executes.
+        await wait(1000);
+        this.$parent.$emit('clik'); // onClick();        
+      }
+    },
+  },
+  template: '#buton-template'
+});
+
+Vue.component('note', {
+  props: {
+    text: {type: String },
+  },
+  data(){
+    return {
+      showExpansion: false,
+    }
+  },
+  template: '#note-template'
+});
+
+Vue.component('exp', {
+  props: {
+    base: {type: String },
+    pow: {type: String },
+  },
+  template: '#exp-template'
+});
+
+
+Vue.component('frac', {
+  props: {
+    num: {type: String },
+    den: {type: String },
+  },
+  template: '#frac-template'
+});
+
+
+Vue.component('big-frac', {
+  props: {
+    num: {type: String },
+    den: {type: String },
+  },
+  template: '#big-frac-template'
+});
+
+function drawFromOutcomes(outcomes){
+  var ind = drawIndFromOutcomes(outcomes);
+  return outcomes[ind].x;
+}
+
+function drawIndFromOutcomes(outcomes){
+  var probs = _.map(outcomes, 'y');
+  if (!approx(sum(probs), 1.0)){
+    console.error('certainties for outcomes did not sum to 1: ' + outcomes);
+  }
+
+  var rand = Math.random();
+  var cumsum_probs = cumulativeSum(probs);
+  var cumsum_ind = 0;
+  while (cumsum_probs[cumsum_ind] < rand){
+    cumsum_ind++;
+  }
+  return cumsum_ind;
+}
+
+// // categorical x
+// outcomes = [
+//   {x: 'tattoos', y: 0.2},
+//   {x: 'no tattoos', y: 0.8},
+// ]
+
+// // numerical x
+// outcomes = [
+//   {x: 1, y: 0.1},
+//   {x: 2, y: 0.2},
+//   {x: 3, y: 0.3},
+//   {x: 4, y: 0.4},
+// ]
+
+// histogram example
+// https://bl.ocks.org/d3noob/96b74d0bd6d11427dd797892551a103c
+Vue.component('distribution', {
+  props: {
+
+    title: {type: String},
+    // Pass in outcomes directly.
+    outcomes: {type: Array, default: function(){
+      return [
+        {x: 'tattoos', y: 0.2},
+        {x: 'no tattoos', y: 0.8},
+      ];
+
+      // return [
+      //   {x: 1, y: 0.1},
+      //   {x: 2, y: 0.2},
+      //   {x: 3, y: 0.3},
+      //   {x: 4, y: 0.4},
+      // ];
+    }},
+    chartHeight: {type: Number, default: 150},
+    chartWidth: {type: Number, default: 200},
+    margin: {
+      type: Object, 
+      default: function(){
+        return {top: 10, right: 10, bottom: 20, left: 30};
+      }
+    },
+  },
+  computed: {
+    xScale(){
+      return d3.scaleBand()
+          .domain(this.outcomes.map(d => d.x)).paddingInner(.1).range([0, this.chartWidth]);
+    },
+    yScale(){
+      return d3.scaleLinear()
+          .domain([0, 1]).range([this.chartHeight, 0]);
+    }
+  },
+  data: function(){
+    return {
+      isCreated: false,
+    }
+  },
+  created: function(){
+    // Add domains
+    this.isCreated = true;
+  },
+  mounted: function() {
+    // Add the axis
+    var xAxis = d3.axisBottom(this.xScale); //.ticks(8);
+    var yAxis = d3.axisLeft(this.yScale).ticks(4);
+
+    const chart = d3.select(this.$el).select('.container');
+    chart.append('g').call(yAxis);
+    chart.append('g').attr('transform', 'translate(0,' + this.chartHeight + ')').call(xAxis);
+  },
+  methods: {
+    draw(){
+      return drawFromOutcomes(this.outcomes);
+    }
+  },
+  template: '#distribution-template'
+});
+
+Vue.component('samples-from-distribution', {
+  props: {
+    title: {type: String},
+    outcomes: {type: Array, default: function(){
+      return  [
+          {x: 'Confuse people', y: .3},
+          {x: 'Annoy people', y: .4},
+          {x: 'Scare people', y: .3},
+        ];
+    }},
+  },
+  data(){
+    return {
+      samples: [],
+    };
+  },
+  computed: {
+    xDomain(){
+      return this.outcomes.map(d => d.x);
+    },
+  },
+  methods: {
+    draw(){
+      const outcome = this.$refs['distribution'].draw();
+      this.samples.push(outcome);
+    }
+  },
+  template: '#samples-from-distribution-template'
+});
+
+
+function canvasPlotCoords(context, coords, fill){
+  var colors = ['#192127', '#1B4063', '#2F77A1', '#C0E1E9', '#ECEEF0'];
+
+  context.lineWidth = 1 / 600; //achtung!!! linewidth gets scaled
+  context.strokeStyle = colors[0];
+  context.fillStyle = fill;
+  context.beginPath();
+
+  var first = coords[0];
+  context.moveTo(first[0], first[1]);
+  coords.forEach(function (coord, ind){
+    if (ind == 0){
+      return;
+    } 
+    context.lineTo(coord[0], coord[1]);
+  } );
+  context.lineTo(first[0], first[1]);
+
+  context.closePath();
+
+  context.fill();
+  context.stroke();     
+}
+
+function canvasAddText(context, text, coord, font){
+  context.font = font;
+  context.fillStyle = "black";
+  // calculate the numbers that 
+  context.fillText(text, coord[0], coord[1]);                   
+}
+
+
+Vue.component('draggable-dist', {
+  props: {        
+    chartHeight: {type: Number, default: 150},
+    chartWidth: {type: Number, default: 500},
+    guess: {type: Number, default: 0},
+  },
+  data(){
+    return {
+      betaA: 4, 
+      betaB: 4, 
+      yScale: 50,
+      conf: [10, 20],
+      dotLeft: 300,
+      dotTop: 100,
+      isDragging: false,
+    }
+  },
+  mounted(){
+    this.conf = [this.guess, this.guess];
+    this.plotFigure();
+    this.plotAxis();
+  },
+  computed: {
+    baseWidth(){
+      return lerp(this.conf[1]-this.conf[0], 0, 100, 50, this.chartWidth);
+    },
+    mode(){
+      return (this.betaA-1) / (this.betaA + this.betaB - 2); 
+    },
+    context(){
+      return this.$refs['canvas'].getContext('2d');
+    },
+    redDotStyle(){
+      if (this.isDragging){
+        return {
+          opacity: 0
+        }
+      }
+      return this.ghostDotStyle;
+    },
+    ghostDotStyle(){
+      return {
+        left: this.dotLeft + 'px',
+        top: this.dotTop + 'px'
+      };
+    }
+  },
+  methods: {
+    getRelativeMousePos: function(event){
+      // https://stackoverflow.com/questions/5921413/difference-between-e-target-and-e-currenttarget
+      // e.target is what triggers the event dispatcher to trigger and e.currentTarget is what you assigned your listener to.
+
+      // Find the 'dist' element to compute relative mouse coords.
+      var refElement = event.target;
+      while (refElement.className !== 'draggable-dist'){
+        refElement = refElement.parentElement;
+      }
+      const result = {
+        left: event.clientX - refElement.getBoundingClientRect().x,
+        top: event.clientY - refElement.getBoundingClientRect().y
+      };
+      return result;
+    },
+
+    dragstart(){
+      this.isDragging = true;
+    },
+    drag(event){
+        // var top = $(this).position().top;
+        // var left = $(this).position().left;
+        const height = this.chartHeight;
+        const width = this.chartWidth;
+        const guess = this.guess;
+
+        const mousePos = this.getRelativeMousePos(event);
+        const top = mousePos.top;
+        const left = mousePos.left;
+        if (top < 0 || left < 0){
+          return;
+        }
+        this.dotTop = top;
+        this.dotLeft = left;
+
+        const peakiness = (height - top) / height * 10;
+        const skew = left/width;
+
+        console.log('peakiness: ' + peakiness + ' skew: ' + skew);
+        const beta_a = Math.max(1.1, peakiness * skew);
+        const beta_b = Math.max(1.1, peakiness * (1-skew));
+        
+        // [0, 1] -> [0, 30]
+        //var spread = Math.round(top/height * 30);
+        const spreadScale = d3.scalePow().exponent(3).range([0, 100]);
+        const spread = spreadScale(top/height);
+
+
+        const mode = (beta_a - 1)/(beta_a + beta_b - 2);
+        var conf = [guess - mode*spread, guess + (1-mode)*spread];
+        //var val = Math.round(lerp(mode, 0, 1, conf[0], conf[1]));
+
+        if (conf[0] < 0){
+          conf = [0, spread];
+        }
+        this.conf = conf;
+        this.betaA = beta_a;
+        this.betaB = beta_b;
+
+        this.plotFigure();
+        this.plotAxis();
+     },
+     dragend(){
+        this.isDragging = false;
+
+        // snap the draggable to the mode
+        const y_scale = 50;
+        const diameter = 10;
+
+        const height = this.chartHeight;
+        const width = this.chartWidth;
+
+        console.log(this.mode);
+        const x = lerp(this.mode, 0, 1, (width - this.baseWidth)/2, (width + this.baseWidth)/2 );
+        const y = jStat.beta.pdf(this.mode, this.betaA, this.betaB) * y_scale;
+        const top = Math.max(0, height-y - diameter/2);
+
+        this.dotLeft = x -diameter/2;
+        this.dotTop = top;
+     },
+
+     plotFigure(){
+        const context = this.context;
+        const y_scale = 50;
+        context.clearRect(0, 0, this.chartWidth, this.chartHeight);
+ 
+        context.setTransform(this.baseWidth, 0, 0, -y_scale, (this.chartWidth-this.baseWidth)/2, this.chartHeight);
+        
+        const x_coords = _.range(0, 1, .01);
+        var this_ = this;
+        var y_coords = x_coords.map(function(x){
+          return [x, jStat.beta.pdf(x, this_.betaA, this_.betaB)];
+        });
+        y_coords.push([1, y_coords[0][0]]);
+        canvasPlotCoords(context, y_coords, 'rgba(27,64,99,.2)');      
+     },
+
+     plotAxis(){
+      const context = this.context;
+      context.setTransform(1, 0, 0, 1, 0, 0);
+
+      const conf = this.conf;
+      const guess = this.guess;
+
+      const font = "18px Arial";
+      const txtfont = '12px Arial';
+
+      const width = this.chartWidth;
+      const height = this.chartHeight;
+
+      const yoff = 15;
+
+        const low = Math.max((width - this.baseWidth)/2, 0);
+        const high = Math.min( (width + this.baseWidth)/2 - 5, width-20 );
+        canvasAddText(context, '[', [low, height], font);
+        canvasAddText(context, Math.round(conf[0]), [low, height+yoff], txtfont);
+
+        canvasAddText(context, ']', [high, height], font);
+        canvasAddText(context, Math.round(conf[1]), [high, height+yoff], txtfont);
+
+        if (conf[1] - conf[0] > 0  && conf[1] - guess > 2){
+          const pos = lerp(this.mode, 0, 1, low, high);
+          const val = Math.round(lerp(this.mode, 0, 1, conf[0], conf[1]));
+          canvasAddText(context, '|', [pos, height], font);
+          canvasAddText(context, val, [pos, height+yoff], txtfont);          
+        }
+      },
+  },
+  template: '#draggable-dist-template'
+});
+
+
+Vue.component('triple-bayes', {
+  props: {
+
+    hypotheses: {type: Array}, // ['Nice', 'Evil']
+        
+    chartHeight: {type: Number, default: 160},
+    chartWidth: {type: Number, default: 160},
+
+    // Missing keys from config are not rendered.
+    // {prior: {dist: [1, 4]}, likelihood: {isActive: true, isDraggable: true, dist: [1, 10]}, posterior: {}}
+    config: {type: Object},
+  },
+  data: function(){
+    return {
+     conf: null,
+     showFeedback: null,
+    }
+  },
+  computed: {
+    posteriorDist(){
+      var distArr = _.zip(this.priorArr, this.likelihoodArr).map(x => _.reduce(x, _.multiply));
+      if (_.max(distArr) > 9){ // Start attempting to simplify posterior when it gets too big.
+        distArr = this.simplifiedArr(distArr);
+      }
+      return _.zipObject(this.hypotheses, distArr);
+    },
+    priorArr(){
+      const ones = _.range(this.hypotheses.length).map(_ => 1);
+      return this.conf['prior'].dist || ones;
+    },
+
+    likelihoodArr(){
+      const ones = _.range(this.hypotheses.length).map(_ => 1);
+      return this.conf['likelihood'].dist || ones;
+    },
+    allCorrect(){
+      const keys = ['prior', 'likelihood', 'posterior'];
+      const parts = keys.map(key => !this.conf[key] || !this.conf[key].correct || this.isEqual(this.conf[key].correct, this.conf[key].dist));
+      console.log(parts);
+      return _.every(parts);
+    }
+  },
+  created(){
+    console.log('mounted');
+    this.conf = _.cloneDeep(this.config);
+  },
+  methods: {
+    isEqual(arr1, arr2){
+      return _.isEqual(this.simplifiedArr(arr1), this.simplifiedArr(arr2));
+    },
+    // simplifiedArr([3, 6]) => [1, 2]
+     simplifiedArr(arr){
+      var maxFactor = _.min(arr);
+      for (var i=maxFactor; i>1; i--){
+        var isDivisible = _.every(arr.map(function(x){
+          return Math.abs(x/i - Math.floor(x/i)) < .0001;
+        }));
+        if (isDivisible){
+          break;
+        }
+      }
+      var result = arr.map(x => Math.floor(x / i));
+      //console.log(result);
+      return result;
+    },
+    hasKey(key){
+      return this.conf[key];
+    },
+    isActive(key){
+      return this.conf[key] && this.conf[key].isActive;
+    },
+    isDraggable(key){
+      return this.conf[key] && this.conf[key].isDraggable;      
+    },
+    arrToDist(arr){
+      return _.zipObject(this.hypotheses, arr);
+    },
+    isCompRight(key){
+      return this.showFeedback && this.conf[key] && this.conf[key].correct && this.isEqual(this.conf[key].correct, this.conf[key].dist);
+    },
+    compStyle(key){
+      return {opacity: this.conf[key] && this.conf[key].isActive ? 1 : 0.5};
+    },
+    likelihoodChanged(params){
+      this.showFeedback = false;
+      const distArr = this.hypotheses.map(hyp => params.dist[hyp]);
+      Vue.set(this.conf.likelihood, 'dist', distArr);
+      this.refreshPosterior();
+    },
+    priorChanged(params){
+      this.showFeedback = false;
+      const distArr = this.hypotheses.map(hyp => params.dist[hyp]);
+      Vue.set(this.conf.prior, 'dist', distArr);
+      this.refreshPosterior();
+    },
+    refreshPosterior(){
+      if (this.$refs['posterior-samples-chart']){
+        this.$refs['posterior-samples-chart'].countsFromProps()         
+      }
+    },
+    submitClicked(){
+      this.showFeedback=true;
+      if(this.allCorrect){
+        const pset = firstAncestorOfComponent(this, 'pset');
+        if (pset){
+          pset.next();
+        }
+        this.$emit('yay');
+      }
+    }
+  },
+  template: '#triple-bayes-template'
+});
+
+Vue.component('samples-chart', {
+  props: {
+
+    xdomain: {type: Array}, // ['H', 'T']
+
+    // Specify either samples or dist
+    samples: {type: Array}, // ['H', 'H', 'H', 'T']
+
+    dist: {type: Object}, // {H: 3, T: 1}
+        
+    chartHeight: {type: Number, default: 100},
+    chartWidth: {type: Number, default: 120},
+    margin: {
+      type: Object, 
+      default: function(){
+        return {top: 10, right: 10, bottom: 20, left: 10};
+      }
+    },
+
+    isDraggable: {type: Boolean, default: false}, 
+    maxCounts: {type: Number, default: 20},
+
+  },
+  computed: {
+    xScale(){
+      // Can only use for categorical domain.
+      return d3.scaleBand()
+          .domain(this.xdomain).paddingInner(.1).range([0, this.chartWidth]);
+    },
+    sumCounts(){
+      //return _.sum(_.values(this.counts));
+      return this.maxCounts;
+    },
+    yScale(){
+      // const maxHeight = sumCounts == 1 ? this.xScale.bandwidth() : this.chartHeight;
+      return d3.scaleLinear()
+          .domain([0, this.sumCounts]).range([0, this.chartHeight]);
+    },
+    yScaleBandwidth(){
+      return this.chartHeight / this.sumCounts;
+    },
+  },
+  data: function(){
+    return {
+      isCreated: false,
+      counts: null,
+      draggedDot: null,
+    }
+  },
+  created: function(){
+    // Add domains
+    this.isCreated = true;
+  },
+  mounted: async function() {
+    this.countsFromProps();
+
+    // Add the axis
+    // Hack: for some reason axis needs to get added after a delay, or it doesn't show up.
+    await wait(500);
+    var xAxis = d3.axisBottom(this.xScale); //.ticks(8);
+//    var yAxis = d3.axisLeft(this.yScale);
+
+    const chart = d3.select(this.$el).select('.container');
+//    chart.append('g').call(yAxis);
+    chart.append('g').attr('transform', 'translate(0,' + this.chartHeight + ')').call(xAxis);
+  },
+  watch: {
+    samples(){
+      this.countsFromProps();
+    },
+    dist(){
+      this.countsFromProps();
+    },
+  },
+  methods: {
+    dragstart(x){
+      this.draggedDot = x;
+    },
+    dragend(){
+      this.draggedDot = null; 
+    },
+    countsFromProps(){
+      if (this.dist){
+        this.counts = _.cloneDeep(this.dist);
+      } else {
+        const bins = _.groupBy(this.samples);
+        this.counts = _.zipObject(this.xdomain, this.xdomain.map(function(x){
+            return x in bins ? bins[x].length : 0;
+          }));
+      }
+    },
+    drag(x, event){
+      //console.log('dragging');
+      //debugger;
+      const distanceFromTop = this.getRelativeMouseY(event);
+      if (distanceFromTop < 0){
+        return;
+      }
+      const height = this.chartHeight - distanceFromTop;
+
+      const numBars = Math.max(1, Math.floor(height / this.yScaleBandwidth));
+
+      const isNewNumBars = this.counts[x] && this.counts[x] !== numBars;
+      Vue.set(this.counts, x, numBars);
+
+      if (isNewNumBars){
+          this.$emit('dist-changed', {dist: this.counts});
+      }
+    },
+    getRelativeMouseY: function(event){
+      // https://stackoverflow.com/questions/5921413/difference-between-e-target-and-e-currenttarget
+      // e.target is what triggers the event dispatcher to trigger and e.currentTarget is what you assigned your listener to.
+
+      // Find the 'dist' element to compute relative mouse coords.
+      var refElement = event.target;
+      while (refElement.className !== 'samples-chart'){
+        refElement = refElement.parentElement;
+      }
+      return event.clientY - refElement.getBoundingClientRect().y;
+    },
+
+  },
+  template: '#samples-chart-template'
+});
+
+Vue.component('buton-group', {
+  props: {
+    onClick: {type: Function, 
+              default: () => console.warn('buton-group should have onClick') },
+  },
+  template: '<div><slot></slot></div>'
+});
+Vue.component('centered', {
+  template: '#centered-template'
+});
+Vue.component('bold', {
+  template: '#bold-template'
+});
+
+Vue.component('interstitial', {
+  props: {
+    image: {type: String, default: 'wizard.png'}, 
+  },
+  computed: {
+    cropCircleStyle: function(){
+      return {'background-image': 'url("images/' + this.image + '")'};
+    }
+  },
+  mounted: function(){
+    this.$root.play('chimes');
+  },
+  template: '#interstitial-template'
+});
+
+Vue.component('intro-scene', {
+  template: '#intro-scene-template'
+});
+
+Vue.component('beliefs-as-dists', {
+  data: function(){
+    return {
+      questions: mcQuestions,
+      questionInd: 0,
+    };
+  },
+  template: '#beliefs-as-dists-template'
+});
+
+Vue.component('overconfidence', {
+  data: function(){
+    return {
+      questions: mcQuestions,
+      questionInd: 0,
+    };
+  },
+  template: '#overconfidence-template'
+});
+
+// Can be used to delay logic
+// <delay></delay>
+Vue.component('delay', {
+  props: {
+    ms: {type: Number, default: 500},
+    visible: {type: Boolean, default: false},
+  },
+  data: function(){
+    return {
+      shouldTrigger: false,
+    }
+  },
+  computed: {
+    compStyle: function(){
+      if (this.visible){
+        return {};
+      } else {
+        return {'display': 'none'};
+      }
+    }
+  },
+  mounted: function(){
+    var this_ = this;
+    setTimeout(function(){
+      this_.shouldTrigger = true;
+    }, this.ms);
+  },
+  template: `<span v-if="shouldTrigger" style="compStyle"><slot></slot></span>`,
+});
+
+// Hides content until it is revealed as part of the story.
+Vue.component('story', {
+  props: {
+    visible: {type: Boolean, default:false},
+  },
+  data: function(){
+    return {
+      isVisible: this.visible,
+    };
+  },
+  watch: {
+    isVisible: scrollWindow,
+  },
+  template: '#story-template'
+});
+
+
+
+/*
+How should this work:
+- split the text into words
+- inject the words in via setinterval
+- add a transition component that makes it fade in when it is injected
+*/
+Vue.component('live-text', {
+  props: {
+    interval: {type: Number, default: 1000},
+  },
+  render: function (createElement) {
+    var data = [];
+    for (var i=0; i<this.$slots.default.length; i++){
+      var vnode = this.$slots.default[i];
+      if (vnode.tag){
+        data.push([vnode.tag, vnode.data, vnode.children]);
+      } else if (vnode.text){
+        var tokens = vnode.text.split(' ').filter(token => token);
+        data = _.concat(data, tokens.map(token => ['span', {}, token + ' ']));
+      }
+    }
+    var vnodes = data.map(function(tuple, i){
+      const tag = tuple[0];
+      const nodeData = tuple[1];
+      const children = tuple[2];
+      const meta = {
+        ref: i, 
+        class: { 'hidden-at-first': true }
+      };
+      return createElement(tag, _.merge(meta, nodeData), children);
+    });
+    return createElement(
+      'div',   // tag name
+      vnodes, 
+    )
+  },
+  data: function(){
+    return {
+      visibleTokens: [],
+      length: 0,
+    };
+  },
+  mounted: function(){
+    console.log('mounting live text');
+    this.animate();
+  },
+  methods: {
+    animate: async function(){
+      var elts = _.values(this.$refs);
+
+      this.length = _.sum(elts.map(elt => elt.textContent.length));
+
+      function pauseDuration(text){
+        const short = 100;
+        const med = 500;
+        const long = 1000;
+        if (!text){
+          return short;
+        }
+        if (text.includes('.') || text.includes('?') || text.includes('!')){
+          return long;
+        }
+        if (text.includes(')')){
+          return med;
+        }
+        return short;
+      }
+      this.$root.play('speech');
+      for (var i=0; i<elts.length; i++){
+        var elt = elts[i];
+        elt.style.opacity = 1;
+        // Pause.
+        var duration = pauseDuration(elt.textContent);
+        if (duration == 1000){
+          this.$root.pause('speech');
+        }
+        await wait(duration);
+        if (duration == 1000){
+          this.$root.play('speech');
+        }
+      }
+      this.$root.pause('speech');
+      this.$emit('live-text-complete');
+    },
+  },
+  template: '#live-text-template'
+});
+
+// Child slot should call next() on the parent to advance.
+Vue.component('pset', {
+  computed: {
+    elms(){
+      return this.$slots.default.filter(x => x.tag).map(x => x.elm);
+    }
+  },
+  data: function(){
+    return {
+      ind: 0, // active index
+    };
+  },
+  mounted: function(){
+    // this.elms[0].style.opacity = 1;
+    // for (var i=1; i<this.elms.length; i++){
+    //   this.elms[i].style.opacity = 0;      
+    // }
+  },
+  methods: {
+    next(){
+      this.ind = this.ind + 1;
+      if (this.ind >= this.elms.length){
+        this.$emit('done');
+        return;
+      }
+
+      // grey out previous indices
+      for (var i=0; i<this.ind; i++){
+        this.elms[i].style.opacity = 0.5;        
+      }
+
+      // make current ind, fully visible
+      this.elms[this.ind].style.opacity = 1;
+    }
+  },
+  template: '#pset-template'
+});
+
+// https://jsfiddle.net/39hkrot0/5/
+Vue.component('once-group', {
+  data: function(){
+    return {
+      isClicked: false
+    }
+  },
+  template: `<div><slot></slot></div>`,
+  methods: {
+
+    childClicked: function(childComponent) {
+      if (this.isClicked){
+        return;
+      }
+      this.isClicked = true;
+
+      // Change the buttons to indicate that it is disabled.
+      var this_ = this;
+      this.$slots.default.forEach((item, index) => {
+        if (item.tag) {
+          // var button_value = item.componentInstance.$props.value;
+          // if (button_value === this_.userAnswer){
+          if (childComponent === item.componentInstance){
+            item.elm.classList.add('clicked-button');
+          } else {
+            item.elm.setAttribute('disabled', true); 
+          }
+        }
+      });
+    }
+  }
+});
+
+// once-button must live inside a once-group
+// The once-group enforces that only one child can be called once.
+Vue.component('once-button', {
+  data: function(){
+    return {
+      self: this
+    }
+  },
+  template: '<buton @click.native="$parent.childClicked(self)"><slot></slot></buton>'
+});
+
+const chapters = [
+{
+  component: 'intro-scene',
+  image: 'scroll.png',
+  description: 'The beginning'
+},
+{
+  component: 'beliefs-as-dists',
+  description: 'Beliefs as distributions',
+  image: 'curve.png',
+},
+{
+  component: 'overconfidence',
+  description: 'Overconfidence Bias',
+  image: 'moneybag.png',
+},
+
+// {
+//   component: 'wizard-flips',
+//   name: 'Randomness',
+//   description: 'What does randomness look like',
+//   image: 'wizard.png',
+// },
+// {
+//   component: 'chain-rule',
+//   name: 'Chain Rule',
+//   description: 'Chain rule of probability',
+//   image: 'girl.png',
+// },
+// {
+//   component: 'intro-to-pvalues',
+//   name: 'P-values',
+//   description: 'P-values', 
+//   image: 'scientist.png',
+// },
+// {
+//   component: 'bayes-rule',
+//   name: 'Bayes Rule',
+//   description: 'Bayes Rule', 
+//   image: 'wizard.png',
+// },
+];
+
+// Gotchas:
+// DOM does not update for new property additions.
+// DOM does not update for direct assignments within arrays.
+// https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating  
+new Vue({
+  el: '#app',
+  data: {
+    chapters: chapters,
+    chapterInd: 1,
+    // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
+    //soundNameToCount: {},
+    show: false,
+    isPlaying: false,
+    showTOC: false,
+  },
+  computed: {
+    currentChapter: function(){
+      return this.chapters[this.chapterInd];
+    },
+    visibleScreen: function(){
+      return this.currentChapter.component;
+    }
+  },
+  watch:{
+    chapterInd(){
+      // Remove the rainbow
+      bus.$emit('chapter-changed');
+    }
+  },
+  methods: {
+    renderAsPercent: formatPct,
+
+    formatPct: formatPct,
+    // round_to(2.777777, 0) -> 3
+    // round_to(2.777777, 2) -> 2.78
+    roundTo: roundTo,
+    nextChapter: async function(){
+      // this.play('achievement');
+      // await wait(1500);
+      this.chapterInd = Math.min(this.chapters.length-1, this.chapterInd+1);
+    },
+    // Given 0.8 --> returns {}
+    paramsFromCertainty: function(certainty){
+      if (certainty == 1.0){
+        return {
+          numLoseIfWrong: 10000000, 
+          numWinIfRight: 1,
+          certainty: certainty,
+          percent: '100%',
+        };
+      }
+      return {
+        numWinIfRight: 1, 
+        numLoseIfWrong: this.roundTo(certainty/(1-certainty), 1),
+        certainty: certainty,
+        percent: this.formatPct(certainty)
+      };      
+    },
+    paramsFromBet: function(num_win_if_right, num_lose_if_wrong){
+      var certainty = num_lose_if_wrong/(num_win_if_right+num_lose_if_wrong);
+      return this.paramsFromCertainty(certainty);
+    },
+    play: function(soundName){
+//      console.log('playing ' + soundName);
+      var sound = sounds[soundName].clip;
+      sound.play().catch(function(error){
+        console.log(error.toString());
+      });    
+    },
+    pause: function(soundName){
+ //     console.log('pausing');
+      var sound = sounds[soundName].clip;
+      sound.pause();
+      sound.currentTime = 0;      
+    }
+  } // end methods
+});
+</script>

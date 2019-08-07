@@ -1,0 +1,2573 @@
+<!doctype html>
+<meta charset="utf-8" />
+
+<head>
+<!--<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700,900" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">-->
+
+<!--
+font-family: 'VT323', monospace;
+font-family: 'Princess Sofia', cursive;
+font-family: 'Indie Flower', cursive;
+font-family: 'Dokdo', cursive;
+font-family: 'East Sea Dokdo', cursive;
+font-family: 'Creepster', cursive;
+font-family: 'Bungee Hairline', cursive;
+font-family: 'Bungee', cursive;
+font-family: 'Bungee Shade', cursive;
+font-family: 'Bungee Inline', cursive;
+font-family: 'Cormorant Garamond', serif;
+-->
+
+<!-- todo: strip and remove the unused -->
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Bungee|Bungee+Hairline|Bungee+Inline|Bungee+Shade|Cormorant+Garamond|Creepster|Dokdo|East+Sea+Dokdo|Indie+Flower|Princess+Sofia|VT323" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=East+Sea+Dokdo|Gaegu:300,400,700|Montserrat:300,400|Open+Sans|Raleway|Roboto+Slab" rel="stylesheet">
+
+<script src="js/lodash.min.js"></script>
+<script src="js/d3.v4.min.js"></script>
+
+<script src="js/vue.js"></script>
+
+<script src="js/utils.js"></script>
+<script src="js/monk.js"></script>
+<script src="js/forest.js"></script>
+
+<style>
+
+
+.cat-style{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+/*  font-family: 'Raleway', sans-serif;*/
+
+}
+.cat-problem{
+  margin: 16px;
+  font-family: 'Gaegu', cursive;
+  font-size: 16px;
+  line-height: 1.5em;
+}
+
+.cat-tongue{
+  font-family: 'Gaegu', cursive;
+}
+
+.game-button{
+  font-family: 'Dokdo', cursive;
+  font-size: 14px;
+}
+
+.game-button:hover{
+  font-family: 'Bungee Shade', cursive; 
+  font-size: 12px;
+}
+
+.game-button:active{
+  font-family: 'Bungee Shade', cursive;    
+}
+
+body {
+/*  font-family: Helvetica Neue, Arial, sans-serif;*/
+  font-family: 'Source Code Pro', monospace;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+button{
+  max-width: 150px;
+  margin-right: 8px;
+  cursor: pointer;
+
+  background-color: white;
+  border-radius: 4px;
+}
+
+h4{
+  font-size: 18px;
+  font-weight: 500;
+}
+
+a{
+  color: #337ab7; /* boostrap blue */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+div{
+  margin-bottom: 16px;
+}
+
+img{
+  max-width: 400px;
+}
+
+.monk-dual-quiz .active{
+  font-family: 'Bungee Shade', cursive; 
+  font-size: 18px;   
+}
+
+.monk-dual-quiz .inactive{
+  font-family: 'Bungee Hairline', cursive;
+  font-size: 10px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.monk-dual-quiz .inactive:hover{
+  color:black;
+}
+
+.moneybag-widget {
+  display:inline-grid;
+  grid-template-columns: 180px 1fr; /* chosen to get 10 moneybags on rhs*/
+  grid-template-rows: 44px 1fr;
+}
+
+.moneybag-widget .lhs{
+  text-align: left;
+}
+
+.moneybag-widget .rhs{
+  text-align: right;
+}
+
+.normal-divs div{
+  margin-bottom: 0px;
+}
+
+.fulcrum {
+  display: inline-block;
+  color: white;
+  width: 0; 
+  height: 0; 
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;  
+  border-bottom: 50px solid black;
+}
+
+.smooth{
+  transition: all 1s ease;
+}
+
+.handwriting{
+  font-family: 'Dokdo', cursive;  
+}
+
+.bold {
+  font-family: 'Bungee Shade', cursive;  
+}
+
+.uncertain {
+  font-family: 'Bungee Hairline', cursive;
+}
+
+.clicked-button{
+  font-family: 'Bungee Shade', cursive;  
+}
+
+.right-answer{
+  color: green;
+}
+
+.wrong-answer{
+  color: red;
+}
+
+.moneybag-button:hover{
+  background-color: #ccc;
+}
+
+.progress-moneybag{
+  display: block;
+  margin: 0 auto;
+  width: 20px;
+}
+
+/* https://codepen.io/anon/pen/Laoxro */
+.pulse{
+  position: relative;
+}
+
+.pulse:after {
+  content:"";
+  display:block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid #CBA82C;
+  position:absolute;
+  top:-40px;
+  left:2px;
+  animation: pulse 2s ease 0s infinite;
+}
+
+@keyframes pulse {
+  0% {
+      opacity: 1;
+      transform: scale(1);
+  }
+  80% {
+      opacity: 0;
+      transform: scale(2);
+  }
+  100% {
+      opacity: 0;
+      transform: scale(3);
+  }
+}
+
+.right-wobble{
+  position: absolute;
+  animation: rightwobble 1s ease 0s 1;
+}
+
+@keyframes rightwobble {
+  0% {
+    transform: rotate(0turn);
+  }
+  30% {
+    transform: rotate(0.005turn);
+  }
+  100% {
+    transform: rotate(0turn);
+  }
+}
+
+
+.left-wobble{
+  position: absolute;
+  animation: leftwobble 0.5s ease 0s 1;
+}
+
+@keyframes leftwobble {
+  0% {
+    transform: rotate(0turn);
+  }
+  30% {
+    transform: rotate(-0.01turn);
+  }
+  100% {
+    transform: rotate(0turn);
+  }
+}
+
+
+.lr-arrow{
+  position: absolute;
+  animation: lr 2s ease 0s infinite;
+}
+
+@keyframes lr {
+  0% {
+    transform: translateX(0px);
+  }
+  30% {
+    transform: translateX(20px);
+  }
+}
+
+
+.clickme-button{
+  animation: pulseborder 1s ease 0s infinite;
+}
+
+@keyframes pulseborder{
+  0% {
+    border-bottom: 1px dashed red;
+  }
+  30% {
+    border-bottom: 5px dashed red;
+  }  
+}
+
+.pulse-text{
+  animation: pulsetext 1s ease 0s infinite;
+}
+
+@keyframes pulsetext{
+  0% {
+    color: white;
+  }
+  30% {
+    color: orange;
+  }
+  100% {
+    color: white;
+  }
+}
+
+.sign-text{
+  font-family: 'Princess Sofia', cursive;
+}
+
+.sign{
+  border-bottom: 4px solid transparent;
+}
+.sign:hover{
+  border-bottom: 4px solid #ddd;
+}
+
+.item-img{
+  max-width: 100px;
+  display: block;
+  margin: 0 auto;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.image-button{
+  padding: 16px;
+  width: 180px;
+  height: 150px;
+}
+
+.image-button img{
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.congrats{
+  background-color: #23418b; /* monk blue */
+  border-radius: 8px;
+  padding: 8px;
+  color: #fff;
+}
+
+.fade-from {
+ opacity: 0  
+}
+
+.fade-to {
+ opacity: 1  
+}
+
+.fade-in {
+  transition: opacity 0.5s
+}
+
+
+.story-index{
+  margin-top: 32px;
+  border: 2px solid grey;
+}
+
+.active-tab{
+  font-weight: bold;
+}
+
+.inactive-tab{
+  color: #bbb;
+}
+
+.ev-answer-bar{
+  transition: all 1s ease;
+}
+
+.forest-intro-problem{
+  font-size: 12px;
+}
+
+
+
+
+
+</style>
+
+<body>
+
+<div id="app" style="position:relative">
+
+<div style="max-width: 400px; margin: 0 auto; text-align: center;">
+
+<!-- <div><img src="images/map.jpg" width="400px"></div>
+<game-button>Enter</game-button> -->
+
+
+
+<div style="width: 150px; position:absolute; left: 0px; text-align: left; padding-left: 16px">
+
+  <div v-for="storyPoint in storyPoints"
+      @click="currentStoryPoint = storyPoint"
+      style="margin-bottom: 4px;"
+      :style="storyPointStyle(storyPoint)">
+    <a :class="[storyPoint === currentStoryPoint ? 'active-tab': 'inactive-tab']">{{storyPoint.name}}</a>
+  </div>
+
+</div>
+
+
+<keep-alive>
+  <component v-bind:is="currentStoryPoint.component"></component>
+</keep-alive>
+
+
+<!--
+
+<div>Which plant is poisonous?</div>
+<game-button class="image-button">
+  <img src="images/dolls_eyes.jpg">
+  <div>This one</div>
+</game-button>
+<game-button class="image-button">
+  <img src="images/poke_weed.jpg">
+  <div>That one</div>
+</game-button>
+
+
+
+<div>
+Now, let's see if you can make enough money to fund your journeys...
+</div>
+
+<div>
+(swirl transition into game)
+have bar showing how much money is needed.
+</div> -->
+
+
+<!-- 
+
+<text-animation :tokens="['Hm', '.', '.', '.', '.', '.']" :interval="100"></text-animation>
+
+<stagger>
+  <div>{{testVal}}</div>
+  <div>2</div>
+  <div>3</div>
+</stagger>
+
+
+{{testVal}}
+<once-group>
+  <once-button @click.native="testVal='A'">A</once-button>
+  <once-button @click.native="testVal='B'">B</once-button>
+</once-group>
+
+-->
+
+
+
+
+</div> <!-- end centering box -->
+
+
+
+</div> <!-- end #app -->
+
+
+
+<!-- begin templates -->
+
+
+<script type="text/x-template" id="certainty-widget-template">
+<div>
+
+  <once-group>
+    <once-button 
+      :key="certainty"
+      v-for="certainty in certainties" 
+      @click.native="submitCertainty(certainty)"
+      @mouseenter.native="onHover(certainty)"
+      >{{$root.renderAsPercent(certainty)}}</once-button>
+  </once-group>
+
+  <moneybag-widget v-show="hoveredCertainty !== null" :numLoseIfWrong="$root.paramsFromCertainty(hoveredCertainty).numLoseIfWrong"></moneybag-widget>
+
+</div>
+</script>
+
+<script type="text/x-template" id="money-bags-template">
+<span style="position:relative; display:inline-block;">
+  <img v-for="n in Math.ceil(number)" 
+       :style="{width: width+'px', display: isHorizontal ? 'inline-block': 'block'}" 
+       style="margin-right:2px"
+       src="images/moneybag.png">
+
+  <!-- cover up to make a fractional moneybag -->
+   <span v-if="positiveFraction > 0.01"
+         style="background-color:rgba(255,255,255,0.8); position:absolute; right: 0px; bottom:4px;" 
+         :style="fractionalCoverStyle"></span>
+</span>
+
+</script>
+
+<script type="text/x-template" id="moneybag-widget-template">
+
+<div style="font-size: 12px; user-select:none; width:100%;" class="moneybag-widget handwriting normal-divs">
+
+  <div v-if="isInteractive === true"></div>
+
+  <div v-if="isInteractive === true" class="rhs">
+    <div v-if="showInstructions"
+         style="font-size:12px; margin-bottom:0px">Add moneybags until the bet looks fair.
+    </div>
+    <div style="display:flex; justify-content:flex-end"> <!-- display:flex makes butons same height -->
+      <button v-if="numLosingMoneybags > 0" 
+        class="handwriting moneybag-button" 
+        @click="submitBet">Looks fair</button>
+      <button
+        v-if="numLosingMoneybags > 0"
+        @click="lessClick" 
+        class="uncertain moneybag-button" 
+        style="font-size:12px">less</button>
+      <button 
+        @click="moreClick" 
+        class="bold moneybag-button" 
+        style="font-size:16px">MORE</button>
+      </div>
+  </div> <!-- end isInteractive -->
+
+
+  <div class="lhs" style="display:flex; flex-direction:column; justify-content:flex-end"> <!-- aligns content with bottom -->
+    <div>Win if right ({{numWinIfRight}})</div>
+    <money-bags :number="numWinIfRight"></money-bags>
+  </div>
+
+  <div class="rhs">
+    <div>Lose if wrong ({{numLosingMoneybags}})</div>
+    <money-bags :number="numLosingMoneybags"></money-bags>
+  </div> 
+
+</div>
+
+</script>
+
+<script type="text/x-template" id="story-template">
+  <div v-if="isActive" class="story">
+    <slot></slot>
+  </div>
+</script>
+
+
+<script type="text/x-template" id="text-animation-template">
+<div>
+  {{visibleText}}
+</div>
+</script>
+
+<script type="text/x-template" id="monk-head-template">
+<div class="handwriting normal-divs"
+      style="display:inline-block; position:relative; white-space: nowrap;">
+  <img src="images/monk_head.png" style="width:80px;">
+
+  <!-- speech pointing to left -->
+  <div v-if="hasSlot('lhs')">
+    <div style="width:22px; border:1px solid black; transform:rotate(50deg); position:absolute; top:-14px; left:10px;"></div>
+    <div style="position:absolute; top: -40px; left:0px;">
+      <slot name="lhs"></slot>
+    </div>
+  </div>
+
+  <!-- speech pointing to right -->
+  <div v-if="hasSlot('rhs')">
+    <div style="width:24px; border:1px solid black; transform:rotate(310deg); position:absolute; top:-14px; left:50px;"></div>
+    <div style="position:absolute; top: -40px; left: 60px;">
+      <slot name="rhs"></slot>
+    </div>
+  </div>
+
+</div>
+</script>
+
+<script type="text/x-template" id="monk-question-template">
+<div style="margin-bottom:0px;">
+
+<monk-head>
+
+  <template v-if="showThinkingBubble" v-slot:lhs>
+     <text-animation 
+        :text="'Hm...'"
+        :interval="200"
+        @text-animation-complete="onThinkingComplete"></text-animation>
+  </template>
+
+  <template v-if="monkSays" v-slot:rhs>
+    {{monkSays}}
+  </template>
+
+</monk-head>
+
+<div style="display:inline-block; width:300px; margin-bottom:0px">
+  <div style="display:inline-block">
+    {{datum.question}}
+  </div>
+
+  <once-group>
+    <once-button v-for="answer in datum.answers"
+                 :key="answer"
+                 @click.native="userChoseAnswer(answer)"
+                 style="max-width:120px;">{{answer}}</once-button>
+  </once-group>
+
+
+  <div v-if="userAnswer" style="margin-bottom:0px;">
+    <div>How sure are you of your answer?</div>
+
+    <certainty-widget v-if="vizType == 'certainty'"
+                     @bet-submit="onBetSubmit">
+    </certainty-widget>
+
+    <moneybag-widget v-if="vizType == 'bet'" 
+                     @bet-submit="onBetSubmit"
+                     :isInteractive="true"
+    ></moneybag-widget>
+  </div>
+</div>
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="monk-interaction-template">
+<div>
+  <monk-question @answer-complete="onAnswerComplete"
+                 :datum="datum"
+                 :vizType="vizType"
+                 :monkSays="monkSays"></monk-question>
+
+  <div v-if="isMonkDoneThinking && datum.type =='basic'">
+
+    <stagger v-if="isMonkBetting === false"
+                      @stagger-complete="monkReactionComplete">
+      <div>
+         I don't feel like betting with you on that one. If you increase your certainty, I may be more likely to bet with you.
+      </div>
+    </stagger>
+
+    <stagger v-else-if="isUserCorrect"
+                      @stagger-complete="monkReactionComplete">
+      <div>You win {{numMoneybagsGained}} moneybags.</div>
+    </stagger>
+
+    <stagger v-else-if="!isUserCorrect"
+                      @stagger-complete="monkReactionComplete">
+      <div>You lose {{Math.abs(numMoneybagsGained)}} moneybags.</div>
+    </stagger>
+
+  </div>
+
+
+  <div v-if="isMonkDoneThinking && datum.type=='special'"> <!-- begin special explanations -->
+
+    <div v-if="datum.id === 'uniform-prior'">
+
+      <div v-if="isUserCorrect === false">
+        What makes you think {{params.userAnswer}} is more likely? 
+      </div>
+
+      <!-- Explanation shows up regardless. -->
+      <div>
+        As a newcomer to this world, you don't know anything about these two places, it is equally likely that your quest could proceed through either of them. In this case, it makes sense to choose either answer but express your certainty as 50 - 50.
+      </div>
+
+      <div>
+       This is called a <span class="handwriting">uniform prior</span>. You have no information, so all choices are equal.
+      </div>
+    </div> <!-- end uniform prior -->
+
+
+    <div v-if="datum.id === 'rain-prior'">
+
+      <div v-if="userCertainty === 0.5">
+        You chose 0.5 because you are unsure whether it will rain tomorrow? 0.5 should be used to express total uncertainty, but in this case you do know something.
+      </div>
+
+      <!-- Explanation shows up regardless. -->
+      <div>
+        I also don't know whether it will rain tomorrow, but based off our past experiences living on Earth, there are more sunny days than rainy days -- so in this case you have prior knowledge on the frequency of sunny days vs rainy days which you can use to inform your decision.
+      </div>
+
+      <div>
+        A calibrated player would answer using the observed frequency of rain.
+      </div>
+
+      <div>
+        It is also possible to incorporate additional knowledge, like whether it rained yesterday, into your probability but that's a topic for another day.
+      </div>
+    </div> <!-- end rain prior -->
+
+
+    <div v-if="datum.id === 'brenda-question'">
+
+      <!--
+      // User right answer with 100% certainty
+      // Mm... good. You recognized the Conjuction Fallacy.
+
+      // While it is mathematically true that you have selected the right 
+      // answer, but I personally shy away from being 100% certain about
+      // anything because it means that you would be willing to give up an
+      // entire universe of moneybags if wrong, in exchange for a single 
+      // moneybag if you are right. And who knows, you might have misunderstood
+      // the question... 
+
+      // In this case, you were right though. Here is your 1 moneybag reward.
+      -->
+
+      <div v-if="userCertainty < 0.9 && isUserCorrect">
+        Your answer is correct but why aren't you more certain? 
+      </div>
+
+      <div>
+        The chance that Brenda is a millenial AND something else is true, is always lower than the chane that Brenda is a millenial.
+      </div>
+
+      <div>
+        This is known as the <a href="//en.wikipedia.org/wiki/Conjunction_fallacy" target="_blank">Conjunction Fallacy</a>  where sometimes our brains get tricked into pattern matching, but if you think about the actual probabilistic events the answer is clear. Take a look at the most famous example, the Linda Problem.
+      </div>
+
+    </div> <!-- end brenda -->
+
+    <div v-if="datum.id === 'linda-question'">
+
+      <div v-if="userCertainty == 0.9 && isUserCorrect">
+        You seem to understand the Conjunction Fallacy.
+      </div>
+
+      <div v-else>
+        <div>
+          This question was exactly the same as the Brenda situation above.
+        </div>
+
+        <div v-if="userCertainty < 0.9">
+          Your answer is correct but why aren't more certain given that mathematically this is true?
+        </div>
+      </div>
+    </div> <!-- end linda -->
+
+
+    <!-- Tell user payout and let them move on -->
+    <div v-if="numMoneybagsGained !== 0">
+      {{isUserCorrect ? 'Gain ': 'Lose '}} {{ Math.abs(numMoneybagsGained) }} moneybag.
+    </div>
+
+    <game-button @click.native="monkReactionComplete">Continue</game-button>
+
+  </div> <!-- end special explanations -->
+
+</div>
+</script>
+
+
+
+<script type="text/x-template" id="monk-game-template">
+<div>
+
+  <div>    
+    <div style="font-size:15px;">
+    Player, earn enough moneybags to leave the monastery and begin your travels.
+    </div>
+
+    <div style="font-size: 12px;">
+    The more sure you are in your answers, the more likely the monk will take you up on your bet — but  also the more you stand to lose.
+    </div>
+
+  </div> 
+
+  <div v-for="question in visibleQuestions">
+
+    <div style="border-top: 1px solid #eee;"></div>
+
+    <monk-interaction
+      :datum="question"
+      @question-complete="onQuestionComplete"></monk-interaction>
+
+  </div>
+
+
+  <story ref="questions">
+
+  </story>
+
+  <!-- moneybag progress indicator -->
+  <div class="handwriting" 
+      style="position:fixed; width: 50px; bottom: 0px; right:50px;"> 
+    Acquired 
+    <span style="display:inline-block;">{{$root.roundTo(numUserMoneybags, 1)}}/{{numMoneybagsNeeded}}</span>
+
+    <div v-if="numUserMoneybags < 0">
+      <img v-for="_ in Math.ceil(Math.abs(numUserMoneybags))" 
+           src="images/red_money.png"
+           class="progress-moneybag">
+    </div>
+    <div v-else>
+      <img v-for="_ in Math.ceil(numUserMoneybags)"
+           class="progress-moneybag"
+           src="images/moneybag.png">
+      <img v-for="_ in (numMoneybagsNeeded - Math.ceil(numUserMoneybags))"
+           class="progress-moneybag" 
+           src="images/grey_money.png">
+    </div>
+  </div> 
+
+  <div v-if="gameOutcome === 'userWon'">
+    <div>
+      Congratulations adventurer. Through the visualization of fair bets, you have reduced your susceptibility to the Overconfidence Effect.
+    </div>
+
+    <div>
+      You have also learned about priors, in particular the uniform prior when you are completely unsure. 
+    </div>
+
+    <div>
+      And the Linda Problem.
+    </div>    
+
+    <div>
+      You have earned the requisite moneybags to proceed in your quest.
+    </div>
+
+    <game-button @click.native="isGameComplete=true">Proceed</game-button>
+  </div>
+
+  <div v-if="gameOutcome === 'monkOutOfQuestions'">
+    <div>
+    Oh no, I'm out of questions but you don't have {{numMoneybagsNeeded}} moneybags yet... What should I do?
+    </div>
+
+    <once-group>
+      <once-button @click.native="userWantToProceedPoor=true">Let player proceed in the quest</once-button>
+      <once-button @click.native="userWantsToProceedPoor=false">Send player home</once-button>
+    </once-group>
+  </div> 
+
+
+  <div v-if="userWantsToProceedPoor === true">
+    <div>
+      Very well then. You may proceed but be very careful because you don't have much money to make mistakes!
+    </div>
+
+    <game-button @click.native="isGameComplete = true">Proceed</game-button>
+  </div>
+
+
+  <div v-if="userWantsToProceedPoor === false">
+    Okay, go home! Then you can refresh the page and try again.
+  </div>
+
+  <div v-if="isGameComplete">
+    You may now leave the monastery and journey on. Take care and be sure to make good decisions in the forest.
+
+    <!-- might be cool to have bowing monk art -->
+
+    <game-button @click.native="$root.setStoryPoint('forest-intro')">To the forest</game-button>
+
+  </div>
+
+
+</div>
+</script>
+
+
+
+<script type="text/x-template" id="wooden-sign-template">
+  <div style="position:relative; display:inline-block;" class="sign">
+    <img src="images/sign7.png" style="width: 190px;" :style="{height: height + 'px'}">
+    <div style="position:absolute; width:170px;height:100px; text-align:center; top: 30px; left:10px; cursor:pointer; color: #4E3B27" class="sign-text">
+      <slot></slot>
+    </div>
+  </div>
+</script>
+
+
+<script type="text/x-template" id="forest-intro-template">
+<div>
+
+
+<img src="images/forest_dark.png" style="margin-top:40px;">
+
+<div>
+  You approach the first fork in the road.
+</div>
+
+<div>
+Choose which way to proceed.
+</div>
+
+<div v-for="(problem, index) in visibleProblems" :key="problem">
+
+  <div>{{problem.text}}</div>
+  <game-button v-for="choice in problem.choices"   
+        :key="choice"
+        :isRight="choice.right"
+        @click.native="choiceClicked(choice)">{{choice.name}}</game-button>
+  <div style="margin-top:16px;">{{feedbacks[index]}}</div>
+
+</div>
+
+
+</div>
+</script>
+
+
+
+<script type="text/x-template" id="forest-game-template">
+
+<div>
+
+<div>
+Oh dear. 
+</div>
+
+<div>
+By no fault of your own, you are now lost in this forest. 
+</div>
+
+<div>
+Hopefully with knowledge of expected value (EV), you will make it 
+out alive.
+</div>
+
+<div style="position:fixed; width: 50px; bottom: 0px; right:50px;"> 
+  <div>HP: {{hp}}</div>
+  <div>Progress: {{progress}}</div>
+  <div>Inventory: {{inventory}}</div>
+</div> 
+
+<img src="images/dance_of_rebirth.jpg">
+
+<div>
+You feel the swirl of spirits of the forest, as though you're
+receiving a warm hug. When it is over, you find yourself knowing that 
+the <b>expected value</b> of a random event is the average if you are able to experience a random event many times.
+</div>
+
+
+<once-group>
+  <once-button>Continue</once-button>
+  <once-button @click.native="show('spirit-berry')">Thank the forest spirits</once-button>
+</once-group>
+
+<story ref="spirit-berry">
+  <div>
+  Immediately after you finish thanking the spirits, you find
+  a berry on the ground. 
+  </div>
+
+  <img class="item-img" src="images/berry1.png">
+  <div>
+  The packaging says: Heals +10HP in a bind.
+  </div>
+
+<!-- hm: neither of these are working. todo: debug?
+  {{addToInventory('spirit-berry')}}
+ <hidden>{{addToInventory('spirit-berry')}}</hidden> -->
+
+  <once-group>
+    <once-button @click.native="addToInventory('spirit-berry')">Add to inventory</once-button>
+  </once-group>
+</story>
+
+
+<!-- todo: this for loop needs to get removed in favor of individual problem ids, because we have the surrounding text -->
+<forest-problem v-for="problem in visibleProblems"   
+                :problem="problem"
+                :key="problem"
+                @problem-complete="onProblemComplete"></forest-problem>
+
+
+
+<!-- <div>
+
+<pity-fairy></pity-fairy>                
+
+You finally see light shining through the periphery of the forest.
+</div>
+
+[[Shining light at the end of tunnel]]
+
+<div>
+With newfound knowledge in expected value, variance (and standard deviation), you stumble out of the forest and into
+the radiant sunlight. You have definitely emerged stronger.
+</div>-->
+
+
+</div>
+</script>
+
+
+
+
+<script type="text/x-template" id="forest-problem-template">
+<div>
+
+<div>
+  {{problem.intro}}
+</div>
+
+<div><img v-if="problem.images"
+     v-for="image_name in problem.images" 
+     :src="'images/' + image_name"
+     style="max-width:150px; margin:8px; max-height: 150px;">
+   </div>
+
+<div>
+  <game-button v-for="choice in problem.choices"
+          @click.native="choiceMade($event, choice)"
+          :key="choice">
+
+<!--    <div style="font-size:11px; margin-bottom:4px;">EV: {{outcomesMean(choice.outcomes)}}</div> -->
+    <div>{{choice.name}}</div>
+
+    <distribution v-if="problem.renderAsDistribution" 
+                  @outcome-drawn="outcomeDrawn"
+                  :ref="choice.name"
+                  :outcomes="choice.outcomes" 
+                  :fittedX="true" 
+                  :chartHeight="100" 
+                  :chartWidth="140"></distribution>
+
+    <forest-outcomes v-if="!problem.renderAsDistribution"
+                     @outcome-drawn="outcomeDrawn"
+                     :ref="choice.name"
+                     :outcomes="choice.outcomes" 
+    ></forest-outcomes>
+
+  </game-button>
+</div>
+
+
+<div v-if="userOutcome !== null">
+
+  <stagger>
+  <div>
+  You chose {{userChoice.name}}. 
+  </div>
+
+  <div>
+  You {{userOutcome.hp < 0 ? 'lose': 'gain'}} {{userOutcome.hp}} HP.
+  </div>
+</stagger>
+</div>
+
+</div>
+
+</script>
+
+<script type="text/x-template" id="forest-outcomes-template">
+<div>
+
+<div v-for="(outcome, index) in outcomes" :key="outcome" 
+  style="font-size:13px; margin-bottom:4px;"
+  :style="{'background-color': outcomeColors[index]}">
+
+  {{renderCertainty(outcome.certainty)}}: 
+
+  {{outcome.text}} 
+
+  <span v-if="Array.isArray(outcome.hp)">
+    <distribution :outcomes="outcome.hp"></distribution>
+  </span>
+
+  <span v-else>
+    <span v-if="outcome.hp === 0">
+      no effect
+    </span>
+
+    <span v-if="outcome.hp !== 0">
+      {{outcome.hp >= 0 ? '+' : ''}}{{outcome.hp}} HP 
+    </span>
+
+    {{outcome.caption ? '(' + outcome.caption + ')' : ''}}
+  </span>
+</div>
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="pity-fairy-template">
+<div>
+
+<!--// Only shows up if you have met the variance witch?? or should she show up whenever
+// You're about to die. One chance to save yourself.
+
+todo: make sure pity fairy analysis is correct
+might need to make chance of negative outcome in order to make math work out
+-->
+
+
+<div>
+Hello, I am the Pity Fairy. Yikes, you're not in very good health. 
+</div>
+
+<div>
+There's much more of the forest to go.
+</div>
+
+<div>
+Would you rather I...?
+</div>
+
+
+hmm: this should probably be a forest-problem
+[[higher EV, lower var]]: Restore 12 HP
+[[lower EV, really high var]] : 10% chance of restoration 80 HP.
+
+<story ref="wrong">
+  <div>
+  That's such a pity! I think you chose the wrong answer. 
+  </div>
+
+  <div>
+  Oh well, here's your HP anyways.
+  </div>
+</story>
+
+<story ref="right">
+  <div>
+  Yes, that's clever. 
+  </div>
+
+  <div>
+  Even though Restore 12HP has a higher EV than a 10% chance of 
+  restoring 80HP, in this case I think it makes more sense to choose the 
+  lower EV, higher variance option, because that +12HP isn't going to 
+  make much of a difference in getting you out of the forest while that
+  +80HP would.
+  </div>
+
+  <div>
+  This is one of the few times it may be worth it to take the lower EV
+  option, and is called making a "high variance play".
+  </div>
+</story>
+
+</div>
+</script>
+
+<script type="text/x-template" id="variance-witch-template">
+<div>
+
+<img src="images/grim_reaper.png">
+
+<stagger>
+  <div>
+  I'm the Witch of Variance, or Variance Witch for short. 
+  </div>
+
+  <div>
+  So far, you have only concerned yourself with expected value (EV)
+  which describes how much you expect to gain on average if you are able
+  to repeat the random event many times.
+  </div>
+
+  <div>
+  Of course, there's another important dimension to consider: each time
+  you experience the random event, by **how much does what you experience
+  deviate from the average**?
+  </div>
+
+  <game-button @click.native="show('how-to')">That does seem important</game-button>
+</stagger>
+
+<story ref="how-to">
+  <div>
+  That's what my number tells you. 
+  </div>
+
+  <div>
+  So, to compute the variance: 
+  </div>
+
+  <div>
+  Take all the times you experience the random event. Calculate the 
+  difference between your experience and the average. Square it so you
+  get a positive value. And the average of all those squares is the 
+  variance.
+  </div>
+
+  <once-group>
+    <once-button @click.native="show('std')">Easy!</once-button>
+    <once-button @click.native="show('why-square')">Why do you square it?</once-button>
+  </once-group>
+</story>
+
+
+<story ref="why-square">
+  <div>
+    You want to square it because you don't want the times that you
+    experience a different value more than the average and a different
+    value less than the average to cancel out. 
+  </div>
+
+  <once-group>
+    <once-button @click.native="show('std')">Oh okay</once-button>
+    <once-button @click.native="show('why-not-abs')">Why don't you take the absolute value?</once-button>
+  </once-group>
+</story>
+
+
+<story ref="why-not-abs">
+  <div>
+    Bah! ??
+    todo: ask yan
+  </div>
+
+  <game-button @click.native="show('std')">Continue</game-button>
+</story>
+
+<story ref="std">
+<stagger>
+  <div>
+  Well actually, I own two related numbers: the variance and the standard
+  deviation. The standard deviation is just the square root of the variance. No more no less. 
+  </div>
+
+
+  <div>
+  But Standard Deviation Witch didn't have the same ring to it.
+  </div>
+
+  <div>
+  The neat thing about Standard Deviation is that it's in the same units
+  as your original random event*. So it might be easier to have
+  intuitions about.
+  </div>
+
+  <div>
+  Because I like you so much, for the rest of the game I'll help you by
+  drawing the standard deviation on distributions like this:
+  </div>
+
+  [[distribution]] 
+
+  <div>
+  *As opposed to the variance, which is in that unit^2.
+  </div>
+
+  <game-button @click.native="">Wow! Thanks much, Variance Witch!</game-button>
+</stagger>
+</story>
+
+</div>
+</script>
+
+<script type="text/x-template" id="fulcrum-template">
+
+<!-- 
+show this visually. left column has 7 rows of 1 moneybag. right column has 3 rows of 2.3 moneybags
+
+If you are right 70% of the time and win 1 moneybag when you are right. You lose 30% of the time, and lose 2.3 moneybags. Averaging over many times, you break even. 
+
+animate each moneybag coming in
+when each moneybag comes in, trigger the wobble animation
+-->
+
+
+<div class="normal-divs" style="position:relative; width: 100%; height: 200px;">
+
+
+  <!-- black bar and items -->
+  <div :class="{'left-wobble': shouldLeftWobble, 'right-wobble': shouldRightWobble}" 
+        :style="{width: width + 'px'}"
+        style="position:absolute; border-bottom: 5px solid black; bottom:50px;">
+
+    <!-- left side items -->
+    <div style="position:absolute; left: 0px; bottom:0px;">
+      <slot name="left"></slot>
+      <!--<div v-for="n in numLeftRows">
+        <money-bags></money-bags>
+      </div> -->
+    </div>
+
+    <!-- right side items -->
+    <div style="position:absolute; right: 0px; bottom:0px;">
+      <slot name="right"></slot>
+      <!-- <div v-for="n in numRightRows">
+        <money-bags :number="2.3"></money-bags>
+      </div> -->
+    </div>
+
+  </div>
+
+  <!-- triangle fulcrum -->
+  <div class="fulcrum smooth" 
+    style="position:absolute; bottom:0px;"
+    :style="fulcrumStyle">
+    <div class="bold" style="position:absolute; width:30px; font-size:18px; color:white; left:-22px; top:22px">{{percent}}</div>
+  </div>
+
+<!--<button @click="animate">Animate</button>-->
+
+</div>
+
+</script>
+
+<script type="text/x-template" id="fair-bet-viz-template">
+<fulcrum :style="fulcrumStyle" ref="fulcrum">
+
+  <template v-slot:left>
+    <div style="display:inline-block; position:relative">
+
+      <div v-for="_ in numTimesRightOutOf10" > 
+        <money-bags></money-bags>
+      </div>
+
+      <div style="position:absolute; color: #bbb; font-size: 10px; white-space: nowrap; top: 0px; left: 32px; text-align:left">
+        {{numTimesRightOutOf10}} times out of 10: <br> 
+        <span class="bold">+1 moneybag</span>
+      </div>
+    </div>
+  </template>
+
+  <template v-slot:right>
+    <div style="display:inline-block; position:relative">
+      <div v-for="_ in (10-numTimesRightOutOf10)" > 
+        <money-bags :number="numLoseIfWrong"></money-bags>
+      </div>
+
+      <div style="position:absolute; color: #bbb; font-size: 10px; white-space: nowrap; top: 0px; left:-110px; text-align: right">
+        {{10-numTimesRightOutOf10}} times out of 10<br> 
+        <span class="bold">-{{numLoseIfWrong}} moneybag</span>
+      </div>
+    </div>
+  </template>
+
+</fulcrum>
+</script>
+
+
+<script type="text/x-template" id="monk-dual-quiz-template">
+
+<div class="monk-dual-quiz">
+
+<div class="normal-divs" style="vertical-align:middle;"> <!-- begin monk question -->
+
+<monk-head style="margin-top:50px; display:inline-block;">
+  <template v-if="isMonkThinking" v-slot:lhs>
+     <text-animation 
+        :text="'Hm...'"
+        :interval="200"
+        @text-animation-complete="showAnswer"></text-animation>
+  </template>
+
+  <template v-if="monkAnswer" v-slot:rhs>
+    {{monkAnswer}}
+  </template>
+</monk-head>
+
+<div style="width: 280px; display:inline-block; position:relative; top:-40px;">What is the fair bet if you are 
+  <div v-for="(certainty, index) in certainties" 
+    :class="{active: index== activeInd, inactive: index!==activeInd}" style="margin-left:8px; margin-right:8px; display:inline-block;"
+    @click="activeInd = index">
+    {{$root.renderAsPercent(certainty)}}
+  </div>
+sure?
+</div>
+
+</div> <!-- end monk question -->
+
+<fulcrum :certainty="certainties[activeInd]" ref="fulcrum"
+         :style="{height: certainties[activeInd] == 0.99 ? '400px': '200px'}"
+         class="smooth">
+  <template v-slot:right>
+    <moneybag-widget
+      style="width:400px"
+      :isInteractive="true"
+      :show-certainty="false"
+      @bet-submit="betSubmit" 
+      @more-money="rightWobble"
+      @less-money="leftWobble"
+      ></moneybag-widget>
+  </template>
+</fulcrum>
+
+
+<div v-if="isEndGame">
+  <stagger>
+    <div>
+      Haha! I bet you won't ever say that you're 99% sure again!    
+    </div>
+
+    <div>
+    In my opinion, it is easier to visualize the fair bet and convert that to how sure you are. Human brains work better on concrete numbers and quantities. 
+    </div>
+
+    <game-button @click.native="$root.setStoryPoint('monk-game')">Continue</game-button>
+  </stagger>
+</div> <!-- end isEndGame -->
+
+</div>
+
+</script>
+
+<script type="text/x-template" id="monk-intro-template">
+<div>
+
+
+
+<!--  
+
+<fair-bet-viz></fair-bet-viz>
+
+ <monk-dual-quiz></monk-dual-quiz>
+
+
+<moneybag-widget
+                 :isInteractive="true"
+></moneybag-widget> 
+
+<div class="clickme-button">Obnoxious</div>
+
+<span style="font-size:64px;" class="lr-arrow">></span>
+
+<div class="pulse-text">Hi!</div>
+
+ -->
+
+
+  <div><img src="images/monk.png" width="400px"></div>
+
+  <div>
+  So you want to get rid of cognitive biases, eh?
+  </div>
+
+  <div>
+  <game-button @click.native="show('monk-hyderabad-question')">Talk to</game-button>
+  </div>
+
+  <story ref="monk-hyderabad-question">
+    <div>Which has the bigger population Hyderabad or Islamabad?</div>
+
+    <once-group>
+      <once-button @click.native="show('monk-hyderabad-certainty')">Hyderabad</once-button>
+      <once-button @click.native="show('monk-hyderabad-certainty')">Islamabad</once-button>
+    </once-group>
+  </story>
+
+  <story ref="monk-hyderabad-certainty">
+    <div>
+    How certain are you of your answer?
+    </div>
+
+    <certainty-widget @bet-submit="hyderabadCertaintySubmit"
+                      :showMoneybagWidget="false"></certainty-widget>
+  </story>
+
+  <story ref="monk-hyderabad-bet">
+    <div>How many money bags are you willing to lose, if I pay you one money bag if you are right?</div>
+
+    <moneybag-widget @bet-submit="hyderabadBetSubmit"  
+      :show-certainty="false"
+      :show-instructions="false"
+      :isInteractive="true"
+    ></moneybag-widget>
+
+  </story>
+
+
+  <story ref="monk-hyderabad-dual">
+
+
+      <div v-if="isUserCalibrated === true">
+        <stagger>
+
+        <div>
+          Good. Those two questions were the same.
+        </div>
+
+        <div>
+          What you think is fair, should directly correspond to how sure you are. 
+        </div>
+
+        <div>
+        But perhaps you already knew that... because you were well calibrated.
+        </div>
+
+        <div>
+          Your being {{hyderabadCertaintyParams.percent}} sure, is equivalent to the fair bet that you chose.
+        </div>
+
+        <once-group>
+          <once-button @click.native="show('monk-dual-explanation')">See the cool visualization</once-button>
+          <once-button @click.native="show('monk-dual-quiz')">Yeah, old news</once-button>
+        </once-group>
+    
+        </stagger>
+      </div>
+
+      <div v-if="isUserCalibrated === false">
+        <stagger>
+        <div>
+          Hm, not quite.
+        </div>
+          
+        <div>
+          Those two questions were one and the same.
+        </div>
+
+        <div>
+          What you think is fair, should directly correspond to how sure you are. 
+        </div>
+
+        <div>
+        You said you were <span class="bold"> {{hyderabadCertaintyParams.percent}} sure</span>, which would translate to the following bet:
+        </div>
+
+        <moneybag-widget :showCertainty="false" :numLoseIfWrong="hyderabadCertaintyParams.numLoseIfWrong"></moneybag-widget>
+
+
+        <game-button @click.native="show('monk-dual-explanation')">Why??</game-button>
+
+        </stagger>
+      </div>
+
+  </story>
+
+  <story ref="monk-dual-explanation" v-if="isUserCalibrated !== null">
+    <div>
+      If you are right {{$root.renderAsPercent(fairBetVizCertainty)}} of the time, and win 1 moneybag whenever you are right. You lose {{$root.renderAsPercent(1-fairBetVizCertainty)}} of the time, and lose {{$root.paramsFromCertainty(fairBetVizCertainty).numLoseIfWrong}} moneybags. Averaging over many times, you break even. 
+    </div>
+
+    <fair-bet-viz ref="fbv" :certainty="fairBetVizCertainty"></fair-bet-viz>
+
+    <game-button @click.native="$refs['fbv'].wobble(); show('monk-dual-quiz')">Hm...</game-button>
+  </story>
+
+  <story ref="monk-dual-quiz">
+    <stagger>
+
+      <div>
+        Let's test you out. 
+      </div>
+
+      <monk-dual-quiz></monk-dual-quiz>
+
+    </stagger>
+  </story>
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="distribution-template">
+<div class="dist"
+     :style="{ height: chartHeight + 'px', width: chartWidth + 'px'}"
+     style="position:relative; margin-bottom:64px;">
+
+  <!-- add axis containing important points -->
+  <div class="axis" 
+      style="position:relative; bottom: 0px; border-top: 1px solid #F6AB83; font-size:10px; padding-top:8px; text-transform:uppercase"
+      :style="{top: chartHeight + 'px'}">
+    {{xAttr}}</div>
+
+  <div class="bar" v-for="(outcome, index) in outcomes"
+       :key="outcome"
+       :style="barStyle(outcome, index)"
+       style="position:absolute; background-color:#C55A2C; bottom:0px; text-align: center; font-size:10px; color: white; margin-bottom:0px;"
+       >
+       {{renderAsPercent(outcome.certainty)}}
+       
+       <div class="hp-text" style="position:absolute; bottom:-30px; width: 100%; color:black;">{{outcome.hp}}</div>
+  </div>
+
+  <!-- show the mean as a bar -->
+  <div v-if="showMean" style="border-left: 2px solid #74361F; width:0px; height:160px; position:absolute; bottom: 0px; pointer-events:none; font-size:8px; white-space: nowrap; position:relative;"
+       :style="meanStyle">
+
+     <span style="position:absolute;bottom:-12px; color: #74361F; left:-15px; font-weight: bold;">mn {{ $root.roundTo(stats.mean, 1)}}</span>
+
+    <!-- show the std as a horizontal thing -->
+    <div v-if="showStd" style="height: 14px; border-top: 1px solid #F6AB83; 
+    border-bottom: 1px solid #F6AB83; position:absolute; bottom: -52px; color: #F6AB83; text-align: center; padding-top:2px"
+         :style="stdStyle">sd {{$root.roundTo(stats.std, 1)}}</div>
+
+  </div>
+
+
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="visual-ev-click-template">
+
+<div>
+
+<!-- might want to plug in spirit story later 
+
+Spirits dance around you.
+They encourage you to make a guess. 
+Your hand is gently guided to the true of EV. 
+
+They chatter excitedly. Your guess of __ was very close to the true EV of __-. 
+
+You were kind of far off, so the spirits gently guide you to the true answer of ___.
+
+The spirits want you to try another distribution.
+
+-->
+
+<!-- When used on a component, v-on now only listens to custom events $emitted by that component. To listen for a native DOM event on the root element, you can use the .native modifier. 
+
+  https://stackoverflow.com/questions/41475447/vue-v-onclick-does-not-work-on-component -->
+
+<div style="position:relative">
+  <distribution ref="distribution" 
+    :outcomes="outcomes" 
+    @click.native.once="distributionClicked"
+    @mousemove.native="mouseX = getRelativeMouseX($event)"
+    @mouseenter.native="isMouseover = true"></distribution>
+
+  <!-- tracks the user mouseover and user answer -->
+  <div v-if="isMouseover" 
+       style="border-left:1px solid #fc4a1a; width:1px; height:200px; position:absolute; bottom: -32px; pointer-events:none;"
+       :style="trackerStyle"></div>
+
+  <!-- show the real answer -->
+  <div ref="answer-marker"
+       v-if="answerPx" 
+       class="ev-answer-bar"
+       :style="{left: answerPx + 'px'}"
+       style="border-left:1px solid #359e61; width:1px; height:200px; position:absolute; bottom: -32px; pointer-events:none;"></div>
+</div>
+
+
+<div v-if="answerReal">
+  <stagger @stagger-complete="$emit('visual-ev-click-complete')">
+  <div>
+  You <span style="color:#fc4a1a">guessed {{$root.roundTo(guessReal, 1)}}</span>. The <span style="color:#359e61">true answer of  {{$root.roundTo(answerReal,1)}}</span> was {{isUserClose  ? 'very close!' : 'far off.'}}
+  </div>
+
+  <div>
+    {{ isUserClose ? 'Good job!' : 'Needs work.' }}
+  </div>
+
+  <div>
+    Let's do another.
+  </div>
+
+</stagger>
+
+
+</div>
+
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="distribution-interlude-template">
+<div>
+
+<div>
+And that, a visual shortcut for computing the expected value happens
+to be the center of mass of the probability distribution. i.e. 
+Pretend the probability distribution is made of a solid material
+and you are balancing the material on your finger. The X-axis value
+of that balance point, is the expected value.
+</div>
+
+<div style="font-size: 12px;">
+  Click where you think the EV is.
+</div>
+
+<visual-ev-click v-for="outcomes in visibleQuestions"
+          :outcomes="outcomes"
+          :key="outcomes"
+          @visual-ev-click-complete="questionInd++"></visual-ev-click>  
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="cat-forest-template">
+<div style="text-align:left" class="cat-style">
+
+
+<div class="cat-tongue" style="font-size:48px;">The Average Forest</div>
+
+<div>
+Adventurer, if you're up to the task...
+</div>
+
+<div>
+Your journey will take you through an average forest, where you will encounter creatures that need your help.
+</div>
+
+<!--<div>
+A distribution shows the possible outcomes and how likely they are to occur.
+</div> -->
+
+
+
+<div class="cat-problem" style="text-align:left; margin-left: 32px;">
+
+  <div class="cat-tongue" style="font-size:32px;">The Average Cat</div>
+
+  <img src="images/cat1.png">
+  <div>
+    Cat surveyed forest. Average cat eat 5.2 mouse/day. Dat lot!
+  </div>
+
+  <div>
+  Diss cat only get 2 mouse/day. Is diss cat very unlucky?
+  </div>
+
+  <button>Yes, poor kitty</button>
+  <button>No</button>
+  <button>Not enough info</button>
+</div>
+
+<div>
+  Yarrr king make average go up! Average no help with outlier!
+</div>
+
+<div>
+  Okkk okkk we try again.
+</div>
+
+<div class="cat-problem">
+  <div class="cat-tongue" style="font-size:32px;">The Average And Standard Deviation Cat</div>
+
+  <div style="text-align:center;">
+    <img src="images/cat2.png">
+  </div>
+
+  <div>
+    Ok we ignore king cat data point.
+  </div>
+
+  <div>
+    Compare this cat forest with neighbor cat forest.
+  </div>
+
+</div>
+
+
+</div>
+</script>
+
+<!-- end templates -->
+
+
+<script>
+
+
+
+
+Vue.component('cat-forest', {
+  // data: function(){
+  //   return {
+  //     evQuestions: evQuestions,
+  //     questionInd: 0,
+
+  //     isGameComplete: false,
+  //   };
+  // },
+  // computed: {
+  //   visibleQuestions: function(){
+  //     return this.evQuestions.slice(0, this.questionInd+1);      
+  //   },
+  // },
+  // watch: {
+  //   visibleQuestions: scrollWindow,
+  //   isGameComplete: scrollWindow
+  // },
+  // methods: {
+  //   onQuestionComplete: function(params){
+  //     this.questionInd++;
+  //     // this.numUserMoneybags += params.numMoneybagsGained;
+
+  //     // if (this.numUserMoneybags == this.numMoneybagsNeeded){
+  //     //   // todo: trigger game end
+  //     //   this.gameOutcome = 'userWon';        
+  //     // } else if (this.questionInd == this.monkQuestions.length){
+  //     //   // todo: trigger game end
+  //     //   this.gameOutcome = 'monkOutOfQuestions';
+  //     // } else {
+  //     //   this.questionInd++;        
+  //     // }
+  //   },
+  // },
+  template: '#cat-forest-template',
+});
+
+var evQuestions = [
+
+  [{certainty: 0.1, hp:4}, {certainty: 0.3, hp:3}, {certainty: 0.4, hp:2}, {certainty: 0.2, hp:1}],
+
+  [{certainty: 0.1, hp:14}, {certainty: 0.3, hp:13}, {certainty: 0.4, hp:12}, {certainty: 0.2, hp:11}],
+
+  [{certainty: 0.8, hp:4}, {certainty: 0.2, hp:3}],
+
+];
+
+Vue.component('distribution-interlude', {
+  data: function(){
+    return {
+      evQuestions: evQuestions,
+      questionInd: 0,
+
+      isGameComplete: false,
+    };
+  },
+  computed: {
+    visibleQuestions: function(){
+      return this.evQuestions.slice(0, this.questionInd+1);      
+    },
+  },
+  watch: {
+    visibleQuestions: scrollWindow,
+    isGameComplete: scrollWindow
+  },
+  methods: {
+    onQuestionComplete: function(params){
+      this.questionInd++;
+      // this.numUserMoneybags += params.numMoneybagsGained;
+
+      // if (this.numUserMoneybags == this.numMoneybagsNeeded){
+      //   // todo: trigger game end
+      //   this.gameOutcome = 'userWon';        
+      // } else if (this.questionInd == this.monkQuestions.length){
+      //   // todo: trigger game end
+      //   this.gameOutcome = 'monkOutOfQuestions';
+      // } else {
+      //   this.questionInd++;        
+      // }
+    },
+  },
+  template: '#distribution-interlude-template',
+});
+
+Vue.component('forest-outcomes', {
+  props: {
+    outcomes: {type: Array, default: () => [{certainty: 0.1, hp:4}, {certainty: 0.3, hp:3}, {certainty: 0.4, hp:2}, {certainty: 0.2, hp:1}] },
+    certaintyAs: {type: String, default: 'percent'}, // 'odds'
+  },
+  data: function(){
+    return {
+      animatedInd: null,
+    };
+  },
+  computed: {
+    outcomeColors: function(){
+      var colors = _.times(this.outcomes.length, () => 'transparent');
+      if (this.animatedInd !== null){
+         colors[this.animatedInd] = '#ccc';
+      }
+      return colors;
+    }
+  },
+
+  methods: {
+    drawOutcome: async function(){
+      var numCycles = 3;
+      var outcomeInd = drawIndFromOutcomes(this.outcomes);
+      var numIters = numCycles*this.outcomes.length+outcomeInd -1;
+
+      // milliseconds
+      var activeTimes = this.outcomes.map(outcome => outcome.certainty * 500);
+
+      // Each outcome is active for a different length of time.
+      for (var i=0; i<numIters; i++){
+        var animatedInd = i % activeTimes.length;
+        this.animatedInd = animatedInd;
+        await wait(activeTimes[animatedInd]);
+
+        // Check if it's the last one and emit an event.
+        if (i == numIters-1){
+          console.log('outcome ind: ' + outcomeInd)
+          this.$emit('outcome-drawn', {outcomeInd: outcomeInd});
+        }
+      }
+    },
+
+    renderCertainty: function(certainty){
+      if (this.certaintyAs == 'percent'){
+        return this.$root.renderAsPercent(certainty) + ' chance';        
+      } else if (this.certaintyAs == 'odds'){
+        var params = this.$root.paramsFromCertainty(certainty);
+        // stopped here figuring out how we want to render x parts chance
+        // could hardcode it? 
+        return 'nope'; 
+      } else{
+        console.error('unrecognized certaintyAs: ' + this.certaintyAs);
+      }
+    },
+
+  },
+  template: '#forest-outcomes-template',
+});
+
+
+function outcomesMean(outcomes){
+  return sum(outcomes.map(outcome => outcome.certainty * outcome.hp));
+}
+
+function outcomesVariance(outcomes){
+  var mean_hp = outcomesMean(outcomes);
+  return sum(outcomes.map(outcome => outcome.certainty * (outcome.hp - mean_hp) * (outcome.hp - mean_hp)));
+}
+
+function outcomesStd(outcomes){
+  return Math.sqrt(outcomesVariance(outcomes));
+}
+
+Vue.component('visual-ev-click', {
+  props: {
+    outcomes: {type: Array, default: () => [{certainty: 0.1, hp:4}, {certainty: 0.3, hp:3}, {certainty: 0.4, hp:2}, {certainty: 0.2, hp:1}] },
+  },
+  data: function(){
+    return {
+      isMouseover: false,
+
+      mouseX: null,  // tracks mouse position always
+
+      guessPx: null, // populated when user clicks
+      guessReal: null, // populated when user clicks
+
+      answerPx: null, // populated after delay when user clicks
+      answerReal: null, // populated after delay when user clicks
+    };
+  },
+
+  computed: {
+    trackerStyle: function(){
+      return {
+        left: (this.guessPx !== null ? this.guessPx : this.mouseX) + 'px'
+      };
+    },
+
+    isUserClose: function(){
+      // Is close if it's less than X% away from the true answer
+      var distribution_component = this.$refs['distribution'];
+      var total = distribution_component.xMax - distribution_component.xMin;
+
+      var difference = Math.abs(this.answerReal - this.guessReal);
+      return difference / total < .05;
+    }
+  },
+
+  methods: {
+    distributionClicked: function(event){
+      var distribution_component = this.$refs['distribution'];
+      var stats = distribution_component.stats;
+      var xScale = distribution_component.xScale;
+
+
+      this.guessPx = this.getRelativeMouseX(event);
+      this.guessReal = xScale.invert(this.guessPx);
+
+      // answerPx gets animated into the correct position.
+      this.answerPx = this.guessPx;
+      var this_ = this;
+      setTimeout(function(){
+        // Make the answer bar to animate.
+        this_.answerPx = xScale(stats.mean);
+
+        // Make the text to show.
+        setTimeout(() => this_.answerReal = stats.mean, 1000);
+      }, 200);
+
+    },
+
+    getRelativeMouseX: function(event){
+      // https://stackoverflow.com/questions/5921413/difference-between-e-target-and-e-currenttarget
+      // e.target is what triggers the event dispatcher to trigger and e.currentTarget is what you assigned your listener to.
+
+      // Find the 'dist' element to compute relative mouse coords.
+      var refElement = event.target;
+      while (refElement.className !== 'dist'){
+        refElement = refElement.parentElement;
+      }
+
+      // console.log(event.target.className + ' ' + event.clientX + '      ' + refElement.className + JSON.stringify(refElement.getBoundingClientRect()));        
+      return event.clientX - refElement.getBoundingClientRect().x;
+    },
+
+  },
+  template: '#visual-ev-click-template',
+});
+
+// outcomes = [
+//  {certainty: 0.4, hp: 15, caption: 'warmth'}, 
+//  {certainty: 0.6, hp: 0, caption: 'you fail to start the fire'}
+// ]
+Vue.component('distribution', {
+  props: {
+    outcomes: {type: Array, required: true},
+    // barWidth: {type: Number, default: 50},
+
+    chartHeight: {type: Number, default: 160},
+    chartWidth: {type: Number, default: 400},
+
+    xAttr: {type: String, default: 'hp'},
+    yAttr: {type: String, default: 'certainty'},
+
+    // If we want the x-axis to be the same between problems, so
+    // hardcode it here.
+    xMin: {type: Number, default: -10},
+    xMax: {type: Number, default: 10},
+    // Uses xMin and xMax if false, otherwise fits to smallest xMin and xMax.
+    fittedX: {type: Boolean, default: false},
+    showMean: {type: Boolean, default: false},
+    showStd: {type: Boolean, default: false},
+
+    margin: {
+      type: Object, 
+      default: function(){
+        return {top: 0, right: 0, bottom: 0, left: 20};
+      }
+    },
+  },
+  computed: {
+    barWidth: function(){
+      var domain = this.domain;
+      return (this.chartWidth - this.margin.left - this.margin.right) / (domain[1] - domain[0]);
+    },
+    domain: function(){
+      // Note: we adjust for barWidth within barStyle.
+      var xVals = _.map(this.outcomes, outcome => outcome[this.xAttr]);
+      return this.fittedX ? [_.min(xVals), _.max(xVals)] : [this.xMin, this.xMax];
+    },
+    xScale: function(){
+      return d3.scaleLinear()
+        .domain(this.domain)
+        .range([this.margin.left, this.chartWidth-this.margin.right]);
+    },
+
+    yScale: function(){
+      return d3.scaleLinear()
+        .domain([0, 1])
+        .range([this.margin.bottom, this.chartHeight-this.margin.top]);
+    },
+    stats: function(){
+      return {
+        mean: outcomesMean(this.outcomes), 
+        std: outcomesStd(this.outcomes),
+      }      
+    },
+    meanStyle: function(){
+      return {
+        left: this.xScale(this.stats.mean) + 'px',
+      }
+    }, 
+    stdStyle: function(){
+      var width = this.stats.std * this.barWidth; 
+      return {
+        // left: this.meanStyle.left,
+        width: width + 'px',
+      }
+    }
+  },
+
+  data: function(){
+    return {
+      animatedInd: null,
+    }
+  },
+
+  methods: {
+    renderAsPercent: formatPct,
+    barStyle: function(outcome, barIndex){
+      return {
+        width: this.barWidth + 'px',
+        height: this.yScale(outcome[this.yAttr]) + 'px',
+        left: (this.xScale(outcome[this.xAttr]) - this.barWidth / 2) + 'px',
+        'background-color': barIndex === this.animatedInd ? 'blue': 'orange'
+      };
+    },
+
+    // todo: dedup?
+    drawOutcome: async function(){
+      var numCycles = 5;
+      var outcomeInd = drawIndFromOutcomes(this.outcomes);
+      var numIters = numCycles*this.outcomes.length+outcomeInd -1;
+
+      // milliseconds
+      var activeTimes = this.outcomes.map(outcome => outcome.certainty * 500);
+
+      // Each outcome is active for a different length of time.
+      for (var i=0; i<numIters; i++){
+        var animatedInd = i % activeTimes.length;
+        this.animatedInd = animatedInd;
+        await wait(activeTimes[animatedInd]);
+
+        // Check if it's the last one and emit an event.
+        if (i == numIters-1){
+          this.$emit('outcome-drawn', {outcomeInd: outcomeInd});
+        }
+      }
+    },
+
+  },
+  template: '#distribution-template'
+});
+
+
+Vue.component('pity-fairy', {
+  methods: {
+    show: show,
+  },
+  template: '#pity-fairy-template'
+});
+
+Vue.component('variance-witch', {
+  methods: {
+    show: show,
+  },
+  template: '#variance-witch-template'
+});
+
+Vue.component('forest-intro', {
+  props: {
+    forestProblems: {type: Array, default: () => forestIntro},
+  },
+  data: function(){
+    return {
+      questionInd: 0,
+      feedbacks: [],
+    }
+  },
+  computed:{
+    visibleProblems: function(){
+      // Return slice from [0, questionInd] inclusive.
+      // Slice is safe from array out of bounds errors.
+      return this.forestProblems.slice(0, this.questionInd+1);
+    },
+  },
+  watch: {
+    visibleProblems: scrollWindow,
+  },
+  methods: {
+    show: show,
+    choiceClicked: function(choice){
+      if (this.feedbacks.length <= this.questionInd){
+        this.feedbacks.push(choice.feedback);
+      } else {
+        this.feedbacks[this.feedbacks.length - 1] = choice.feedback;
+      }
+
+      if (choice.right === true){
+        var this_ = this;
+        setTimeout(function(){
+          this_.questionInd++;
+
+          // Move to next section.
+          if (this.questionInd == this.forestProblems.length){
+            this.$root.setStoryPoint('forest-game');      
+          }
+        }, 1000);
+      }
+
+    }
+  },
+  template: '#forest-intro-template'
+});
+
+Vue.component('forest-problem', {
+  props: {
+    problem: {type: Object, required: true}
+  },
+  data: function(){
+    return {
+      userChoice: null,
+      userOutcome: null,
+    };
+  },
+  computed: {
+    maxEVChoice: function(){
+     // function outcomesMean(outcomes){
+      var evs = this.problem.choices.map(choice => outcomesMean(choice.outcomes));
+      var maxEvInd = evs.indexOf(Math.max(...evs));
+      return this.problem.choices[maxEvInd];
+    }
+  },
+  methods: {
+    outcomesMean: outcomesMean,
+    choiceMade: function($event, choice){
+      this.userChoice = choice;
+
+      // Color the clicked button.
+      var elt = $event.target
+      while (elt.tagName !== 'BUTTON'){
+        elt = elt.parentElement;
+      }
+
+      // https://www.canva.com/learn/website-color-schemes/
+      // green : red
+      elt.style.backgroundColor = choice == this.maxEVChoice ? '#359e61' : '#FC4A1A';
+      elt.style.color = '#fff';
+
+      // Disable all buttons.
+      this.$el.querySelectorAll('button').forEach(elt => elt.disabled=true);
+
+      this.$refs[choice.name][0].drawOutcome(); 
+    },
+
+    outcomeDrawn: function(params){
+      this.userOutcome = this.userChoice.outcomes[params.outcomeInd];
+      this.$emit('problem-complete', {userChoice: this.userChoice,
+                                      userOutcome: this.userOutcome});     
+    }
+  },
+  template: '#forest-problem-template'
+});
+
+
+Vue.component('forest-game', {
+  props: {
+    forestProblems: {type: Array, default: () => forestProblems},
+  },
+  data: function(){
+    return {
+      forestItems: forestItems,
+      hp: 100,
+      inventory: [],
+
+      // showExplanation: false,
+      questionInd: 0,
+    }
+  },
+  computed:{
+    progress: function(){
+      // todo: figure out fraction of questions
+      return 0;
+    },
+    visibleProblems: function(){
+      // Return slice from [0, questionInd] inclusive.
+      // Slice is safe from array out of bounds errors.
+      return this.forestProblems.slice(0, this.questionInd+1);
+    },
+  },
+  watch: {
+    visibleProblems: scrollWindow,
+//    gameOutcome: scrollWindow
+  },
+  methods: {
+    show: show,
+    addToInventory: function(item_name){
+      console.log('add to inv: ' + this.forestItems[item_name]);
+      this.inventory.push(this.forestItems[item_name]);
+    },
+    onProblemComplete: function(params){
+      var this_ = this;
+      setTimeout(function(){this_.questionInd++}, 4000);
+      // this.userAnswer = params.userAnswer;
+      // this.userCertainty = params.certainty;
+    }
+  },
+  template: '#forest-game-template'
+});
+
+
+
+// Useful for hiding logic inside of a v-if.
+// e.g.
+// <div v-if="isUserReallyCorrect">
+//   <hidden>{{numMoneybagsGained = 10}}</hidden>
+// </div>
+Vue.component('hidden', {
+  template: `<span style="display:none"><slot></slot></span>`,
+});
+
+
+// Can be used to delay logic
+// <delay :delayFn="() => show('wrong-basic')"></delay>
+Vue.component('delay', {
+  props: {
+    delay: {type: Number, default: 500},
+    delayFn: {type: Function, required: true},
+  },
+  mounted: function(){
+    var this_ = this;
+    setTimeout(function(){
+      this_.delayFn();
+    }, this.delay);
+  },
+  template: `<span style="display:none"></span>`,
+});
+
+Vue.component('wooden-sign', {
+  props: {
+    height: {type: Number, default: 150},
+  },
+  template: '#wooden-sign-template',
+});
+
+// https://jsfiddle.net/39hkrot0/5/
+Vue.component('once-group', {
+  data: function(){
+    return {
+      isClicked: false
+    }
+  },
+  template: `<div><slot></slot></div>`,
+  methods: {
+
+    childClicked: function(childComponent) {
+      if (this.isClicked){
+        return;
+      }
+      this.isClicked = true;
+
+      // Change the buttons to indicate that it is disabled.
+      var this_ = this;
+      this.$slots.default.forEach((item, index) => {
+        if (item.tag) {
+          // var button_value = item.componentInstance.$props.value;
+          // if (button_value === this_.userAnswer){
+          if (childComponent === item.componentInstance){
+            item.elm.classList.add('clicked-button');
+          } else {
+            item.elm.setAttribute('disabled', true); 
+          }
+        }
+      });
+    }
+  }
+});
+
+// once-button must live inside a once-group
+// The once-group enforces that only one child can be called once.
+Vue.component('once-button', {
+  data: function(){
+    return {
+      self: this
+    }
+  },
+  template: '<game-button @click.native="$parent.childClicked(self)"><slot></slot></game-button>'
+});
+
+// game-button differs from once-button, in that it doesn't live in a 
+// special parent.
+// If a game-button is clicked, it's siblings may still be clicked.
+// game-button just provides a color to the user whether the guess was
+// correct or not
+Vue.component('game-button', {
+  props: {    
+    isRight: {type: Boolean, default: null},
+  },
+  data: function(){
+    return {
+      isClicked: false,
+    };
+  },
+  methods: {
+    buttonClicked: function(){      
+      if (this.isClicked === true){
+        return;
+      }; 
+      this.$root.play('heal');
+      this.isClicked = true;
+    }
+  },
+  template: `<button @click="buttonClicked()" 
+                    :class="{'clicked-button' : isClicked, 'right-answer': isClicked===true && isRight===true,
+                      'wrong-answer': isClicked===true && isRight===false }"
+                    class="game-button"
+                    ><slot></slot></button>`
+});
+
+
+// https://jsfiddle.net/jamesbrndwgn/85h6n1q9/14/
+Vue.component('stagger', {
+  props: {
+    interval: {type: Number, default: 300},
+  },
+
+  mounted: function(){
+    var this_ = this;
+    this.$slots.default.forEach((item, index) => {
+      // item: VNode
+      if (item.tag) { // item.tag: 'div'
+        item.elm.classList.add('fade-from'); // item.elm: <div>sup</div>
+
+        setTimeout(() => {
+          item.elm.classList.remove('fade-from');
+          item.elm.classList.add('fade-in', 'fade-to');
+          scrollWindow();
+
+          // trigger that the animation is complete
+          if (index == this_.$slots.default.length - 1){
+            setTimeout(function(){
+              this_.$emit('stagger-complete');
+            }, this_.interval);
+          }
+        }, this_.interval + (index*this_.interval));
+      }
+    });
+
+    // use setTimeout instead of setInteval
+    // todo: look at JS () => {}
+  },
+  template: `<div><slot></slot></div>`
+});
+
+// A component where you give it
+// ['Hm', '.', '.', '.', '.', '.']
+// and it uses setInterval + data to animate.
+// Also trigger an event when it's done? 
+Vue.component('text-animation', {
+  props: {
+    text: {type: String}, // Can pass in 'Hm...'
+    tokens: {type: Array}, // Or ['Hm', '.', '.', '.', '.', '.']
+    interval: {type: Number, default: 500},
+  },
+  data: function(){
+    return {
+      visibleText: '',
+    };
+  },
+  created: function(){
+    var current_ind = 0;
+    var this_ = this;
+    const tokens = this.tokens ? this_.tokens : this.text.split('');
+
+    function animation(){
+      // Add one token at a time
+      // console.log('current_ind: ' + current_ind);
+      // console.log('this_.tokens: ' + this_.tokens);
+      this_.visibleText = tokens.slice(0, current_ind).join('');
+      current_ind++;
+
+      if (current_ind > tokens.length+1){
+        clearInterval(animation_timer);
+        setTimeout(function(){
+          this_.$emit('text-animation-complete');
+        }, 500);
+      }
+    }
+    animation();
+    var animation_timer = setInterval(animation, this.interval);
+  },
+  template: '#text-animation-template'
+});
+
+
+// Hides content until it is revealed as part of the story.
+Vue.component('story', {
+  data: function(){
+    return {
+      isActive: false,
+    };
+  },
+  watch: {
+    isActive: scrollWindow,
+  },
+  template: '#story-template'
+});
+
+
+var storyPoints = [
+// {
+//   name: 'Monk Intro',
+//   component: 'monk-intro',
+// },
+// {
+//   name: 'Monk Game',
+//   component: 'monk-game',
+// },
+// {
+//   name: 'Forest Intro',
+//   component: 'forest-intro',
+// },
+// {
+//   name: 'Forest Game',
+//   component: 'forest-game',
+// },
+{
+  name: 'Distribution Interlude',
+  component: 'distribution-interlude',
+  nest: 1
+},
+{
+  name: 'Cats',
+  component: 'cat-forest',
+},
+
+
+];
+
+// Gotchas:
+// DOM does not update for new property additions.
+// DOM does not update for direct assignments within arrays.
+// https://vuejs.org/2016/02/06/common-gotchas/#Why-isn%E2%80%99t-the-DOM-updating  
+new Vue({
+  el: '#app',
+  data: {
+
+    storyPoints: storyPoints,
+    currentStoryPoint: storyPoints[0],
+
+    // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
+    soundNameToCount: {},
+  },
+
+  watch: {
+    currentStoryPoint: function(){
+      this.$root.play('swish');
+    },
+  },
+
+  methods: {
+    show: show, 
+    renderAsPercent: formatPct,
+
+    // round_to(2.777777, 0) -> 3
+    // round_to(2.777777, 2) -> 2.78
+    roundTo: roundTo,
+
+    // Changes tabs.
+    setStoryPoint: function(component_name){
+      var story_point = _.filter(storyPoints, {component: component_name});
+      if (story_point.length !== 1){
+        console.error('must match exactly one story point');
+        debugger;
+      }
+      this.currentStoryPoint = story_point[0];
+      this.play('achievement0');
+    },
+
+    // Given 0.8 --> returns {}
+    paramsFromCertainty: function(certainty){
+      if (certainty == 1.0){
+        return {
+          numLoseIfWrong: 10000000, 
+          numWinIfRight: 1,
+          certainty: certainty,
+          percent: '100%',
+        };
+      }
+      return {
+        numWinIfRight: 1, 
+        numLoseIfWrong: this.roundTo(certainty/(1-certainty), 1),
+        certainty: certainty,
+        percent: this.renderAsPercent(certainty)
+      };      
+    },
+
+    paramsFromBet: function(num_win_if_right, num_lose_if_wrong){
+      var certainty = num_lose_if_wrong/(num_win_if_right+num_lose_if_wrong);
+      return this.paramsFromCertainty(certainty);
+    },
+
+    storyPointStyle: function(storyPoint){
+      if (storyPoint.nest === undefined){
+        return {};
+      }
+      return {
+        'margin-left': storyPoint.nest * 8 + 'px',
+        'font-size': '12px'
+      };
+    },
+
+    play: function(soundName){
+      console.log('playing ' + soundName);
+
+      var audio;
+      if (isNaN(soundName[soundName.length-1])){ // is string last char
+        const count = this.soundNameToCount[soundName] || 0;
+        this.soundNameToCount[soundName] = count+1;
+        audio = new Audio('sounds/' + soundName + (count % 2) + '.wav');
+      } else { // is number last char
+        audio = new Audio('sounds/' + soundName + '.wav');
+      }
+      audio.play();      
+    }
+  } // end methods
+});
+
+
+</script>
