@@ -1043,25 +1043,17 @@ when each moneybag comes in, trigger the wobble animation
 
 <div class="draggable-dist" style="position:relative; border: 1px solid blue">
   <canvas ref="canvas" width="600" height="150"></canvas>
-<!--  <div class="dot"
-    style="position:absolute"
-    draggable="true"
-    @dragstart="dragstart"
-    @dragend="dragend"
-    @drag="drag($event)"
-    :style="dotStyle"></div> -->
 
   <div class="dot"
     v-if="!isDragging"
     style="position:absolute; background-color:red"
-    @mousedown="isDragging=true"
+    @mousedown="mousedown($event)"
     :style="redDotStyle"
     draggable="true"></div>    
 
   <!-- ghost red dot -->
   <div class="dot" v-if="isDragging"
     style="position:absolute; background-color:green"
-    @dragstart="dragstart"
     @dragend="dragend"
     @drag="drag($event)"
 
@@ -1833,6 +1825,8 @@ Vue.component('draggable-dist', {
       dotLeft: 300,
       dotTop: 100,
       isDragging: false,
+
+      mouseWithinDotPos: null,
     }
   },
   mounted(){
@@ -1866,15 +1860,16 @@ Vue.component('draggable-dist', {
     }
   },
   methods: {
-    getRelativeMousePos: function(event){
+    getRelativeMousePos: function(event, className){
       // https://stackoverflow.com/questions/5921413/difference-between-e-target-and-e-currenttarget
       // e.target is what triggers the event dispatcher to trigger and e.currentTarget is what you assigned your listener to.
 
       // Find the 'dist' element to compute relative mouse coords.
       var refElement = event.target;
-      while (refElement.className !== 'draggable-dist'){
+      while (refElement.className !== className){
         refElement = refElement.parentElement;
       }
+
       const result = {
         left: event.clientX - refElement.getBoundingClientRect().x,
         top: event.clientY - refElement.getBoundingClientRect().y
@@ -1882,19 +1877,28 @@ Vue.component('draggable-dist', {
       return result;
     },
 
-    dragstart(){
+    mousedown(event){
+      console.log('mousedown');
       this.isDragging = true;
+
+      // Need this to create a more accurate ghost
+      const mousePos = this.getRelativeMousePos(event, 'dot');
+      this.mouseWithinDotPos = mousePos;
     },
+    // dragstart(event){
+    //   console.log('dragstart');
+    // },
     drag(event){
+      console.log('drag');
         // var top = $(this).position().top;
         // var left = $(this).position().left;
         const height = this.chartHeight;
         const width = this.chartWidth;
         const guess = this.guess;
 
-        const mousePos = this.getRelativeMousePos(event);
-        const top = mousePos.top;
-        const left = mousePos.left;
+        const mousePos = this.getRelativeMousePos(event, 'draggable-dist');
+        const top = mousePos.top - this.mouseWithinDotPos.top;
+        const left = mousePos.left - this.mouseWithinDotPos.left;
         if (top < 0 || left < 0){
           return;
         }
@@ -1904,7 +1908,7 @@ Vue.component('draggable-dist', {
         const peakiness = (height - top) / height * 10;
         const skew = left/width;
 
-        console.log('peakiness: ' + peakiness + ' skew: ' + skew);
+//        console.log('peakiness: ' + peakiness + ' skew: ' + skew);
         const beta_a = Math.max(1.1, peakiness * skew);
         const beta_b = Math.max(1.1, peakiness * (1-skew));
         
@@ -1938,7 +1942,7 @@ Vue.component('draggable-dist', {
         const height = this.chartHeight;
         const width = this.chartWidth;
 
-        console.log(this.mode);
+//        console.log(this.mode);
         const x = lerp(this.mode, 0, 1, (width - this.baseWidth)/2, (width + this.baseWidth)/2 );
         const y = jStat.beta.pdf(this.mode, this.betaA, this.betaB) * y_scale;
         const top = Math.max(0, height-y - diameter/2);
