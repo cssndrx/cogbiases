@@ -171,7 +171,7 @@ button{
   cursor: pointer;
   background-color: white;
   border-radius: 4px;
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
   margin-bottom: 8px; 
   padding: 8px 16px;
@@ -513,7 +513,7 @@ button{
 
 
 
-<div id="app" style="position:relative;left: 60px;width:calc(100% - 60px); padding: 16px; width: 500px">
+<div id="app" style="position:relative;left: 60px;width:calc(100% - 60px);">
 
 
   <div 
@@ -538,7 +538,7 @@ button{
     bottom:0;
 overflow-y:scroll;padding-top:8px; background-color: #eee;">
     <div v-for="(chapter, ind) in chapters"
-         @click="chapterInd = ind"
+         @click="showTOC = false; chapterInd = ind"
          class="toc-chapter"
          style="padding:4px">
       <img :class="{'story-point-silhouette': currentChapter !== chapter}"
@@ -582,7 +582,7 @@ You are going to bring us into this new world of <span class="animated infinite 
 
 
 <keep-alive>
-  <component v-bind:is="visibleScreen" style="position:relative" :style="screenStyle"></component>
+  <component v-bind:is="visibleScreen"></component>
 </keep-alive>
 
 
@@ -918,7 +918,8 @@ You are going to bring us into this new world of <span class="animated infinite 
   <button 
     @click="butonClicked()" v-on="$listeners" 
     :class="{'rainbow-text': showRainbowText, 'clicked-button': clickedButton}" 
-    class="handwriting"><slot></slot>
+    class="handwriting"
+    :style="buttonStyle"><slot></slot>
   </button>
 <!--  <transition name="fade">
     <div v-if="showNopeText" class="nope" style="margin-bottom:8px; position:relative; top:-4px;">
@@ -974,8 +975,6 @@ You are going to bring us into this new world of <span class="animated infinite 
     <div>
     MONK: I am training explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
     </div>
-
-    <next>Start lesson</next>
   </div>
 
 </pset>
@@ -1036,696 +1035,38 @@ when each moneybag comes in, trigger the wobble animation
 
 <script type="text/x-template" id="draggable-dist-template">
 <div>
-
-<!--  <div>beta({{betaA}} , {{betaB}})</div>
+    <div>beta({{betaA}} , {{betaB}})</div>
   <div>conf: {{conf}}</div>
   <div>mode: {{mode}}</div>
-  <div>(dotLeft, dotTop): {{dotLeft}}, {{dotTop}}</div>
-  <div>isDragging: {{isDragging}}</div> -->
+  <div>dotPos: {{dotPos}}</div>
+  <div>isDragging: {{isDragging}}</div>
 
-<div class="draggable-dist" style="position:relative; border: 1px solid #ccc; display:inline-block">
-  <canvas ref="canvas" width="500" height="150"></canvas>
+<div class="draggable-dist" style="position:relative; border: 1px solid blue">
+  <canvas ref="canvas" width="600" height="150"></canvas>
 
   <div class="dot"
     v-if="!isDragging"
-    style="position:absolute; background-color:#2F77A1"
+    style="position:absolute; background-color:red"
     @mousedown="mousedown($event)"
     :style="redDotStyle"
     draggable="true"></div>    
 
   <!-- ghost red dot -->
   <div class="dot" v-if="isDragging"
-    style="position:absolute; background-color:#2F77A1"
+    style="position:absolute; background-color:green"
     @dragend="dragend"
     @drag="drag($event)"
 
-    :style="ghostDotStyle"></div>    
+    :style="dotPosStyle"></div>    
 </div>
 </div>
 
 </script>
 
 <script type="text/x-template" id="beliefs-as-dists-template">
-<pset>
-  gradUnits: {{gradUnits}}
-  dishDuty: {{dishDuty}}
-  <div>
-    <bold>Monk Lesson: Know thyself</bold>
-
-    <div>
-    It is important to know how much (or how little) you know. Most people tend to be overconfident about their answers. We will attempt to train the Overconfidence Bias out of you.
-    </div>
-
-    <next>Begin</next>
-  </div>
-
-
-  <div>
-    Answer this question to the best of your ability.
-  </div>
-
-  <distribution-question :question="questions[0]" @done="nextQuestion">
-
-    <template v-slot:tutorial>
-      <div>
-        Drag down the circle so that your belief covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits  based on the height of your graph over the correct answer.
-      </div>
-
-      <div>
-        But be careful... if you assign zero probability to the correct answer, you will get monastery dish duty.
-      </div>
-    </template>
-  
-  </distribution-question>
-
-  <distribution-question 
-    v-for="(question, index) in questions" v-if="showGame && index !=0 && index <= questionInd" :question="question"
-    :key="question.text"
-    @done="nextQuestion">
-  </distribution-question>
-
-  <div>
-    Thank you for washing {{dishDuty}} days of dishes. Together, with your {{gradUnits}} credits, I think you have gained enough character to graduate from monk school.
-  </div>
-
 <div>
-<p>
-MONK: By the way, I think we might have reduced your susceptibility to the Overconfidence Bias...
-</p>
-<next>I'm not too sure about that</next>
+  <draggable-dist />
 </div>
-
-<div>
-<p>
-MONK: Very good. To reach the next stage in your journey to reduce cognitive biases, you may want to seek out a figure named Kahneman. He will administer to you a test of your abilities.
-</p>
-<p>
-MONK: His whereabouts have been unknown for some time, so good luck finding him.
-</p>
-<next>Leave the monastery</next>
-</div>
-
-
-<div>
-<p>
-  You have found yourself graduated from monk school on a solo journey across the land to gain knowledge and find Kahneman.
-</p>
-<p>
-  You decide to seek help from the oracle on top of the mountain. 
-</p>
-<next>Climb the mountain</next>
-</div>
-
-<div>
-<img src="images/mountain.gif">
-<p>
-  It takes you days and days to climb to the peak of the mountain...
-</p>
-<next>And days</next>
-</div>
-
-<div>
-<p>
-  And days....
-</p>
-<next>And days</next>
-</div>
-
-<div>
-<p>
-  And even more days....
-</p>
-<next>And days</next>
-</div>
-
-<div>
-<p>
-  But you finally make it.
-</p>
-<next>Oh good</next>
-</div>
-
-<div>
-<p>
-  ORACLE: So, you're searching for Kahneman? 
-</p>
-
-<img src="images/oracle.jpg">
-
-<p>
-  The oracle peers into your eyes. 
-</p>
-<next>Peer back</next>
-</div>
-
-<div>
-<p>
-ORACLE: Well, I could tell you where he is but that would defeat the point. 
-</p>
-
-<p>
-  ORACLE: Instead, I will give you hints about where he is and you have to combine the hints to form your best guess. 
-</p>
-
-<p>
-  ORACLE: Do you understand?
-</p>
-
-<next>Yes, I think so?</next>
-</div>
-
-</pset>
-</script>
-
-<script type="text/x-template" id="bayes-unit-template">
-<pset>
-
-<div>
-<h3>Oracle Lesson: Update beliefs</h3>
-<p>
-  ORACLE: Based on past experience, Kahneman is likely either at the Cave of Uncertainty or the Tavern of Decision-Making. Unfortunately, these places are weeks of travelling away from each other, so you will want to be reasonably certain before embarking.  
-</p>
-<img src="images/cave.png" width="200px"> <img src="images/tavern.png" width="200px">
-<br>
-<next>How do I know which to go to?</next>
-</div>
-
-
-<div>
-<p>
-  ORACLE: Well, Kahneman goes to the tavern to study people's decision-making abilities. He goes to the cave to process his data and write papers. In the past Kahneman has split his time between the cave and the tavern in a roughly 2 to 3 ratio (40% vs 60%).
-</p>
-
-<p>
-  ORACLE: You can use this information to create a visual picture of your knowledge. Drag up the bars until their relative heights reflect what you currently know about Kahneman's location.
-</p>
-<div id="intro-prior"></div>
-</div>
-
-
-<div>
-<p>
-  ORACLE: Correct. This picture is called your <strong>prior belief</strong>.
-</p>
-<p>
-  ORACLE: Without any additional information, the probability of Kahneman being at either location is shown by this graph. Looking at the heights of the graph, you can visually see that he is 50% more likely to be at the tavern.
-</p>
-<next>I see how the bar heights represent relative probabilities</next>
-</div>
-
-<div>
-<p>
-  Suppose that the weather has been nice recently, and someone tells you that when the weather is nice Kahneman is more likely to prefer going to the cave than spending all day in a tavern. 
-</p>
-
-<img src="images/good_weather.jpg" width="200px">
-<br><br>
-<next>This new information should change my mind</next>
-</div>
-
-<div>
-<p>
- If the weather is nice, say Kahneman favors going to the cave over the tavern six times more than normal. Incorporate this new <strong>evidence</strong> into you belief by dragging up the evidence bars. 
-</p>
-
-<div id="intro-likelihood"></div>
-</div>
-
-<div>
-
-<p>
-If you think about it, the evidence bars should <bold>multiplicatively scale</bold> up your prior belief to form your <bold>new belief</bold>. This multiplication is something you can perform with your visual system. 
-</p>
-
-<p>
-What is the probability that Kahneman is in the cave if the weather is nice? (Hint: view the new belief tab to see how the widget would perform the calculation).
-</p>
-<input type="number" class="bayes-prob-input" data-answer="80">
-
-</div>
-
-
-<div>
-<p>
-ORACLE: Often times, information about our world comes in multiple parts. We have to combine these parts to form a unified belief. Logic tells you how to do this.
-</p> 
-
-<p>
-ORACLE: Pretend that you are a detective. 
-</p>
-
-<img src="images/detective.png" height="150">
-
-<p>
-ORACLE: During a case you discover some new evidence. What you think after obtaining new evidence should depend both on </p>
-<p>
-(a) <bold>what you previously believed</bold> and (b) <bold>the new evidence</bold>. 
-</p>
-
-<next>Pretty intuitive</next>
-</div>
-
-<div>
-
-<p>
-These two parts go by other names including
-</p>
-<p>
-(a) <bold>prior belief</bold> and (b) <bold>likelihood of evidence</bold>. 
-</p>
-
-<p>
-When making guesses, sometimes people use the new evidence and forget to include their prior knowledge, this is called <a href="http://en.wikipedia.org/wiki/Base_rate_fallacy" target="_blank">Base Rate Neglect</a>. Sometimes they stick too firmly to prior knowledge and forget to include the evidence, this is called <a href="http://en.wikipedia.org/wiki/Conservatism_(belief_revision)" target="_blank">Bayesian Conservatism</a>. 
-</p>
-
-<next>Sounds reasonable</next>
-</div>
-
-
-<div>
-<p>
-As long as you use the widget I have given you, you will remember to use both your prior belief and the likelihood of evidence to form your new opinion.
-</p>
-
-<p>
-Take this widget into your right sidebar so that you can update your beliefs on Kahneman's location as you get new information.
-</p>
-
-<p>
-At this point, all you have is the 2:3 prior on Kahneman's location. The weather evidence was hypothetical.
-</p>
-
-<next>Take the widget</next>
-</div>
-
-
-<div>
-  <img src="images/forest.jpg" height="300">
-
-  <p>
-    You descend the other side of the mountain into a dark forest.
-  </p>
-
-  <next>Enter the forest</next>
-</div>
-
-<div>
-  <p>
-    A shadowy figure approaches you. 
-  </p>
-  <img src="images/monk.gif">
-
-  <p>
-    SHADOW FIGURE: You have an unusual power of inference about you. I do too and infer that you are looking for someone.
-  </p>
-
-  <next>I am looking for Kahneman. Do you know where he is?</next>
-</div>
-
-
-<div>
-  <p>
-    SHADOW FIGURE: Ha! Well, I don't know where he is. 
-  </p>
-
-  <p>
-    SHADOW FIGURE: But I've searched for him in the past, and you also need a Thing.  
-  </p>
-
-  <next>A thing?</next>
-</div>
-
-<div>
-  <p>
-  SHADOW FIGURE: Well, he doesn't take visitors easily. You want to take the test of your abilities, I assume. 
-  </p>
-
-  <p>
-  SHADOW FIGURE: But usually you can't get him to see you just by declaring that. I would suggest either saying that you are selling cookies or that you are selling beer. You need to infer which type of food he is interested in before you see him. 
-  </p>
-
-  <img src="images/cookies.jpg" width="200px"><img src="images/beer.gif" width="200"><br>
-
-  <next>Why can't I just offer him both beer and cookies?</next> 
-</div>
-
-<div>
-  <p>
-  SHADOW FIGURE: Because it's part of the test to infer what he likes!
-  </p>
-
-  <next>Okay... can you tell me the prior belief I should have over beer and cookies?</next>
-  </div>
-
-  <div>
-  <p>
-  SHADOW FIGURE: Ah, I see you have been trained by the Bayesian Oracle. 
-  </p>
-
-  <p>
-  SHADOW FIGURE: Well prior beliefs are a bit subjective, but I would say that for most people, you should expect 2 : 5 beer versus cookies (29% vs 71%).
-  </p>
-
-  <p>
-  SHADOW FIGURE: After all, who doesn't like cookies?
-  </p>
-
-  <next>Add the picture to your mental beliefs</next>
-</div>
-
-<div>
-  <p>
-  You attempt to thank the shadowy figure, but he has vanished.
-  </p>
-
-  <next>Creepy... let's get out of this forest.</next>
-</div>
-
-
-<div>
-  <img src="images/village.png" width="300">
-  <p>
-  You have made it out of the shadow forest and into the neighboring town. You are still over a week of journeying from both the tavern and the cave.
-  </p>
-  <next>Enter the town</next>
-</div>
-
-<div>
-  <img src="images/farmer.png" height="300px">
-  <p>
-  And there is a somewhat distressed looking farmer on the side of the road.
-  </p>
-  <next>Ask her what's wrong</next>
-</div>
-
-
-<div>
-  <p>
-  FARMER: There have been thefts from my chicken coop. The local animal population consists of 7 raccoons to every 3 foxes (70% raccoons, 30% foxes). Judging by the type of marks on the door alone, the marks look five times more likely to be caused by a fox than a raccoon.</p>
-
-  <p>
-  FARMER: I want to trap the animal, but I only have traps for foxes. If a raccoon goes in, it will get hurt. If I set up the trap, what is the probability that the animal I will catch will be a fox?
-  </p>
-
-  <p class="question">
-  Show the farmer the appropriate new belief.
-  </p>
-
-  <span id="raccoon-fox"></span> <br>
-</div>
-
-<div>
-  <p>
-  FARMER: So what is the numerical probability that it will be a fox?
-  </p>
-  <input type="number" class="bayes-prob-input" data-answer="68">
-  </div>
-
-  <div>
-  <p>
-  FARMER: Wow, thanks a lot, traveller! 
-  </p>
-
-  <p>
-  FARMER: Can I invite you home for breakfast?
-  </p>
-
-  <next>You haven't eaten for over 40 clicks. Go eat with the farmer!</next>
-</div>
-
-<div>
-  <p>
-  You realize that you have been happily staring off into space thinking about Bayes Rule that you have been a pretty lousy meal companion. After a hearty homecooked meal, the farmer hints that you should continue on your way.
-  </p>
-
-  <next>Have you seen any other travellers around who I could talk to?</next>
-  </div>
-
-  <div>
-  <p>
-  FARMER: You should see the mayor. His office is yonder.
-  </p>
-
-  <next>Head toward the mayor's office</next>
-</div>
-
-
-<div>
-<img src="images/thinking-man.jpg" width="300">
-
-<p>
-It's a small town so you are able to walk straight into the mayor's office. The mayor is rubbing his beard with a furrow on his brow.
-</p>
-
-<next>Talk to the mayor</next>
-</div>
-
-<div>
-<img src="images/trebuchet.png">
-<p>
-MAYOR: I am trying to choose a builder for a rock throwing machine. The two handymen in the town are Billy and Bob. 60% of the time Billy's quality is better than Bob's. However, Bob seems really excited about building a rock throwing machine, and I have reason to believe that on this occasion, his odds are two times better than normal to outperform Billy. What is the probability that excited Bob will produce the better result?
-</p>
-<next>I think I can help</next>
-</div>
-
-<div>
-
-<p class="question">
-Show the mayor the appropriate belief.
-</p>
-
-<span id="billy-bob"></span> <br>
-</div>
-
-<div>
-<p>
-MAYOR: So what is the probability that Bob will do a better job than Billy?
-</p>
-<input type="number" class="bayes-prob-input" data-answer="57">
-</div>
-
-<div>
-<p>
-MAYOR: Hey, thanks, adventurer!
-</p>
-
-<p>
-MAYOR: You're not from around these parts are you?
-</p>
-
-<p>
-You tell the Mayor that you're searching for Kahneman or other travellers who might know of his whereabouts.
-</p>
-
-<p>
-MAYOR: Oh Kahneman? So many people have been looking for him these days. 
-</p>
-<next>Do you know where he is?</next>
-</div>
-
-<div>
-<p>
-MAYOR: NOPE.
-</p>
-<next>Do you know if he likes beer or cookies?</next>
-</div>
-
-<div data-checkpoint="mayor-cookies">
-<p>
-MAYOR: Cookies. Definitely cookies. 
-</p>
-
-<p>
-MAYOR: I'd say that he likes cookies 2 times more than the average person. And he's about average for beer. 
-</p>
-
-<p class="question">
-Use the mayor's information to update your beliefs about Kahneman.
-</p>
-</div>
-
-<div>
-<p>
-You thank the mayor and wish him best of luck with his rock thrower. 
-</p>
-<next>Keep journeying</next>
-</div>
-
-<div>
-<p>
-As you journey through villages, acquiring the goodwill of all you meet through your powers of rational inference, news begins to spread about you. 
-</p>
-
-<next>Keep a moderate head so as not to succumb to the overconfidence bias</next>
-</div>
-
-<div>
-<p>
-An adventurer approaches you.
-</p>
-<img src="images/adventurer.jpg" width="200">
-<p>
-ADVENTURER: I hear you are looking for Kahneman.
-</p>
-<p>
-ADVENTURER: I am 90% sure that Kahneman is at the cave of uncertainty!
-</p>
-<next>Oh dear, he probably hasn't been through overconfidence training</next>
-</div>
-
-<div data-checkpoint="kahneman-loc-man">
-<p>
-You talk to the adventurer in attempt to find out his intentions. He seems to have no ill wishes to you. 
-</p>
-
-<p>
-Discounting for his questionable reliability, you think that it is more reasonable to assume that the man is correct with 75% probability (3 : 1) instead of 90% (9 : 1). 
-</p>
-
-<p class="question">
-Use the adventurer's information to update your belief on Kahneman's location.
-</p>
-</div>
-
-<div>
-<p>
-Nice. Your belief of Kahneman's location has proportionally been updated. 
-</p>
-
-<next>You think a bit more about Kahneman's location and realize...</next>
-</div>
-
-<div data-checkpoint="kahneman-loc-news">
-<p>
-That you have travelled around quite a bit but news about Kahneman has been rather quiet. You infer that this is more likely if he were in a secluded cave than in a tavern with other people. 
-</p>
-
-<p>
-You are uncertain but think that this level of quiet might be evidence to suggest that Kahneman is more likely to be at the Cave (1.5 : 1). 
-</p>
-
-<p class="question">
-Combine your observation with the adventurerr's information to further skew your evidence and produce a new belief on Kahneman's location.
-</p>
-
-</div>
-
-<div>
-
-<p>
-Correct! You multiplied to combine two pieces of evidence into one likelihood.
-</p>
-
-<p>
-You were able to do that because the two pieces of information were <strong>independent</strong>. 
-</p>
-
-<p>
-You think that Kahneman is probably at: <br>
-<buton yay>The Cave</buton>
-<buton nope>The Tavern</buton>
-</p>
-</div>
-
-
-<div>
-<p>
-And you think that you might want to bring some:<br>
-<buton nope>Beer</buton>
-<buton yay>Cookies</buton>
-</p>
-</div>
-
-<div>
-<p>
-You shift course and proceed directly to the Cave of Uncertainty.
-</p>
-<next>Go forth</next>
-</div>
-
-<div>
-<img src="images/cave.png" width="450px">
-<p>
-After almost a week, you make it to the cave with cookies in hand....
-</p>
-<next>Enter the cave</next>
-</div>
-
-<div>
-<p>
-"Hello, Kahneman?" you venture tentatively. 
-</p>
-<next>Wait for a response</next>
-</div>
-
-<div>
-<img src="images/scroll.jpg" width="300">
-<p>
-You just hear your echo. But in the cave of uncertainty, lies a fluttering scroll with a test. 
-</p>
-
-<next>Take the test</next>
-</div>
-
-
-<div>
-<iframe src="https://docs.google.com/forms/d/15SQSBgRhIB9CAFwts4nB9oCCdW8tCjFfV_zXQZEuI38/viewform" style="width:100%; height:600px"></iframe>
-
-<p class="question">
-What was the codeword scrawled at the end of the test?
-</p>
-<input type="text" data-answer="cliffhanger" class="text-answers">
-</div>
-
-
-<div>
-  <p>
-  As you complete the test, the walls of the cave begins to shudder and hiss. The walls begin to fold in, and you are suddently uncertain that this was truly the Cave of Uncertainty. 
-  </p>
-
-  <p>If you would like, email Cassandra (cssndrx@gmail.com) to be notified as more of the adventure is added.</p>
-<!--  <input type="email" style="width:200px">
-  <next>Submit</button>-->
-
-  <h3>To be continued....</h3>
-
-</div>
-
-</pset>
-</script>
-
-<script type="text/x-template" id="distribution-question-template">
-
-<div>
-
-  <div>{{question.text}}</div>
-
-  <input-box @click="guessSubmitted"></input-box>
-
-  <div v-if="stage > 0">
-    <slot name="tutorial"></slot>
-    <draggable-dist ref="dist" :guess="guess"/>
-    <buton @click="beliefSubmitted">Submit belief</buton>
-  </div>
-
-  <div v-if="stage > 1">
-    <div>
-      The correct answer was {{question.answer}}. The height of the correct answer on your normalized belief graph was {{guessHeight}}.
-    </div>
-
-    <div v-if="result.gradUnits">
-      Thereby you accumulate {{result.gradUnits}} units towards graduation. 
-    </div>
-
-    <div v-if="result.dishDuty">
-      Thereby you will be washing dishes for {{result.dishDuty}} night.
-    </div>
-  
-    <buton @click="finishQuestion">Onwards</buton>
-  </div>
-
-</div>
-
 </script>
 
 <script type="text/x-template" id="fair-bet-viz-template">
@@ -1874,60 +1215,8 @@ What was the codeword scrawled at the end of the test?
 
 <script>
 
-const numericQuestions = [{
-text: 'How many reincarnations have there been of the Dalai Lama?',
-answer: 13},
-{
-text: 'How many gallons of milk does a cow produce per week?',
-answer: 25,
-},
-{
-text: 'How fast can a horse run (mph)?',
-answer: 30,
-},
-{
-text: 'How many countries are there in the world?',
-answer: 196,
-},
-{
-  text: 'What percent of food and drink sold in the US is organic?',
-  answer: 4,
-},
-{
-  text: 'What percent of the population is left handed?',
-  answer: 13,
-},
-{
-  text: 'How many dollars does the average American spend at vending machines during a year?',
-  answer: 27,
-},
-{
-  text: 'How many hours does an average cat sleep in a day?',
-  answer: 16,
-},{
-  text: 'What percent of Americans say that they are often stressed at work?',
-  answer: 30,
-},{
-  text: 'How many years does it take a plastic bag to degrade?',
-  answer: 1000,
-},{
-  text: 'What percent of total electricity consumption goes to refrigerators?',
-  answer: 7,
-},{
-  text: 'What is the estimated age of the universe in billions of years?',
-  answer: 13.75,
-},{
-  text: "What percent of the body's nutrients is consumed by the brain?",
-  answer: 25,
-},{
-  text: 'How many bones are there in the human body?',
-  answer: 206,
-},
-{text: 'What is the height of Mt. Everest in kilometers?',
-answer: 8.8},
-];
 
-const multipleChoiceQuestions = [
+const mcQuestions = [
 
 {
   text: 'What percent of food and drink sold in the US is organic?',
@@ -1943,7 +1232,7 @@ const multipleChoiceQuestions = [
 
 {
   text: 'How many bones are there in the human body?',
-  choices: [206, 312],
+  choices: [206, 315],
   answer: 206,
 },
 
@@ -2050,12 +1339,17 @@ Vue.component('next', {
 
 Vue.component('input-box', {
   props: {
-    right: {type: Number},
+    right: {type: Number, default: 0},
     hints: {
       type: Array, 
       default: function(){ return ['Try again', 'Nope']; },
     },
-    // Give feedback if there is a right answer
+    // onRight: {
+    //   type: Function,
+    //   default: function(){},
+    // },
+
+    // Default to no feedback bc avatar takes care of it, but sometimes we want to use this as a standalone component.
     feedback: {type: Boolean, default: true},
   },
   computed: {
@@ -2069,9 +1363,7 @@ Vue.component('input-box', {
       return {'color': this.isYay ? 'green' : 'red'};
     },
     isYay: function(){
-      const matchesRight = this.val === this.right;
-      const exists = this.right === undefined && this.val !== null;
-      return  matchesRight || exists;
+      return this.val == this.right;
     },
     isNope: function(){
       return !this.isYay;
@@ -2086,8 +1378,7 @@ Vue.component('input-box', {
   },
   methods: {
     answerSubmit: async function(){
-      this.$emit('click', {val: this.val});
-      if (this.feedback && this.right !== undefined){
+      if (this.feedback){
         this.showFeedback = true;
         await wait(500);
       }
@@ -2273,11 +1564,11 @@ Vue.component('buton', {
     isYay: function(){
       return 'yay' in this.$attrs;
     },
-    // buttonStyle: function(){
-    //   if (this.$slots.default){
-    //     return {'font-size': this.$slots.default[0].text.length > 40 ? '16px' : ''};        
-    //   }
-    // }
+    buttonStyle: function(){
+      if (this.$slots.default){
+        return {'font-size': this.$slots.default[0].text.length > 40 ? '16px' : ''};        
+      }
+    }
   },
   methods: {
     butonClicked: async function(){
@@ -2523,16 +1814,18 @@ Vue.component('draggable-dist', {
   props: {        
     chartHeight: {type: Number, default: 150},
     chartWidth: {type: Number, default: 500},
-    guess: {type: Number, default: 10},
+    guess: {type: Number, default: 0},
   },
   data(){
     return {
       betaA: 4, 
       betaB: 4, 
       yScale: 50,
-      conf: [10, 20],
-      dotLeft: 244,
-      dotTop: 38,
+      conf: [0, 0],
+
+      dotPos: {left: 0, top: 0},
+      // dotLeft: 300,
+      // dotTop: 100,
       isDragging: false,
 
       mouseWithinDotPos: null,
@@ -2559,23 +1852,16 @@ Vue.component('draggable-dist', {
           opacity: 0
         }
       }
-      return this.ghostDotStyle;
+      return this.dotPos;
     },
-    ghostDotStyle(){
+    dotPosStyle(){
       return {
-        left: this.dotLeft + 'px',
-        top: this.dotTop + 'px'
+        left: this.dotPos.left + 'px',
+        top: this.dotPos.top + 'px'
       };
     }
   },
   methods: {
-    getPDF(val){
-      if (val < this.conf[0] || val > this.conf[1]){
-        return 0;
-      }
-      var true_x = lerp(val, this.conf[0], this.conf[1], 0, 1);
-      return jStat.beta.pdf(true_x, this.betaA, this.betaB) / (this.conf[1]-this.conf[0]);
-    },
     getRelativeMousePos: function(event, className){
       // https://stackoverflow.com/questions/5921413/difference-between-e-target-and-e-currenttarget
       // e.target is what triggers the event dispatcher to trigger and e.currentTarget is what you assigned your listener to.
@@ -2594,7 +1880,7 @@ Vue.component('draggable-dist', {
     },
 
     mousedown(event){
-      // console.log('mousedown');
+      console.log('mousedown');
       this.isDragging = true;
 
       // Need this to create a more accurate ghost
@@ -2605,7 +1891,7 @@ Vue.component('draggable-dist', {
     //   console.log('dragstart');
     // },
     drag(event){
-      // console.log('drag');
+      console.log('drag');
         // var top = $(this).position().top;
         // var left = $(this).position().left;
         const height = this.chartHeight;
@@ -2618,8 +1904,8 @@ Vue.component('draggable-dist', {
         if (top < 0 || left < 0){
           return;
         }
-        this.dotTop = top;
-        this.dotLeft = left;
+        this.dotPos.top = top;
+        this.dotPos.left = left;
 
         const peakiness = (height - top) / height * 10;
         const skew = left/width;
@@ -2629,14 +1915,12 @@ Vue.component('draggable-dist', {
         const beta_b = Math.max(1.1, peakiness * (1-skew));
         
         // [0, 1] -> [0, 30]
-        //var spread = Math.round(top/height * 30);
         const spreadScale = d3.scalePow().exponent(3).range([0, 100]);
         const spread = spreadScale(top/height);
 
 
         const mode = (beta_a - 1)/(beta_a + beta_b - 2);
         var conf = [guess - mode*spread, guess + (1-mode)*spread];
-        //var val = Math.round(lerp(mode, 0, 1, conf[0], conf[1]));
 
         if (conf[0] < 0){
           conf = [0, spread];
@@ -2649,6 +1933,7 @@ Vue.component('draggable-dist', {
         this.plotAxis();
      },
      dragend(){
+      console.log('dragend');
         this.isDragging = false;
 
         // snap the draggable to the mode
@@ -2663,8 +1948,8 @@ Vue.component('draggable-dist', {
         const y = jStat.beta.pdf(this.mode, this.betaA, this.betaB) * y_scale;
         const top = Math.max(0, height-y - diameter/2);
 
-        this.dotLeft = x -diameter/2;
-        this.dotTop = top;
+        this.dotPos.left = x -diameter/2;
+        this.dotPos.top = top;
      },
 
      plotFigure(){
@@ -2684,19 +1969,19 @@ Vue.component('draggable-dist', {
      },
 
      plotAxis(){
-        const context = this.context;
-        context.setTransform(1, 0, 0, 1, 0, 0);
+      const context = this.context;
+      context.setTransform(1, 0, 0, 1, 0, 0);
 
-        const conf = this.conf;
-        const guess = this.guess;
+      const conf = this.conf;
+      const guess = this.guess;
 
-        const font = "18px Arial";
-        const txtfont = '12px Arial';
+      const font = "18px Arial";
+      const txtfont = '12px Arial';
 
-        const width = this.chartWidth;
-        const height = this.chartHeight;
+      const width = this.chartWidth;
+      const height = this.chartHeight;
 
-        const yoff = -15;
+      const yoff = 15;
 
         const low = Math.max((width - this.baseWidth)/2, 0);
         const high = Math.min( (width + this.baseWidth)/2 - 5, width-20 );
@@ -2967,50 +2252,9 @@ Vue.component('buton-group', {
 Vue.component('centered', {
   template: '#centered-template'
 });
-
 Vue.component('bold', {
   template: '#bold-template'
 });
-
-
-Vue.component('distribution-question', {
-  props: {
-    question: {type: Object}, 
-  },
-  data(){
-    return {
-      stage: 0,
-      guess: null,
-    };
-  },
-  computed: {
-    guessHeight(){
-      // todo: fish these numbers out
-      return this.$refs['dist'].getPDF(this.question.answer);
-    },
-    result(){
-      if (this.guessHeight > 0){
-        return {gradUnits: this.guessHeight * 100};
-      }
-      return {dishDuty: 1};
-    }
-  },
-  methods: {
-    guessSubmitted(params){
-      this.stage = 1;
-      this.guess = Number(params.val);
-    },
-    beliefSubmitted(){
-      this.stage = 2;
-      // this.guessHeight = this.$refs['dist'].getPDF(this.question.answer);
-    },
-    finishQuestion(){
-      this.$emit('done', {result: this.result});
-    }
-  },
-  template: '#distribution-question-template',
-});
-
 
 Vue.component('interstitial', {
   props: {
@@ -3034,45 +2278,17 @@ Vue.component('intro-scene', {
 Vue.component('beliefs-as-dists', {
   data: function(){
     return {
-      questions: numericQuestions,
+      questions: mcQuestions,
       questionInd: 0,
-      showGame: false,
-
-      results: [],
     };
   },
-  computed:{
-    dishDuty(){
-      return _.sum(this.results.map(r => r.dishDuty || 0));
-    },
-    gradUnits(){
-      return _.sum(this.results.map(r => r.gradUnits || 0));      
-    }
-  },
-  methods:{
-    nextQuestion(params){
-      this.showGame = true;
-      this.questionInd++;
-      this.results.push(params.result);
-    },
-  },
   template: '#beliefs-as-dists-template'
-});
-
-Vue.component('bayes-unit', {
-  // data: function(){
-  //   return {
-  //     questions: multipleChoiceQuestions,
-  //     questionInd: 0,
-  //   };
-  // },
-  template: '#bayes-unit-template'
 });
 
 Vue.component('overconfidence', {
   data: function(){
     return {
-      questions: multipleChoiceQuestions,
+      questions: mcQuestions,
       questionInd: 0,
     };
   },
@@ -3309,15 +2525,35 @@ const chapters = [
   image: 'curve.png',
 },
 {
-  component: 'bayes-unit',
-  description: 'Bayes Rule',
-  image: 'cave.png',
-},
-{
   component: 'overconfidence',
   description: 'Overconfidence Bias',
   image: 'moneybag.png',
 },
+
+// {
+//   component: 'wizard-flips',
+//   name: 'Randomness',
+//   description: 'What does randomness look like',
+//   image: 'wizard.png',
+// },
+// {
+//   component: 'chain-rule',
+//   name: 'Chain Rule',
+//   description: 'Chain rule of probability',
+//   image: 'girl.png',
+// },
+// {
+//   component: 'intro-to-pvalues',
+//   name: 'P-values',
+//   description: 'P-values', 
+//   image: 'scientist.png',
+// },
+// {
+//   component: 'bayes-rule',
+//   name: 'Bayes Rule',
+//   description: 'Bayes Rule', 
+//   image: 'wizard.png',
+// },
 ];
 
 // Gotchas:
@@ -3328,12 +2564,12 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 2,
+    chapterInd: 1,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
     isPlaying: false,
-    showTOC: true,
+    showTOC: false,
   },
   computed: {
     currentChapter: function(){
@@ -3341,11 +2577,6 @@ new Vue({
     },
     visibleScreen: function(){
       return this.currentChapter.component;
-    },
-    screenStyle(){
-      if (this.showTOC){
-         return {left: '200px'};
-      }
     }
   },
   watch:{
@@ -3399,7 +2630,7 @@ new Vue({
       var sound = sounds[soundName].clip;
       sound.pause();
       sound.currentTime = 0;      
-    },
+    }
   } // end methods
 });
 </script>
