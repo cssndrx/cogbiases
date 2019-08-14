@@ -28,9 +28,6 @@ scale everything up 1000
 
 ======
 
-
-todo:
-
 CIA world fact book
 
 
@@ -42,11 +39,74 @@ drag an existing moneybag
 
 ---
 
-
-todo:
 Make at least two guesses
 If X isnt' the answer, what is the answer?
 Choose a distribution that covers it
 
 
 
+music:
+https://opengameart.org/content/dark-city
+https://opengameart.org/content/post-rock-song-incl-stems
+
+----
+
+todo:
+
+see which of the bayes problems actually work / which should be removed
+
+weather is good
+
+P(H|D) = P(D|H) * P(H)
+
+P(H|D) --> P(cave|good weather) 
+
+P(D|H) --> P(good weather|cave) 
+P(D|H) --> P(good weather|tavern)
+
+
+80% of the days he's in the cave, the weather is good.
+20% of the days he's in )))
+
+P(good weather AND cave) = P(cave|good ewather)
+P(good weather AND tavern)
+
+P(cave|good weather) = P(cave and good weather) / P(good weather)
+Weather is good so 
+
+
+adding hte click outside
+make dropdown work better
+
+
+---
+
+stopped here: 
+
+put in bayes widget
+add moneybag unit
+
+
+fix the text to make sense given the current ordering -- what should the current ordering be??
+
+
+--
+
+moneybag
+bayes
+belief as graphs
+
+--
+
+put in followup / signup page / thanks
+figure out where we want to put the tests
+
+---
+
+too long and grindy
+feedback from the google form:
+do put in lower and upper bounds for the draggy thing
+remove the google form
+people didn't understand how it helps cog biases
+bonus levels for bayes rule
+unit problems for uncertainty questions

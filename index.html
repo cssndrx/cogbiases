@@ -56,7 +56,7 @@ font-family: 'Cormorant Garamond', serif;
   border: 4px dashed #777;
   display: inline-block;
   position:relative;
-  width: 180px;
+  width: 150px;
   height: 250px;
   vertical-align: top;
   text-align: center;
@@ -507,47 +507,49 @@ button{
   filter: none;
 }
 
+.toc-closed:hover{
+  background-color: #eee;
+}
 </style>
 
 <body>
 
 
 
-<div id="app" style="position:relative;left: 60px;width:calc(100% - 60px); padding: 16px; width: 500px">
+<div id="app" style="position:relative;left: 60px;width:calc(100% - 60px); padding: 16px; width: 500px" @click="mainClick($event)">
 
 
-  <div 
-  :style="{'background-color': showTOC ? '#777' : '#ddd', 'color': showTOC ? 'white': 'black'}"
-  style="width:60px;position: fixed; top:0px; left:0px; height: 100%; text-align: center; padding-top:8px"
-  :style="{}">
-    <img v-if="!showTOC" src="images/menu.png" style="cursor: pointer" @click="showTOC = !showTOC">
-    <img v-if="showTOC" src="images/x.png" style="cursor: pointer" @click="showTOC = !showTOC">
-    <span class="sideways handwriting" style="white-space: nowrap;" v-if="currentChapter.name">Chapter{{chapterInd}}: {{currentChapter.name}}</span>
+  <h1 class="handwriting" style="font-size:48px">Adventures in Cognitive Biases</h1>
 
+  <div ref="toc" class="normal-div" style="position: relative; z-index:1; width:240px;">
 
-<!--    <div v-for="(chapter, ind) in chapters"
-         @click="chapterInd = ind"
-         style="display:inline-block;">
-      <img :class="{'story-point-silhouette': currentChapter !== chapter}"
-          :src="'images/' + chapter.image" 
-          style="width:50px">
-      <span style="top:60px;">{{chapter.name}}</span>
-    </div> -->
-  </div> 
-  <div v-if="showTOC" class="normal-div" style="position:fixed; z-index:1; width:200px;top:0px; left:60px; top:0;
-    bottom:0;
-overflow-y:scroll;padding-top:8px; background-color: #eee;">
-    <div v-for="(chapter, ind) in chapters"
-         @click="chapterInd = ind"
-         class="toc-chapter"
-         style="padding:4px">
-      <img :class="{'story-point-silhouette': currentChapter !== chapter}"
-          :src="'images/' + chapter.image" 
-          style="max-width:50px; max-height:100px">
-      <span style="top:60px; font-size:12px; display: inline-block; margin:8px;"><bold style="font-size:12px">Chapter {{ind}}</bold><br> {{chapter.description}}</span>
+    <div :style="{opacity: showTOC ? 0 : 1}" 
+         @click="showTOC = true" class="toc-closed"
+         style="padding: 4px">
+      <img :src="'images/' + currentChapter.image" 
+           style="max-width:50px; max-height:100px">
+
+      <span style="top:60px; font-size:12px; display: inline-block; margin:8px; vertical-align: top"><bold style="font-size:12px">Chapter {{chapterInd}}</bold><br> {{currentChapter.description}}</span>
+    
+      <span style="position:absolute; right:16px; top:16px">▼</span>
     </div>
-  </div>
 
+    <transition name="fade">
+    <div style="position:absolute; top: 0px; left:0px; width:100%">
+      <div v-if="showTOC"
+           v-for="(chapter, ind) in chapters"
+           @click="showTOC = false; chapterInd = ind"
+           class="toc-chapter"
+           style="padding:4px; border:1px solid #eee"
+           :style="{'background-color': currentChapter == chapter ? '#eee': 'rgb(250,250,250)'}">
+        <img :class="{'story-point-silhouette': currentChapter !== chapter}"
+            :src="'images/' + chapter.image" 
+            style="max-width:50px; max-height:100px">
+        <span style="top:60px; font-size:12px; display: inline-block; margin:8px;"><bold style="font-size:12px">Chapter {{ind}}</bold><br> {{chapter.description}}</span>
+      </div>
+    </div>
+    </transition>
+  </div>
 
 <!--
 <transition name="slide-fade">
@@ -582,7 +584,7 @@ You are going to bring us into this new world of <span class="animated infinite 
 
 
 <keep-alive>
-  <component v-bind:is="visibleScreen" style="position:relative" :style="screenStyle"></component>
+  <component v-bind:is="visibleScreen" style="position:relative"></component>
 </keep-alive>
 
 
@@ -646,12 +648,9 @@ You are going to bring us into this new world of <span class="animated infinite 
 </div>
 </script>
 
-<!-- 
-  <triple-bayes 
+<!-- <triple-bayes 
   :hypotheses="['Nice', 'Evil']" 
-  :config="{prior: {view: 'faded', dist: [1, 4]}, likelihood: {view: 'active', dist: [1, 10]}, posterior: {}}"></triple-bayes>
-
--->
+  :config="{prior: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable:true}, likelihood: {dist: [10, 1], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes> -->
 <script type="text/x-template" id="triple-bayes-template">
   <div>
 
@@ -975,7 +974,7 @@ You are going to bring us into this new world of <span class="animated infinite 
     MONK: I am training explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
     </div>
 
-    <next>Start lesson</next>
+    <next @click.native="$root.chapterInd++">Start lesson</next>
   </div>
 
 </pset>
@@ -1072,6 +1071,8 @@ when each moneybag comes in, trigger the wobble animation
   <div>
     <bold>Monk Lesson: Know thyself</bold>
 
+    <img src="images/monk.png">
+
     <div>
     It is important to know how much (or how little) you know. Most people tend to be overconfident about their answers. We will attempt to train the Overconfidence Bias out of you.
     </div>
@@ -1122,9 +1123,14 @@ MONK: Very good. To reach the next stage in your journey to reduce cognitive bia
 <p>
 MONK: His whereabouts have been unknown for some time, so good luck finding him.
 </p>
-<next>Leave the monastery</next>
+<next @click.native="$root.chapterInd++">Leave the monastery</next>
 </div>
 
+</pset>
+</script>
+
+<script type="text/x-template" id="bayes-unit-template">
+<pset>
 
 <div>
 <p>
@@ -1170,7 +1176,7 @@ MONK: His whereabouts have been unknown for some time, so good luck finding him.
   ORACLE: So, you're searching for Kahneman? 
 </p>
 
-<img src="images/oracle.jpg">
+<img src="images/oracle.png">
 
 <p>
   The oracle peers into your eyes. 
@@ -1194,18 +1200,13 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 <next>Yes, I think so?</next>
 </div>
 
-</pset>
-</script>
-
-<script type="text/x-template" id="bayes-unit-template">
-<pset>
-
 <div>
 <h3>Oracle Lesson: Update beliefs</h3>
 <p>
   ORACLE: Based on past experience, Kahneman is likely either at the Cave of Uncertainty or the Tavern of Decision-Making. Unfortunately, these places are weeks of travelling away from each other, so you will want to be reasonably certain before embarking.  
 </p>
-<img src="images/cave.png" width="200px"> <img src="images/tavern.png" width="200px">
+
+<img src="images/cave.png" width="200px" style="display:inline-block"> <img src="images/tavern.png" width="200px" style="display:inline-block">
 <br>
 <next>How do I know which to go to?</next>
 </div>
@@ -1219,9 +1220,11 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 <p>
   ORACLE: You can use this information to create a visual picture of your knowledge. Drag up the bars until their relative heights reflect what you currently know about Kahneman's location.
 </p>
-<div id="intro-prior"></div>
-</div>
 
+<triple-bayes 
+:hypotheses="['Cave', 'Tavern']" 
+:config="{prior: {isActive: true, isDraggable:true, dist: [1, 1], correct: [2, 3]}}"></triple-bayes>
+</div>
 
 <div>
 <p>
@@ -1248,11 +1251,13 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
  If the weather is nice, say Kahneman favors going to the cave over the tavern six times more than normal. Incorporate this new <strong>evidence</strong> into you belief by dragging up the evidence bars. 
 </p>
 
-<div id="intro-likelihood"></div>
+<triple-bayes 
+  :hypotheses="['Cave', 'Tavern']" 
+  :config="{prior: {dist: [2, 3]}, likelihood: {dist: [6, 1], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes> 
+
 </div>
 
 <div>
-
 <p>
 If you think about it, the evidence bars should <bold>multiplicatively scale</bold> up your prior belief to form your <bold>new belief</bold>. This multiplication is something you can perform with your visual system. 
 </p>
@@ -1260,8 +1265,7 @@ If you think about it, the evidence bars should <bold>multiplicatively scale</bo
 <p>
 What is the probability that Kahneman is in the cave if the weather is nice? (Hint: view the new belief tab to see how the widget would perform the calculation).
 </p>
-<input type="number" class="bayes-prob-input" data-answer="80">
-
+<input-box :right="80">%</input-box>
 </div>
 
 
@@ -1364,7 +1368,7 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
   SHADOW FIGURE: But usually you can't get him to see you just by declaring that. I would suggest either saying that you are selling cookies or that you are selling beer. You need to infer which type of food he is interested in before you see him. 
   </p>
 
-  <img src="images/cookies.jpg" width="200px"><img src="images/beer.gif" width="200"><br>
+  <img src="images/cookies.jpg" width="200px" style="display:inline-block"><img src="images/beer.gif" width="200" style="display:inline-block"><br>
 
   <next>Why can't I just offer him both beer and cookies?</next> 
 </div>
@@ -1431,14 +1435,16 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
   Show the farmer the appropriate new belief.
   </p>
 
-  <span id="raccoon-fox"></span> <br>
+  <triple-bayes 
+  :hypotheses="['Raccoon', 'Fox']" 
+  :config="{prior: {dist: [1, 1], correct: [7, 3], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 5], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes>
 </div>
 
 <div>
   <p>
   FARMER: So what is the numerical probability that it will be a fox?
   </p>
-  <input type="number" class="bayes-prob-input" data-answer="68">
+  <input-box :right="68">%</input-box>
   </div>
 
   <div>
@@ -1501,7 +1507,7 @@ Show the mayor the appropriate belief.
 <p>
 MAYOR: So what is the probability that Bob will do a better job than Billy?
 </p>
-<input type="number" class="bayes-prob-input" data-answer="57">
+<input-box :right="57">%</input-box>
 </div>
 
 <div>
@@ -1563,7 +1569,7 @@ As you journey through villages, acquiring the goodwill of all you meet through 
 <p>
 An adventurer approaches you.
 </p>
-<img src="images/adventurer.jpg" width="200">
+<img src="images/adventurer.png" width="200">
 <p>
 ADVENTURER: I hear you are looking for Kahneman.
 </p>
@@ -1659,36 +1665,9 @@ After almost a week, you make it to the cave with cookies in hand....
 </div>
 
 <div>
-<img src="images/scroll.jpg" width="300">
-<p>
-You just hear your echo. But in the cave of uncertainty, lies a fluttering scroll with a test. 
-</p>
-
-<next>Take the test</next>
-</div>
-
-
-<div>
-<iframe src="https://docs.google.com/forms/d/15SQSBgRhIB9CAFwts4nB9oCCdW8tCjFfV_zXQZEuI38/viewform" style="width:100%; height:600px"></iframe>
-
-<p class="question">
-What was the codeword scrawled at the end of the test?
-</p>
-<input type="text" data-answer="cliffhanger" class="text-answers">
-</div>
-
-
-<div>
   <p>
-  As you complete the test, the walls of the cave begins to shudder and hiss. The walls begin to fold in, and you are suddently uncertain that this was truly the Cave of Uncertainty. 
+  The sound of your voice echoes deep into the cave. The walls of the cave begin to shudder and hiss. The walls begin to fold in, and you are suddently uncertain that this was truly the Cave of Uncertainty. 
   </p>
-
-  <p>If you would like, email Cassandra (cssndrx@gmail.com) to be notified as more of the adventure is added.</p>
-<!--  <input type="email" style="width:200px">
-  <next>Submit</button>-->
-
-  <h3>To be continued....</h3>
-
 </div>
 
 </pset>
@@ -1710,11 +1689,11 @@ What was the codeword scrawled at the end of the test?
 
   <div v-if="stage > 1">
     <div>
-      The correct answer was {{question.answer}}. The height of the correct answer on your normalized belief graph was {{guessHeight}}.
+      The correct answer was {{question.answer}}. The height of the correct answer on your normalized belief graph was {{$root.roundTo(guessHeight, 5)}}.
     </div>
 
     <div v-if="result.gradUnits">
-      Thereby you accumulate {{result.gradUnits}} units towards graduation. 
+      Thereby you accumulate {{$root.roundTo(result.gradUnits, 0)}} units towards graduation. 
     </div>
 
     <div v-if="result.dishDuty">
@@ -2122,6 +2101,8 @@ function firstAncestorOfComponent(node, componentName){
   return undefined;
 }
 function isDescendant(ancestor, maybeChild){
+
+  // If maybeChild is a vue component
   var node = maybeChild.$parent;
   while(node !== undefined){
     if (node === ancestor){
@@ -2129,6 +2110,16 @@ function isDescendant(ancestor, maybeChild){
     }
     node = node.$parent;
   }
+
+  // If maybeChild is an HTML element
+  var node = maybeChild.parentElement;
+  while(node !== null){
+    if (node === ancestor){
+      return true;
+    }
+    node = node.parentElement;
+  }
+
   return false;
 }
 Vue.component('avatar', {
@@ -2541,7 +2532,7 @@ Vue.component('draggable-dist', {
   mounted(){
     this.conf = [this.guess, this.guess];
     this.plotFigure();
-    this.plotAxis();
+//    this.plotAxis();
   },
   computed: {
     baseWidth(){
@@ -2646,7 +2637,7 @@ Vue.component('draggable-dist', {
         this.betaB = beta_b;
 
         this.plotFigure();
-        this.plotAxis();
+//        this.plotAxis();
      },
      dragend(){
         this.isDragging = false;
@@ -2724,7 +2715,7 @@ Vue.component('triple-bayes', {
     hypotheses: {type: Array}, // ['Nice', 'Evil']
         
     chartHeight: {type: Number, default: 160},
-    chartWidth: {type: Number, default: 160},
+    chartWidth: {type: Number, default: 120},
 
     // Missing keys from config are not rendered.
     // {prior: {dist: [1, 4]}, likelihood: {isActive: true, isDraggable: true, dist: [1, 10]}, posterior: {}}
@@ -2852,7 +2843,7 @@ Vue.component('samples-chart', {
     },
 
     isDraggable: {type: Boolean, default: false}, 
-    maxCounts: {type: Number, default: 20},
+    maxCounts: {type: Number, default: 15},
 
   },
   computed: {
@@ -3300,7 +3291,7 @@ Vue.component('once-button', {
 const chapters = [
 {
   component: 'intro-scene',
-  image: 'scroll.png',
+  image: 'monastery.png',
   description: 'The beginning'
 },
 {
@@ -3311,7 +3302,7 @@ const chapters = [
 {
   component: 'bayes-unit',
   description: 'Bayes Rule',
-  image: 'cave.png',
+  image: 'oracle.png',
 },
 {
   component: 'overconfidence',
@@ -3333,7 +3324,7 @@ new Vue({
     //soundNameToCount: {},
     show: false,
     isPlaying: false,
-    showTOC: true,
+    showTOC: false,
   },
   computed: {
     currentChapter: function(){
@@ -3342,11 +3333,6 @@ new Vue({
     visibleScreen: function(){
       return this.currentChapter.component;
     },
-    screenStyle(){
-      if (this.showTOC){
-         return {left: '200px'};
-      }
-    }
   },
   watch:{
     chapterInd(){
@@ -3393,6 +3379,11 @@ new Vue({
       sound.play().catch(function(error){
         console.log(error.toString());
       });    
+    },
+    mainClick(event){
+      if (!isDescendant(this.$refs['toc'], event.target)){
+        this.showTOC = false;
+      }
     },
     pause: function(soundName){
  //     console.log('pausing');
