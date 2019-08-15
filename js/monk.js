@@ -370,7 +370,7 @@ Vue.component('fulcrum', {
 });
 
 
-Vue.component('money-bags', {
+Vue.component('moneybag', {
   props: {
     color: {type: String, default: 'brown'},
     number: {type: Number, default: 1},
@@ -394,80 +394,22 @@ Vue.component('money-bags', {
       };
     },
   },
-  template: '#money-bags-template'
+  template: '#moneybag-template'
 });
 
-Vue.component('moneybag-widget', {
+Vue.component('fair-bet', {
   props: {
     numWinIfRight: {type: Number, default: 1},
     numLoseIfWrong: {type: Number, default: 1},
-    showCertainty: {type: Boolean, default: true}, // currently unused
-    showInstructions: {type: Boolean, default: true},
-    isInteractive: {type: Boolean, default: false},
+    showCertainty: {type: Boolean, default: true},
   },
   computed:{
     percent: function(){
       var params = this.$root.paramsFromBet(this.numWinIfRight, this.numLosingMoneybags);
       return params.percent;
     },
-    numLosingMoneybags: function(){
-      return this.isInteractive ? this.numInteractiveBags : this.numLoseIfWrong;
-    }
   },
-
-  data: function(){
-    return {
-      relativeMousePos: null,
-      numInteractiveBags: 0, // starting default
-    }
-  },
-
-  methods: {
-    getRelativeMousePos: function(event){
-      // https://stackoverflow.com/questions/5921413/difference-between-e-target-and-e-currenttarget
-      // e.target is what triggers the event dispatcher to trigger and e.currentTarget is what you assigned your listener to.
-
-      // Find the 'dist' element to compute relative mouse coords.
-      var refElement = event.target;
-      while (refElement.className !== 'ref-element'){
-        refElement = refElement.parentElement;
-      }
-      return {x: event.clientX - refElement.getBoundingClientRect().x,
-            y: event.clientY - refElement.getBoundingClientRect().y};
-    },
-
-    onDrag: function($event){
-      console.log('on drag: '+ $event.clientX + ' ' + $event.clientY);
-      if ($event.clientX === 0 && $event.clientY === 0){
-        // For some reason, on dragdrop clientX/clientY === 0. 
-        // Discard this event.
-        return;
-      }
-      this.relativeMousePos = this.getRelativeMousePos($event);
-      numBagsInX = Math.max(1, Math.ceil(this.relativeMousePos.x / this.moneybagWidth));
-      numBagsInY = Math.max(0, Math.floor(this.relativeMousePos.y / (this.moneybagWidth *(35/30)))); 
-      this.numInteractiveBags = numBagsInX + numBagsInY * 10;
-    },
-
-    submitBet: function(){
-      // emit the event
-      this.$root.play('buton');
-      this.$emit('bet-submit', this.$root.paramsFromBet(this.numWinIfRight, this.numLosingMoneybags));
-    },
-
-    lessClick: function(){
-      this.numInteractiveBags = Math.max(0, this.numInteractiveBags-1); 
-      this.$root.play('remove');
-      this.$emit('less-money');
-    },
-
-    moreClick: function(){
-      this.numInteractiveBags+=1; 
-      this.$root.play('coin'); 
-      this.$emit('more-money');
-    }
-  },
-  template: '#moneybag-widget-template'
+  template: '#fair-bet-template'
 });
 
 // static moneybag widget: renders 1:4 statically

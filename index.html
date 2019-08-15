@@ -22,6 +22,7 @@ font-family: 'Cormorant Garamond', serif;
 
 <!-- todo: strip and remove the unused -->
 <link href="https://fonts.googleapis.com/css?family=Schoolbell|Dokdo|Fira+Sans:300,700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Itim&display=swap" rel="stylesheet">
 
 <script src="js/lodash.min.js"></script>
 <script src="js/d3.v5.min.js"></script>
@@ -35,12 +36,6 @@ font-family: 'Cormorant Garamond', serif;
 <script src="js/monk.js"></script>
 
 <style>
-
-.moneybag-widget {
-  display:inline-grid;
-  grid-template-columns: 180px 1fr; /* chosen to get 10 moneybags on rhs*/
-  grid-template-rows: 44px 1fr;
-}
 
 .pset  img{
     display: block;
@@ -138,8 +133,11 @@ img{
 }
 .handwriting, .handwriting *{
 /* font-family: 'Dokdo', cursive; */   
-  font-family: 'Schoolbell', cursive;
+/*  font-family: 'Schoolbell', cursive;*/
+/*font-family: 'Nanum Pen Script', cursive;*/
+font-family: 'Itim', cursive;
 }
+
 .dialog-text, .dialog-text *{
 /*  font-family: 'Dokdo', cursive;  */
   font-family: 'Schoolbell', cursive;
@@ -177,9 +175,9 @@ button{
   padding: 8px 16px;
   margin: 8px;
 }
-.question button:hover, .question .clicked-button{
+.buton:hover,.clicked-button{
   color: white;
-  background-color: black;
+  background-color: #555;
 }
 .bold{
   font-weight: 700;
@@ -510,13 +508,18 @@ button{
 .toc-closed:hover{
   background-color: #eee;
 }
+
+.fair-bet *{
+  font-size: 12px;
+}
+
 </style>
 
 <body>
 
 
 
-<div id="app" style="position:relative;left: 60px;width:calc(100% - 60px); padding: 16px; width: 500px" @click="mainClick($event)">
+<div id="app" style="position:relative; padding: 16px; width: 500px; margin: 0 auto;" @click="mainClick($event)">
 
 
   <h1 class="handwriting" style="font-size:48px">Adventures in Cognitive Biases</h1>
@@ -917,7 +920,7 @@ You are going to bring us into this new world of <span class="animated infinite 
   <button 
     @click="butonClicked()" v-on="$listeners" 
     :class="{'rainbow-text': showRainbowText, 'clicked-button': clickedButton}" 
-    class="handwriting"><slot></slot>
+    class="buton handwriting"><slot></slot>
   </button>
 <!--  <transition name="fade">
     <div v-if="showNopeText" class="nope" style="margin-bottom:8px; position:relative; top:-4px;">
@@ -993,7 +996,7 @@ when each moneybag comes in, trigger the wobble animation
 -->
 
 
-<div class="normal-divs" style="position:relative; width: 100%; height: 200px;">
+<div class="normal-div" style="position:relative; width: 100%; height: 200px;">
 
 
   <!-- black bar and items -->
@@ -1005,7 +1008,7 @@ when each moneybag comes in, trigger the wobble animation
     <div style="position:absolute; left: 0px; bottom:0px;">
       <slot name="left"></slot>
       <!--<div v-for="n in numLeftRows">
-        <money-bags></money-bags>
+        <moneybag></moneybag>
       </div> -->
     </div>
 
@@ -1013,7 +1016,7 @@ when each moneybag comes in, trigger the wobble animation
     <div style="position:absolute; right: 0px; bottom:0px;">
       <slot name="right"></slot>
       <!-- <div v-for="n in numRightRows">
-        <money-bags :number="2.3"></money-bags>
+        <moneybag :number="2.3"></moneybag>
       </div> -->
     </div>
 
@@ -1673,8 +1676,38 @@ After almost a week, you make it to the cave with cookies in hand....
 </pset>
 </script>
 
-<script type="text/x-template" id="distribution-question-template">
+<script type="text/x-template" id="moneybag-question-template">
+<div>
 
+  <div><slot></slot>{{question.text}}</div>
+
+  <div>
+    <buton v-for="choice in question.choices" :key="choice" @click.native="userChoice = choice">{{choice}}</buton>
+  </div>
+
+  <div v-if="userChoice">
+    <div>
+    And, how sure are you about your answer?
+    </div>
+
+    <buton v-if="viz=='certainty'" 
+           v-for="certainty in certainties"  
+           :key="certainty" 
+           @click="finishQuestion(certainty)">{{certainty}}%</buton>
+
+    <buton v-if="viz=='moneybag'" 
+            v-for="numLoseIfWrong in numLoseIfWrongs" :key="numLoseIfWrong">
+      <fair-bet  
+      :numLoseIfWrong="numLoseIfWrong"
+      @click="finishQuestion($root.paramsFromFairBet(1, numLoseIfWrong).certainty)"></fair-bet>
+    </buton>
+  </div>
+
+</div>
+</script>
+
+
+<script type="text/x-template" id="distribution-question-template">
 <div>
 
   <div>{{question.text}}</div>
@@ -1704,7 +1737,6 @@ After almost a week, you make it to the cave with cookies in hand....
   </div>
 
 </div>
-
 </script>
 
 <script type="text/x-template" id="fair-bet-viz-template">
@@ -1714,7 +1746,7 @@ After almost a week, you make it to the cave with cookies in hand....
     <div style="display:inline-block; position:relative">
 
       <div v-for="_ in numTimesRightOutOf10" > 
-        <money-bags></money-bags>
+        <moneybag></moneybag>
       </div>
 
       <div style="position:absolute; color: #bbb; font-size: 10px; white-space: nowrap; top: 0px; left: 32px; text-align:left">
@@ -1727,7 +1759,7 @@ After almost a week, you make it to the cave with cookies in hand....
   <template v-slot:right>
     <div style="display:inline-block; position:relative">
       <div v-for="_ in (10-numTimesRightOutOf10)" > 
-        <money-bags :number="numLoseIfWrong"></money-bags>
+        <moneybag :number="numLoseIfWrong"></moneybag>
       </div>
 
       <div style="position:absolute; color: #bbb; font-size: 10px; white-space: nowrap; top: 0px; left:-110px; text-align: right">
@@ -1744,57 +1776,203 @@ After almost a week, you make it to the cave with cookies in hand....
 <script type="text/x-template" id="overconfidence-template">
 <pset>
 
-<fair-bet-viz></fair-bet-viz>
+<buton>
+<fair-bet :numLoseIfWrong="1"/>
+</buton>
+<buton>
+<fair-bet :numLoseIfWrong="1"/>
+</buton>
 
-<certainty-widget />
+<div>
+<p>
+You were standing alone in a cave holding a scroll and calling out for Kahneman... when the cave mysteriously started shrinking and the walls closed in.
+</p>
 
-<!-- <moneybag-widget  :isInteractive="true"/> -->
+<p>
+The walls are now uncomfortably close around your chest and vital organs.
+</p>
+
+<next>Help!</next>
+</div>
+
+<img src="images/eyes.png" style="width:400px">
+<div>
+<p>
+VOICE: Welcome to the Cave of Overconfidence.
+</p>
+
+<p>
+VOICE: You boldly waltzed in thinking you had it figured out. But did you know that most humans are overconfident?
+</p>
+
+<next>I'm sorry</next>
+</div>
 
 
-  <img src="images/monk.png">
+<div>
+<p>
+You humans overestimate how good of a driver you are ___. 
+</p>
 
-  <div>
-    Most important is to know how much (or how little) you know.
-  </div>
+<p>
+You underestimate the amount of time it'll take to ___. 
+</p>
 
-  <div>
-    For instance, most people who say they are __% sure turn out to be __% right. This is called the Overconfidence Bias.
-  </div>
+<p>
+And when you say you're __% sure, it turns out that you're only __% right. 
+</p>
 
-  <div>
-    First, answer these 5 questions to see how you do without any calibration.
-  </div>
+<next> Who are you? Please let me go.</next>
+</div>
 
-<div v-for="question in questions">
 
-<!--  <div>
-    {{question.text}}
-  </div>
-  <div>
-    <buton v-for="choice in question.choices">{{choice}}</buton>
-  </div>
--->
+<div>
+  <p>
+I'll let you go... for a price. 
+</p>
 
-<!--  <div>
-    And, how sure are you about your answer?
-  </div>
+<p>
+How much money do you have on you? 
+</p>
 
-  <certainty-widget />
--->
+<p>
+You feel around your pockets and realize that you've got money! 
+</p>
+
+<next>I have five moneybags</next>
 </div>
 
 <div>
-  Now, answer these 5 slightly different questions...
+
+<p>
+The voice chuckles.
+</p>
+
+<p>
+I was thinking more on the order of... fifty moneybags.
+</p>
+
+<!--If this is the monk's section.
+Hey, higher education isn't free these days. You'll need to pay __ moneybags to graduate from this monastery -->
+
+<next>But I don't have that many</next>
+</div>
+
+<div>
+<p>
+You can bet with me to earn more money...
+</p>
+
+<p>
+But if you lose, *walls pulse threatening*.... well, you don't want to happen. 
+</p>
+
+<next>Oh no</next>
 </div>
 
 
-<div v-for="question in questions">
-  <div>
-    For the question you just answered, what is the maximum moneybags would you be willing to lose when you're wrong... if you will win one moneybag when you're right? 
-  </div>
+<div>
+<p>
+I will ask you a question. 
+</p>
 
-  <moneybag-widget :isInteractive="true"/>
+<p>
+Which is more popular?
+</p>
+
+[ice cream] [pizza]
+
+<p>
+But then more importantly, I will ask you how sure you are of your answer. 
+</p>
+
 </div>
+
+
+<div>
+  First, answer these {{certaintyQuestions.length}} questions to see how you do without any calibration.
+</div>
+
+<moneybag-question 
+  v-for="(question, index) in certaintyQuestions" v-if="index <= questionInd" :question="question"
+  :key="question.text"
+  viz="certainty"
+  @done="nextQuestion">
+  <bold>{{index + 1}} out of {{certaintyQuestions.length}}: </bold>
+</moneybag-question>
+
+<div>
+On average, you were ___% sure. And on average, you were __% accurate.
+</div>
+
+<div>
+calibrated:
+This is indeed pretty impressive for a human. 
+
+overconfident:
+You're a typical human, with more certainty than accuracy.
+
+underconfident:
+How unusual.... you were less certain than you were accurate. 
+</div>
+
+<p>
+You may not need this following tool, but humor me. 
+To better calibrate your certainty, think in terms of the fair bet instead. 
+</p>
+
+<p>
+For instance, the bet:
+</p>
+
+<buton><fair-bet :showCertainty="false" /></buton>
+
+<p>
+Corresponds to 50% certainty, because if you are correct 50% of the time, this bet would break even.
+</p>
+
+<p>
+The bet:
+</p>
+
+<buton><fair-bet :numLoseIfWrong="4" :showCertainty="false"/></buton>
+
+<p>
+Corresponds to 80% certainty, because if you are correct 80% of the time, this bet would break even.
+</p>
+
+<p>
+Try it here:
+
+Which weighs more?
+</p>
+[Goat] [Sheep]
+
+What would you like to wager? 
+
+[bet] [bet] [bet]
+
+<p>
+Since you were correct/incorrect, you win __. 
+</p>
+
+<next>Why don't I always pick 50%</next>
+
+<p>
+Reader, you should answer honestly. If the cave detects any dishonesty, *cave walls close in menancingly*.
+</p>
+
+<next>I'm ready</next>
+
+
+<moneybag-question 
+  v-for="(question, index) in moneybagQuestions" v-if="index <= questionInd" :question="question"
+  :key="question.text"
+  viz="moneybag"
+  @done="nextQuestion">
+  <bold>{{index + 1}} out of {{certaintyQuestions.length}}: </bold>
+</moneybag-question>
+
 
 </pset>
 </script>
@@ -1811,7 +1989,7 @@ After almost a week, you make it to the cave with cookies in hand....
 </div>
 </script>
 
-<script type="text/x-template" id="money-bags-template">
+<script type="text/x-template" id="moneybag-template">
 <span style="position:relative; display:inline-block;">
   <img v-for="n in Math.ceil(number)" 
        :style="{width: width+'px', display: isHorizontal ? 'inline-block': 'block'}" 
@@ -1826,24 +2004,23 @@ After almost a week, you make it to the cave with cookies in hand....
 
 </script>
 
-<script type="text/x-template" id="moneybag-widget-template">
+<script type="text/x-template" id="fair-bet-template">
 
-<div style="user-select:none;" class="small-text normal-divs">
-
-  <div style="display:inline-block; width: 150px">
-    <div>Win if right ({{numWinIfRight}})</div>
-    <money-bags :number="numWinIfRight"></money-bags>
-  </div>
-
-  <div style="display:inline-block">
-    <div>Lose if wrong ({{numLosingMoneybags}})</div>
-    <money-bags :number="numLosingMoneybags"></money-bags>
-  </div> 
+<div class="small-text normal-div fair-bet" style="text-align:left; user-select:none">
 
   <div>
-    <buton></buton>
+    <div>Win if right ({{numWinIfRight}})</div>
+    <moneybag :number="numWinIfRight"></moneybag>
   </div>
 
+  <div>
+    <div>Lose if wrong ({{numLoseIfWrong}})</div>
+    <moneybag :number="numLoseIfWrong"></moneybag>
+  </div> 
+
+  <div v-if="showCertainty" style="text-align:center; margin-top:12px">
+    <bold>{{ $root.paramsFromBet(numWinIfRight, numLoseIfWrong).percent }} sure</bold>
+  </div>  
 </div>
 
 </script>
@@ -1853,118 +2030,132 @@ After almost a week, you make it to the cave with cookies in hand....
 
 <script>
 
-const numericQuestions = [{
-text: 'How many reincarnations have there been of the Dalai Lama?',
-answer: 13},
+const numericQuestions = [
 {
-text: 'How many gallons of milk does a cow produce per week?',
-answer: 25,
-},
-{
-text: 'How fast can a horse run (mph)?',
-answer: 30,
-},
-{
-text: 'How many countries are there in the world?',
-answer: 196,
-},
-{
-  text: 'What percent of food and drink sold in the US is organic?',
-  answer: 4,
+  text: 'How many countries are there in the world?',
+  answer: 196,
 },
 {
   text: 'What percent of the population is left handed?',
-  answer: 13,
-},
-{
-  text: 'How many dollars does the average American spend at vending machines during a year?',
-  answer: 27,
+  answer: 10,
 },
 {
   text: 'How many hours does an average cat sleep in a day?',
   answer: 16,
-},{
-  text: 'What percent of Americans say that they are often stressed at work?',
-  answer: 30,
-},{
-  text: 'How many years does it take a plastic bag to degrade?',
-  answer: 1000,
-},{
+},
+,
+{
   text: 'What percent of total electricity consumption goes to refrigerators?',
   answer: 7,
-},{
+},
+{
   text: 'What is the estimated age of the universe in billions of years?',
   answer: 13.75,
-},{
+},
+{
   text: "What percent of the body's nutrients is consumed by the brain?",
   answer: 25,
-},{
+},
+{
   text: 'How many bones are there in the human body?',
   answer: 206,
 },
-{text: 'What is the height of Mt. Everest in kilometers?',
-answer: 8.8},
+{
+  text: 'How many kilometers tall is Mt. Everest?',
+  answer: 8.8
+},
 ];
 
-const multipleChoiceQuestions = [
+// main source: 'https://www.rd.com/culture/interesting-facts/'
+// https://bestlifeonline.com/random-fun-facts/
+const certaintyQuestions = [
 
 {
-  text: 'What percent of food and drink sold in the US is organic?',
-  choices: [5, 25],
-  answer: 5,
+  text: 'Which has the greater population?',
+  choices: ['Hyderabad', 'Islamabad'],
+  answer: 'Hyderabad',
 }, 
 
 {
-  text: 'What percent of the population is left handed?',
-  choices: [4, 8],
-  answer: 4,
-},
-
-{
-  text: 'How many bones are there in the human body?',
-  choices: [206, 312],
-  answer: 206,
-},
-
-{
-  text: 'Which of the following compounds can be used to kill bedbugs?',
-  choices: ['Ginseng', 'Diatomaceous earth'],
-  answer: ['Diatomaceous earth']
-},
-
-{
-  text: 'Which of the following is used as a tea for reducing anxiety?',
-  choices: ['Tulsi', 'Gingko'],
-  answer: ['Tulsi'],
-},
-
-{
-  text: 'Which of the following has antimicrobial properties?',
-  choices: ['Garlic', 'Bull thistle'],
-  answer: ['Garlic']
-},
-
-{
-  text: 'Which of the following is older?',
-  choices: ['Etruscan Gold Book', 'Madrid Codex'],
-  answer: ['Etruscan Gold Book'],
-  images: ['etruscan_gold_book.jpg', 'madrid_codex.jpg']
-},
-
-{
-  text: 'Which of these plants is edible?',
-  choices: ['Cat tail', 'Angel\'s Trumpet'],
-  answer: ['Cat tail'],
-  images: [],
+  text: 'What color was the orange fruit when it was first developed?',
+  choices: ['green', 'red'],
+  answer: 'green',
 }, 
 
-// https://www.foodandwine.com/fwx/slideshow/wild-berries-you-can-eat-without-dying#saskatoon-berries
 {
-  text: 'Which of these berries is poisonous?',
-  choices: ['Poke weed', 'Dew berries'],
-  answer: ['Poke weed'],
-  images: [],
-}
+  text: 'John Chapman (the real life Johnny Appleseed) planted thousands of apple trees, but they were too...?',
+  choices: ['sour', 'bitter'],
+  answer: 'bitter',
+},
+
+{
+  text: 'How many words does Scotland have for snow?',
+  choices: [42, 421],
+  answer: [421],
+},
+
+{
+  text: "A cashew is not technically a nut, because a nut is a 'hard-shelled dry fruit or seed with a separable rind or shell and interior kernel'. A cashew is actually a...",
+  choices: ['legume', 'seed'],
+  answer: ['seed'],
+},
+
+{
+  text: 'The longest English word is how many letters long?',
+  choices: [819, 189819],
+  answer: [189819]
+},
+
+];
+
+const moneybagQuestions = [
+{
+  text: 'How many calories are consumed by a blue whale in one mouthful?',
+  choices: [50000, 500000],
+  answer: [500000],
+},
+
+{
+  text: 'What is the tiny pocket in jeans meant to store?',
+  choices: ['Watch', 'Coins'],
+  answer: ['Watch'],
+}, 
+
+{
+  text: "President Theodore Roosevelt had which of these as a pet?",
+  choices: ['owl', 'moose'],
+  answer: ['owl'],
+},
+
+{
+  text: "Where is the world's largest desert?",
+  choices: ['Africa', 'Antarctica'],
+  answer: ['Antarctica'],
+},
+
+{
+  text: "Which two body parts keeps growing as we reach late adulthood?",
+  choices: ['Ears and nose', 'Teeth and liver'],
+  answer: ['Ears and nose'],
+},
+
+{
+  text: "Pigeon poop was used to make what item?",
+  choices: ['paint', 'gun powder'],
+  answer: ['gun powder'],
+},
+
+{
+  text: "Nikola Tesla hated what type of jewelry?",
+  choices: ['silver', 'pearls'],
+  answer: ['pearls'],
+},
+
+{
+  text: "What is the most popular instrument in North Korea?",
+  choices: ['flute', 'accordion'],
+  answer: ['accordion'],
+},
 
 ];
 
@@ -2963,6 +3154,30 @@ Vue.component('bold', {
   template: '#bold-template'
 });
 
+Vue.component('moneybag-question', {
+  props: {
+    question: {type: Object}, 
+    certainties: {type: Array, default: () => [50, 60, 70, 80, 90]},
+    numLoseIfWrongs: {type: Array, default: () => [1, 2, 3, 4, 9]},
+    viz: {type: String, default: 'certainty'}
+  },
+  data(){
+    return {
+      userChoice: null,
+      userCertainty: null,
+      // stage: 0,
+      // guess: null,
+    };
+  },
+  methods: {
+    finishQuestion(certainty){
+      // $root.paramsFromCertainty(certainty);
+      this.$emit('done', {choice: this.userChoice, userCertainty: this.certainty});
+    }
+  },
+  template: '#moneybag-question-template',
+});
+
 
 Vue.component('distribution-question', {
   props: {
@@ -3063,9 +3278,21 @@ Vue.component('bayes-unit', {
 Vue.component('overconfidence', {
   data: function(){
     return {
-      questions: multipleChoiceQuestions,
+
+      certaintyQuestions: certaintyQuestions,
+      moneybagQuestions: moneybagQuestions,
+
       questionInd: 0,
+
+      results: [],
     };
+  },
+  methods: {
+    nextQuestion(params){
+//      this.showGame = true;
+      this.questionInd++;
+      this.results.push(params.result);
+    },
   },
   template: '#overconfidence-template'
 });
@@ -3319,7 +3546,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 2,
+    chapterInd: 3,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
