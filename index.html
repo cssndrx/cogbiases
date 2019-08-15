@@ -135,12 +135,12 @@ img{
 /* font-family: 'Dokdo', cursive; */   
 /*  font-family: 'Schoolbell', cursive;*/
 /*font-family: 'Nanum Pen Script', cursive;*/
-font-family: 'Itim', cursive;
+font-family: 'Itim';
 }
 
 .dialog-text, .dialog-text *{
 /*  font-family: 'Dokdo', cursive;  */
-  font-family: 'Schoolbell', cursive;
+  font-family: 'Schoolbell';
   font-size: 28px;
   width: 340px;
 }
@@ -977,7 +977,7 @@ You are going to bring us into this new world of <span class="animated infinite 
     MONK: I am training explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
     </div>
 
-    <next @click.native="$root.chapterInd++">Start lesson</next>
+    <next @click.native="$root.nextChapter()">Start lesson</next>
   </div>
 
 </pset>
@@ -1126,7 +1126,7 @@ MONK: Very good. To reach the next stage in your journey to reduce cognitive bia
 <p>
 MONK: His whereabouts have been unknown for some time, so good luck finding him.
 </p>
-<next @click.native="$root.chapterInd++">Leave the monastery</next>
+<next @click.native="$root.nextChapter()">Leave the monastery</next>
 </div>
 
 </pset>
@@ -1810,16 +1810,25 @@ VOICE: You boldly waltzed in thinking you had it figured out. But did you know t
 
 
 <div>
+
 <p>
-You humans overestimate how good of a driver you are ___. 
+Humans are the worst.
 </p>
 
 <p>
-You underestimate the amount of time it'll take to ___. 
+You underestimate the amount of time it'll take to write a good story. 
 </p>
 
 <p>
-And when you say you're __% sure, it turns out that you're only __% right. 
+93% of drivers think they are above average.
+</p>
+
+<p>
+And when you say you're 70% sure, it turns out that you're only 50% right.
+</p>
+
+<p>
+I'm tired of all these little lies humans tell eachother and themselves.
 </p>
 
 <next> Who are you? Please let me go.</next>
@@ -1827,7 +1836,7 @@ And when you say you're __% sure, it turns out that you're only __% right.
 
 
 <div>
-  <p>
+<p>
 I'll let you go... for a price. 
 </p>
 
@@ -3433,6 +3442,7 @@ Vue.component('live-text', {
   template: '#live-text-template'
 });
 
+
 // Child slot should call next() on the parent to advance.
 Vue.component('pset', {
   computed: {
@@ -3446,10 +3456,11 @@ Vue.component('pset', {
     };
   },
   mounted: function(){
-    // this.elms[0].style.opacity = 1;
-    // for (var i=1; i<this.elms.length; i++){
-    //   this.elms[i].style.opacity = 0;      
-    // }
+    // Hides elements initially.
+    this.elms[0].style.opacity = 1;
+    for (var i=1; i<this.elms.length; i++){
+      this.elms[i].style.opacity = 0;      
+    }
   },
   methods: {
     next(){
@@ -3466,6 +3477,8 @@ Vue.component('pset', {
 
       // make current ind, fully visible
       this.elms[this.ind].style.opacity = 1;
+
+      this.$root.scrollWindow();
     }
   },
   template: '#pset-template'
@@ -3546,12 +3559,14 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 3,
+    chapterInd: 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
     isPlaying: false,
     showTOC: false,
+
+    isScrolling: false,
   },
   computed: {
     currentChapter: function(){
@@ -3612,12 +3627,35 @@ new Vue({
         this.showTOC = false;
       }
     },
-    pause: function(soundName){
- //     console.log('pausing');
+    pause(soundName){
       var sound = sounds[soundName].clip;
       sound.pause();
       sound.currentTime = 0;      
     },
+    nextChapter(){
+      this.chapterInd++;
+      window.scrollTo(0, 0);
+    },
+    async scrollWindow(){
+      if (this.isScrolling){
+        return;
+      }
+
+      this.isScrolling = true;
+      // Scroll down a little bit and see if we should keep scrolling.
+      // Stop scrolling if we've reached the bottom, 
+      // Or if we have somehow traveled up (i.e. user has moved the mouse)
+      while (true){
+        const startY = window.scrollY;
+        if (this.lastStartY >= startY){
+          break;
+        }
+        this.lastStartY = startY;
+        window.scrollBy(0, 10);
+        await wait(30);
+      }
+      this.isScrolling = false;
+    }    
   } // end methods
 });
 </script>
