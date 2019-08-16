@@ -1068,9 +1068,10 @@ when each moneybag comes in, trigger the wobble animation
 </script>
 
 <script type="text/x-template" id="beliefs-as-dists-template">
-<pset>
-  gradUnits: {{gradUnits}}
-  dishDuty: {{dishDuty}}
+<pset ref="pset">
+
+<!--  <dist-question :question="questions[0]" @done="nextQuestion" /> -->
+
   <div>
     <bold>Monk Lesson: Know thyself</bold>
 
@@ -1085,48 +1086,52 @@ when each moneybag comes in, trigger the wobble animation
 
 
   <div>
-    Answer this question to the best of your ability.
-  </div>
+    <p>
+      Answer this question to the best of your ability.
+    </p>
 
-  <distribution-question :question="questions[0]" @done="nextQuestion">
+    <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()">
 
-    <template v-slot:tutorial>
-      <div>
-        Drag down the circle so that your belief covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits  based on the height of your graph over the correct answer.
-      </div>
+      <template v-slot:tutorial>
+        <div>
+          Drag down the circle so that your belief covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits  based on the height of your graph over the correct answer.
+        </div>
 
-      <div>
-        But be careful... if you assign zero probability to the correct answer, you will get monastery dish duty.
-      </div>
-    </template>
-  
-  </distribution-question>
-
-  <distribution-question 
-    v-for="(question, index) in questions" v-if="showGame && index !=0 && index <= questionInd" :question="question"
-    :key="question.text"
-    @done="nextQuestion">
-  </distribution-question>
-
-  <div>
-    Thank you for washing {{dishDuty}} days of dishes. Together, with your {{gradUnits}} credits, I think you have gained enough character to graduate from monk school.
+        <div>
+          But be careful... if you assign zero probability to the correct answer, you will get monastery dish duty.
+        </div>
+      </template>
+    
+    </dist-question>
   </div>
 
 <div>
-<p>
-MONK: By the way, I think we might have reduced your susceptibility to the Overconfidence Bias...
-</p>
-<next>I'm not too sure about that</next>
+  <dist-question 
+    v-for="(question, index) in questions" v-if="showGame && index !=0 && index <= questionInd" :question="question"
+    :key="question.text"
+    @done="nextQuestion($event)">
+  </dist-question>
+  </div>
+
+<div>
+  <p>
+    Thank you for washing {{dishDuty}} days of dishes. Together, with your {{gradUnits}} credits, I think you have gained enough character to graduate from monk school.
+  </p>
+
+  <p>
+  MONK: By the way, I think we might have reduced your susceptibility to the Overconfidence Bias...
+  </p>
+  <next>I'm not too sure about that</next>
 </div>
 
 <div>
-<p>
-MONK: Very good. To reach the next stage in your journey to reduce cognitive biases, you may want to seek out a figure named Kahneman. He will administer to you a test of your abilities.
-</p>
-<p>
-MONK: His whereabouts have been unknown for some time, so good luck finding him.
-</p>
-<next @click.native="$root.nextChapter()">Leave the monastery</next>
+  <p>
+  MONK: Very good. To reach the next stage in your journey to reduce cognitive biases, you may want to seek out a figure named Kahneman. He will administer to you a test of your abilities.
+  </p>
+  <p>
+  MONK: His whereabouts have been unknown for some time, so good luck finding him.
+  </p>
+  <next @click.native="$root.nextChapter()">Leave the monastery</next>
 </div>
 
 </pset>
@@ -1135,7 +1140,7 @@ MONK: His whereabouts have been unknown for some time, so good luck finding him.
 <script type="text/x-template" id="bayes-unit-template">
 <pset>
 
-<div>
+<!-- <div>
 <p>
   You have found yourself graduated from monk school on a solo journey across the land to gain knowledge and find Kahneman.
 </p>
@@ -1201,7 +1206,7 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 </p>
 
 <next>Yes, I think so?</next>
-</div>
+</div> -->
 
 <div>
 <h3>Oracle Lesson: Update beliefs</h3>
@@ -1256,7 +1261,7 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 
 <triple-bayes 
   :hypotheses="['Cave', 'Tavern']" 
-  :config="{prior: {dist: [2, 3]}, likelihood: {dist: [6, 1], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes> 
+  :config="{prior: {dist: [2, 3]}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true}}"></triple-bayes> 
 
 </div>
 
@@ -1707,12 +1712,12 @@ After almost a week, you make it to the cave with cookies in hand....
 </script>
 
 
-<script type="text/x-template" id="distribution-question-template">
+<script type="text/x-template" id="dist-question-template">
 <div>
 
   <div>{{question.text}}</div>
 
-  <input-box @click="guessSubmitted"></input-box>
+  <input-box @click="guessSubmitted" :advancePset="false"></input-box>
 
   <div v-if="stage > 0">
     <slot name="tutorial"></slot>
@@ -2048,31 +2053,31 @@ const numericQuestions = [
   text: 'What percent of the population is left handed?',
   answer: 10,
 },
-{
-  text: 'How many hours does an average cat sleep in a day?',
-  answer: 16,
-},
-,
-{
-  text: 'What percent of total electricity consumption goes to refrigerators?',
-  answer: 7,
-},
-{
-  text: 'What is the estimated age of the universe in billions of years?',
-  answer: 13.75,
-},
-{
-  text: "What percent of the body's nutrients is consumed by the brain?",
-  answer: 25,
-},
-{
-  text: 'How many bones are there in the human body?',
-  answer: 206,
-},
-{
-  text: 'How many kilometers tall is Mt. Everest?',
-  answer: 8.8
-},
+// {
+//   text: 'How many hours does an average cat sleep in a day?',
+//   answer: 16,
+// },
+// ,
+// {
+//   text: 'What percent of total electricity consumption goes to refrigerators?',
+//   answer: 7,
+// },
+// {
+//   text: 'What is the estimated age of the universe in billions of years?',
+//   answer: 13.75,
+// },
+// {
+//   text: "What percent of the body's nutrients is consumed by the brain?",
+//   answer: 25,
+// },
+// {
+//   text: 'How many bones are there in the human body?',
+//   answer: 206,
+// },
+// {
+//   text: 'How many kilometers tall is Mt. Everest?',
+//   answer: 8.8
+// },
 ];
 
 // main source: 'https://www.rd.com/culture/interesting-facts/'
@@ -2236,6 +2241,8 @@ Vue.component('input-box', {
     },
     // Give feedback if there is a right answer
     feedback: {type: Boolean, default: true},
+    advancePset: {type: Boolean, default: true},
+
   },
   computed: {
     feedbackString: function(){
@@ -2278,7 +2285,7 @@ Vue.component('input-box', {
         this.$emit('yay'); //onRight();
 
         const pset = firstAncestorOfComponent(this, 'pset');
-        if (pset){
+        if (pset && this.advancePset){
           pset.next();
         }
       } else {
@@ -2732,7 +2739,7 @@ Vue.component('draggable-dist', {
   mounted(){
     this.conf = [this.guess, this.guess];
     this.plotFigure();
-//    this.plotAxis();
+    this.plotAxis();
   },
   computed: {
     baseWidth(){
@@ -2837,7 +2844,7 @@ Vue.component('draggable-dist', {
         this.betaB = beta_b;
 
         this.plotFigure();
-//        this.plotAxis();
+        this.plotAxis();
      },
      dragend(){
         this.isDragging = false;
@@ -3188,7 +3195,7 @@ Vue.component('moneybag-question', {
 });
 
 
-Vue.component('distribution-question', {
+Vue.component('dist-question', {
   props: {
     question: {type: Object}, 
   },
@@ -3214,16 +3221,19 @@ Vue.component('distribution-question', {
     guessSubmitted(params){
       this.stage = 1;
       this.guess = Number(params.val);
+      // debugger;
+      this.$root.scrollWindow();
     },
     beliefSubmitted(){
       this.stage = 2;
+      this.$root.scrollWindow();
       // this.guessHeight = this.$refs['dist'].getPDF(this.question.answer);
     },
     finishQuestion(){
       this.$emit('done', {result: this.result});
     }
   },
-  template: '#distribution-question-template',
+  template: '#dist-question-template',
 });
 
 
@@ -3269,6 +3279,11 @@ Vue.component('beliefs-as-dists', {
       this.showGame = true;
       this.questionInd++;
       this.results.push(params.result);
+
+      // No more questions.
+      if(this.questionInd === this.questions.length){
+        this.$refs['pset'].next();
+      }
     },
   },
   template: '#beliefs-as-dists-template'
@@ -3455,15 +3470,19 @@ Vue.component('pset', {
       ind: 0, // active index
     };
   },
+
+  // stopped here: i think we want display none
   mounted: function(){
     // Hides elements initially.
-    this.elms[0].style.opacity = 1;
+//    this.elms[0].style.opacity = 1;
     for (var i=1; i<this.elms.length; i++){
-      this.elms[i].style.opacity = 0;      
+//      this.elms[i].style.opacity = 0;      
+      this.elms[i].style.display = 'none';
     }
   },
   methods: {
     next(){
+      console.log('next');
       this.ind = this.ind + 1;
       if (this.ind >= this.elms.length){
         this.$emit('done');
@@ -3476,7 +3495,8 @@ Vue.component('pset', {
       }
 
       // make current ind, fully visible
-      this.elms[this.ind].style.opacity = 1;
+      //this.elms[this.ind].style.opacity = 1;
+      this.elms[this.ind].style.display = 'initial';
 
       this.$root.scrollWindow();
     }
@@ -3559,7 +3579,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 0,
+    chapterInd: 2,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,

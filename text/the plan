@@ -126,4 +126,42 @@ stopped here:
 improve the story
 make themoneybag into a "game"
 feedback for user scores
+unify the bayes colors with the distribution colors
 
+
+
+stopped here:
+figure out how to combine pset with a flow of questions
+
+input-box is triggering next
+
+
+---
+ohh there is no higher pset within beliefs-as-dists....
+pset is within!
+
+---
+
+how pset currently works:
+
+- each child component calls pset.next() by looking up the DOM tree for the pset component
+
+but now we have a hidden block of things that keep populating 
+it seems like the block component should be responsible for: 
+
+greying itself out as it advances
+scrolling
+
+put the block component instead a div
+when it's out of new components to spawn, that should call pset.next()
+
+
+----
+
+stopped here:
+
+What is the probability that Kahneman is in the cave if the weather is nice? (Hint: view the new belief tab to see how the widget would perform the calculation).
+
+get them to press a button?
+input-box isn't working lol -- 80%
+get rid of the rainbow 
