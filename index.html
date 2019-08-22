@@ -48,7 +48,6 @@ font-family: 'Cormorant Garamond', serif;
 }
 
 .bayes-comp{
-  border: 4px dashed #777;
   display: inline-block;
   position:relative;
   width: 150px;
@@ -76,8 +75,12 @@ font-family: 'Cormorant Garamond', serif;
   border-radius: 50%;
   width: 12px;
   height: 12px;
-  background-color: blue;
+  background-color: #2F77A1;
   cursor: ns-resize;
+}
+
+.dot:hover{
+  border: 1px solid white;
 }
 
 text{
@@ -513,14 +516,26 @@ button{
   font-size: 12px;
 }
 
+.toggle{
+  color: #999;
+}
+
+
+.toggle:hover{
+  color: #000;
+}
+
+.toggle:hover div:first-child{
+  background-color: #eee;
+}
+
 </style>
 
 <body>
 
 
 
-<div id="app" style="position:relative; padding: 16px; width: 500px; margin: 0 auto;" @click="mainClick($event)">
-
+<div id="app" style="position:relative; padding: 16px; width: 500px;" :style="appStyle" @click="mainClick($event)">
 
   <h1 class="handwriting" style="font-size:48px">Adventures in Cognitive Biases</h1>
 
@@ -664,7 +679,7 @@ You are going to bring us into this new world of <span class="animated infinite 
     <div style="font-weight:700">Prior belief</div>
     <div>What you think before the evidence</div>
   </div>
-  <img v-if="isCompRight('prior')" src="images/rainbow.png" class="rainbow"> 
+<!--  <img v-if="isCompRight('prior')" src="images/rainbow.png" class="rainbow">  -->
 
   <samples-chart 
   :xdomain="hypotheses"
@@ -680,7 +695,7 @@ You are going to bring us into this new world of <span class="animated infinite 
     <div style="font-weight:700">Likelihood ratio</div>
     <div>Likelihood ratio of the evidence</div>
   </div>
-  <img v-if="isCompRight('likelihood')" src="images/rainbow.png" class="rainbow"> 
+<!--  <img v-if="isCompRight('likelihood')" src="images/rainbow.png" class="rainbow"> -->
 
   <samples-chart
   :xdomain="hypotheses"
@@ -702,7 +717,7 @@ You are going to bring us into this new world of <span class="animated infinite 
   ref="posterior-samples-chart" /> 
 </div>
 
-<div v-if="showFeedback && !allCorrect" style="background-color: #372F26; color: white; padding: 8px;" class="handwriting normal-div">
+<div v-if="showFeedback && !allCorrect" class="handwriting normal-div">
   <div>Not quite. Try again!</div>
   <slot name="hint"></slot>
 </div>
@@ -734,7 +749,7 @@ You are going to bring us into this new world of <span class="animated infinite 
           :width="xScale.bandwidth()"
           :height="yScale(count)"
           :key="x"
-          fill="#E9BE2C"/>  -->
+          fill="#D1D9E0"/>  -->
 
         <g v-for="x in xdomain">
           <rect v-for="countInd in counts[x]"
@@ -743,7 +758,7 @@ You are going to bring us into this new world of <span class="animated infinite 
           :width="xScale.bandwidth()"
           :height="yScaleBandwidth-2"
           :key="x + countInd"
-          fill="#E9BE2C"/>
+          fill="#D1D9E0"/>
         </g>
 
 
@@ -1138,7 +1153,40 @@ when each moneybag comes in, trigger the wobble animation
 </script>
 
 <script type="text/x-template" id="bayes-unit-template">
-<pset>
+<div>
+
+
+<div style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:white; width: 555px; z-index:1;">
+
+    <div v-if="knowAbout('location')" 
+         @click="togglePane('location')" 
+         class="toggle"
+      style="position:absolute; left: -100px;top:100px">
+      <div :style="toggleStyle('location')" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Kahneman's location?</div>
+    </div>
+
+    <div v-if="knowAbout('food')"
+         class="toggle"
+         @click="togglePane('food')" 
+         :style="toggleStyle('food')" 
+      style="position:absolute; left: -130px;top:100px">
+      <div style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Food to bring?</div>
+    </div>
+
+   <triple-bayes v-show="showPane('location')" key="location" style="position:relative; left:100px; top:20px; padding-bottom:24px"
+    :hypotheses="['Cave', 'Tavern']" 
+    :config="{prior: {dist: [2, 3], isActive:true}, likelihood: {dist: [1, 1], correct: [3, 1], isActive: true, isDraggable:true}, posterior: {isActive: true}}"
+    @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+
+   <triple-bayes v-show="showPane('food')" key="food" style="position:relative; left:100px; top:20px; padding-bottom:24px"
+    :hypotheses="['Beer', 'Cookies']" 
+    :config="{prior: {dist: [2, 5], isActive:true}, likelihood: {dist: [1, 1], correct: [1, 2],  isActive: true, isDraggable:true}, posterior: {isActive: true}}"
+    @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+</div>
+
+
+
+<pset ref="pset">
 
 <!-- <div>
 <p>
@@ -1206,10 +1254,11 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 </p>
 
 <next>Yes, I think so?</next>
-</div> -->
+</div>
+
 
 <div>
-<h3>Oracle Lesson: Update beliefs</h3>
+<h3 style="font-weight:700">Oracle Lesson: Update beliefs</h3>
 <p>
   ORACLE: Based on past experience, Kahneman is likely either at the Cave of Uncertainty or the Tavern of Decision-Making. Unfortunately, these places are weeks of travelling away from each other, so you will want to be reasonably certain before embarking.  
 </p>
@@ -1269,17 +1318,24 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 <p>
 If you think about it, the evidence bars should <bold>multiplicatively scale</bold> up your prior belief to form your <bold>new belief</bold>. This multiplication is something you can perform with your visual system. 
 </p>
+<next>Show new belief</next>
+</div>
+
+<div>
+<triple-bayes 
+:hypotheses="['Cave', 'Tavern']" 
+:config="{prior: {dist: [2, 3]}, likelihood: {dist: [1, 1], correct: [6, 1]}, posterior: {isActive: true}}"></triple-bayes> 
 
 <p>
-What is the probability that Kahneman is in the cave if the weather is nice? (Hint: view the new belief tab to see how the widget would perform the calculation).
+What is the probability that Kahneman is in the cave if the weather is nice?
 </p>
-<input-box :right="80">%</input-box>
+<input-box right="80">%</input-box>
 </div>
 
 
 <div>
 <p>
-ORACLE: Often times, information about our world comes in multiple parts. We have to combine these parts to form a unified belief. Logic tells you how to do this.
+ORACLE: Very nice. Often times, information about our world comes in multiple parts. We have to combine these parts to form a unified belief. Logic tells you how to do this.
 </p> 
 
 <p>
@@ -1313,21 +1369,20 @@ When making guesses, sometimes people use the new evidence and forget to include
 <next>Sounds reasonable</next>
 </div>
 
-
 <div>
 <p>
 As long as you use the widget I have given you, you will remember to use both your prior belief and the likelihood of evidence to form your new opinion.
 </p>
 
 <p>
-Take this widget into your right sidebar so that you can update your beliefs on Kahneman's location as you get new information.
+Take this widget into your sidebar so that you can update your beliefs on Kahneman's location as you get new information.
 </p>
 
 <p>
 At this point, all you have is the 2:3 prior on Kahneman's location. The weather evidence was hypothetical.
 </p>
 
-<next>Take the widget</next>
+<next @click.native="knowAboutArr.push('location')">Take the widget</next>
 </div>
 
 
@@ -1402,7 +1457,7 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
   SHADOW FIGURE: After all, who doesn't like cookies?
   </p>
 
-  <next>Add the picture to your mental beliefs</next>
+  <next @click.native="knowAboutArr.push('food')">Add the picture to your mental beliefs</next>
 </div>
 
 <div>
@@ -1433,7 +1488,8 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
 
 <div>
   <p>
-  FARMER: There have been thefts from my chicken coop. The local animal population consists of 7 raccoons to every 3 foxes (70% raccoons, 30% foxes). Judging by the type of marks on the door alone, the marks look five times more likely to be caused by a fox than a raccoon.</p>
+  FARMER: There have been thefts from my chicken coop. The local animal population consists of 7 raccoons to every 3 foxes (70% raccoons, 30% foxes). Judging by the type of marks on the door alone, the marks look five times more likely to be caused by a fox than a raccoon.
+  </p>
 
   <p>
   FARMER: I want to trap the animal, but I only have traps for foxes. If a raccoon goes in, it will get hurt. If I set up the trap, what is the probability that the animal I will catch will be a fox?
@@ -1452,7 +1508,7 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
   <p>
   FARMER: So what is the numerical probability that it will be a fox?
   </p>
-  <input-box :right="68">%</input-box>
+  <input-box right="68">%</input-box>
   </div>
 
   <div>
@@ -1497,7 +1553,7 @@ It's a small town so you are able to walk straight into the mayor's office. The 
 <div>
 <img src="images/trebuchet.png">
 <p>
-MAYOR: I am trying to choose a builder for a rock throwing machine. The two handymen in the town are Billy and Bob. 60% of the time Billy's quality is better than Bob's. However, Bob seems really excited about building a rock throwing machine, and I have reason to believe that on this occasion, his odds are two times better than normal to outperform Billy. What is the probability that excited Bob will produce the better result?
+MAYOR: I am trying to choose the better builder for the town rock throwing machine. The two builders in the town are Billy and Bob. 60% of the time Billy's quality is better than Bob's. However, when I met with both of them... Bob showed me a prototype that looked twice as good as Billy's. What is the probability that excited Bob will produce the better result on this project?
 </p>
 <next>I think I can help</next>
 </div>
@@ -1508,14 +1564,16 @@ MAYOR: I am trying to choose a builder for a rock throwing machine. The two hand
 Show the mayor the appropriate belief.
 </p>
 
-<span id="billy-bob"></span> <br>
+ <triple-bayes 
+  :hypotheses="['Billy', 'Bob']" 
+  :config="{prior: {dist: [1, 1], correct: [3, 2], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes>
 </div>
 
 <div>
 <p>
 MAYOR: So what is the probability that Bob will do a better job than Billy?
 </p>
-<input-box :right="57">%</input-box>
+<input-box right="57">%</input-box>
 </div>
 
 <div>
@@ -1600,53 +1658,21 @@ Discounting for his questionable reliability, you think that it is more reasonab
 Use the adventurer's information to update your belief on Kahneman's location.
 </p>
 </div>
+ -->
 
 <div>
-<p>
-Nice. Your belief of Kahneman's location has proportionally been updated. 
-</p>
-
-<next>You think a bit more about Kahneman's location and realize...</next>
-</div>
-
-<div data-checkpoint="kahneman-loc-news">
-<p>
-That you have travelled around quite a bit but news about Kahneman has been rather quiet. You infer that this is more likely if he were in a secluded cave than in a tavern with other people. 
-</p>
-
-<p>
-You are uncertain but think that this level of quiet might be evidence to suggest that Kahneman is more likely to be at the Cave (1.5 : 1). 
-</p>
-
-<p class="question">
-Combine your observation with the adventurerr's information to further skew your evidence and produce a new belief on Kahneman's location.
-</p>
-
-</div>
-
-<div>
-
-<p>
-Correct! You multiplied to combine two pieces of evidence into one likelihood.
-</p>
-
-<p>
-You were able to do that because the two pieces of information were <strong>independent</strong>. 
-</p>
-
 <p>
 You think that Kahneman is probably at: <br>
-<buton yay>The Cave</buton>
+<next>The Cave</next>
 <buton nope>The Tavern</buton>
 </p>
 </div>
-
 
 <div>
 <p>
 And you think that you might want to bring some:<br>
 <buton nope>Beer</buton>
-<buton yay>Cookies</buton>
+<next>Cookies</next>
 </p>
 </div>
 
@@ -1676,9 +1702,14 @@ After almost a week, you make it to the cave with cookies in hand....
   <p>
   The sound of your voice echoes deep into the cave. The walls of the cave begin to shudder and hiss. The walls begin to fold in, and you are suddently uncertain that this was truly the Cave of Uncertainty. 
   </p>
+
+  <p>
+    To be continued...
+  </p>
 </div>
 
 </pset>
+</div>
 </script>
 
 <script type="text/x-template" id="moneybag-question-template">
@@ -2043,6 +2074,8 @@ Reader, you should answer honestly. If the cave detects any dishonesty, *cave wa
 
 
 <script>
+// lightblue = #D1D9E0
+// darkblue = #2F77A1
 
 const numericQuestions = [
 {
@@ -2234,7 +2267,7 @@ Vue.component('next', {
 
 Vue.component('input-box', {
   props: {
-    right: {type: Number},
+    right: {type: String},
     hints: {
       type: Array, 
       default: function(){ return ['Try again', 'Nope']; },
@@ -2686,10 +2719,8 @@ Vue.component('samples-from-distribution', {
 
 
 function canvasPlotCoords(context, coords, fill){
-  var colors = ['#192127', '#1B4063', '#2F77A1', '#C0E1E9', '#ECEEF0'];
-
   context.lineWidth = 1 / 600; //achtung!!! linewidth gets scaled
-  context.strokeStyle = colors[0];
+  context.strokeStyle = '#192127';
   context.fillStyle = fill;
   context.beginPath();
 
@@ -3290,12 +3321,41 @@ Vue.component('beliefs-as-dists', {
 });
 
 Vue.component('bayes-unit', {
-  // data: function(){
-  //   return {
-  //     questions: multipleChoiceQuestions,
-  //     questionInd: 0,
-  //   };
-  // },
+  computed: {
+  },
+  data: function(){
+    return {
+      activePane: null,
+      knowAboutArr: ['food', 'location'],
+    };
+  },
+  watch:{
+    activePane(){
+      if (this.activePane === null){
+       this.$root.isShowingSidePanel = false;       
+      } else{
+        this.$root.isShowingSidePanel = true;               
+      }
+    }
+  },
+  methods:{
+    knowAbout(thing){
+      return this.knowAboutArr.indexOf(thing) > -1;
+    },
+    showPane(paneName){
+      return this.activePane === paneName;
+    },
+    togglePane(paneName){
+      if(this.activePane === paneName){
+        this.activePane = null;
+      } else {
+        this.activePane = paneName; 
+      }
+    },
+    toggleStyle(paneName){
+      return {color: this.activePane === paneName ? '#000' : ''};
+    }
+  },
   template: '#bayes-unit-template'
 });
 
@@ -3471,12 +3531,9 @@ Vue.component('pset', {
     };
   },
 
-  // stopped here: i think we want display none
   mounted: function(){
     // Hides elements initially.
-//    this.elms[0].style.opacity = 1;
     for (var i=1; i<this.elms.length; i++){
-//      this.elms[i].style.opacity = 0;      
       this.elms[i].style.display = 'none';
     }
   },
@@ -3495,7 +3552,6 @@ Vue.component('pset', {
       }
 
       // make current ind, fully visible
-      //this.elms[this.ind].style.opacity = 1;
       this.elms[this.ind].style.display = 'initial';
 
       this.$root.scrollWindow();
@@ -3587,6 +3643,10 @@ new Vue({
     showTOC: false,
 
     isScrolling: false,
+
+
+    windowWidth: 0,
+    isShowingSidePanel: false,
   },
   computed: {
     currentChapter: function(){
@@ -3595,12 +3655,21 @@ new Vue({
     visibleScreen: function(){
       return this.currentChapter.component;
     },
+    appStyle: function(){
+      const isWideWindow = this.windowWidth > 500+600;
+      return isWideWindow && this.isShowingSidePanel ? {left: '600px'} : {margin: '0 auto'};
+    }
   },
   watch:{
     chapterInd(){
       // Remove the rainbow
       bus.$emit('chapter-changed');
     }
+  },
+  created() {
+    //https://codepen.io/sethdavis512/pen/EvNKWw
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize();
   },
   methods: {
     renderAsPercent: formatPct,
@@ -3609,6 +3678,10 @@ new Vue({
     // round_to(2.777777, 0) -> 3
     // round_to(2.777777, 2) -> 2.78
     roundTo: roundTo,
+
+    handleResize() {
+      this.windowWidth = window.innerWidth;
+    },
     nextChapter: async function(){
       // this.play('achievement');
       // await wait(1500);

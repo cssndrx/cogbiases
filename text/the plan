@@ -160,8 +160,35 @@ when it's out of new components to spawn, that should call pset.next()
 
 stopped here:
 
+If you think about it, the evidence bars should multiplicatively scale up your prior belief to form your new belief. This multiplication is something you can perform with your visual system.
+
 What is the probability that Kahneman is in the cave if the weather is nice? (Hint: view the new belief tab to see how the widget would perform the calculation).
 
-get them to press a button?
-input-box isn't working lol -- 80%
-get rid of the rainbow 
+
+----
+
+Bayes Rule says the evidence bars should multiplicatively scale up your prior belief to form your new belief. This multiplication is something you can perform with your visual system.
+
+Click the button to show __.
+THe proof of this is pretty simple ___ + will be covered in more detail in ___.
+
+
+todo:
+
+---
+
+If the screen is wide enough, then push the text over when the belief is open
+
+---
+stopped here:
+ be able to change the titles of prior belief/posterior belief to new belief/old belief
+add the percents onto the triple-bayes view
+also add checkpointing onto the side panel
+
+add pulsing to attract attentionto the toggle butons
+would be nice that clicking outside one of the belifef things closes it
+make sure that proportions work
+
+
+
+why does the story not consistently grey out the old boxes?
