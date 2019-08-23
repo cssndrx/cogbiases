@@ -36,6 +36,9 @@ font-family: 'Cormorant Garamond', serif;
 <script src="js/monk.js"></script>
 
 <style>
+html, body, #app{
+  height: 100%;
+}
 
 .pset  img{
     display: block;
@@ -51,7 +54,7 @@ font-family: 'Cormorant Garamond', serif;
   display: inline-block;
   position:relative;
   width: 150px;
-  height: 250px;
+  height: 270px;
   vertical-align: top;
   text-align: center;
 
@@ -206,130 +209,29 @@ button{
   opacity: 0;
   transition: opacity 1s;
 }
-.spin-and-pulse{
-  position: absolute;
-  animation: spin-and-pulse 5s ease 0s 1;
-}
-@keyframes spin-and-pulse {
-  0% {
-    transform: rotate(1turn);
-  }
-  5% {
-    transform: rotate(0turn);
-  }
-  7% {
-    transform: scale(1);
-  }
-  10% {
-    transform: scale(1.2);
-  }
-  13% {
-    transform: scale(1);
-  }
-  15% {
-    transform: scale(1.1);
-  }
-  18% {
-    transform: scale(1);
-  }
-}
-.wobble{
-  position: absolute;
-  animation: wobble 5s ease 0s infinite;
-}
-@keyframes wobble {
-  0% {
-    transform: rotate(0turn);
-  }
-  5% {
-    transform: rotate(0.003turn);
-  }
-  10% {
-    transform: rotate(0turn);
-  }
-  12% {
-    transform: rotate(0.003turn);
-  }
-  15% {
-    transform: rotate(0turn);
-  }
-}
+
 .bounce{
   position: absolute;
-  animation: bounce 5s ease 0s infinite;
+  animation: bounce 4s ease 0s infinite;
 }
 @keyframes bounce {
   0% {
-    transform: translateY(20px);
-  }
-  3% {
-    transform: translateY(-30px);
+    transform:  translateY(10px) rotate(-90deg);
   }
   6% {
-    transform: translateY(10px);
+    transform:  translateY(-15px) rotate(-90deg);
   }
   10% {
-    transform: translateY(-10px);
+    transform:  translateY(5px) rotate(-90deg);
   }
-  12% {
-    transform: translateY(0px);
+  15% {
+    transform:  translateY(-5px) rotate(-90deg);
   }
-}
-@keyframes mad-bounce {
-  0% {
-    transform: translateY(20px);
-  }
-  1% {
-    transform: translateY(-30px);
-  }
-  2% {
-    transform: translateY(10px);
-  }
-  3% {
-    transform: translateY(-10px);
-  }
-  4% {
-    transform: translateY(0px);
+  20% {
+    transform: translateY(0px) rotate(-90deg);
   }
 }
-.mad-bounce{
-  position: absolute;
-  animation: bounce 4s ease 0s infinite;  
-}
-.walk-drift{
-  position: absolute;
-  transition: left 3s;
-}
-.walk-bounce{
-  position: absolute;
-  animation: walk-bounce 0.8s ease 0s infinite;
-}
-@keyframes walk-bounce {
-  0% {
-    transform: translateY(0px);
-  }
-  25%{
-    transform: translateY(-12px);    
-  }
-  50% {
-    transform: translateY(0px);
-  }
-  75%{
-    transform: translateY(-12px);    
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-@keyframes fallover{
-  100% {
-    transform: rotate(0.3turn);
-  }
-}
-.fallover{
-  position: absolute;
-  animation: fallover 1s ease-in 0s 1; /* to not stand back up:  normal forwards;  */
-}
+
 .point-container{
   width: 350px;
   display:flex; 
@@ -413,13 +315,16 @@ button{
 .fade-enter, .fade-leave-to {
   opacity: 0;
 }
+
+
 .slide-fade-enter-active, .slide-fade-leave-active {
   transition: all .3s ease;
 }
 .slide-fade-enter, .slide-fade-leave-to {
-  transform: translateY(-300px);
+  transform: translateX(-300px);
   opacity: 0;
 }
+
 .story-point-silhouette{
   -webkit-filter: contrast(0%) brightness(90%);
   filter: contrast(0%) brightness(90%);
@@ -529,13 +434,33 @@ button{
   background-color: #eee;
 }
 
+.color-change{
+  position: absolute;
+  animation: colorchange 2s linear 0s infinite;
+}
+@keyframes colorchange {
+  0% {
+    color: #000;
+  }
+  30% {
+    color: #bbb;
+  }
+  70% {
+    color: #555;
+  }
+  100%{
+    color: #000;
+  }
+}
+
+
 </style>
 
 <body>
 
 
-
-<div id="app" style="position:relative; padding: 16px; width: 500px;" :style="appStyle" @click="mainClick($event)">
+<div id="app" @click="mainClick($event)">
+<div style="position:relative; padding: 16px; width: 500px;" :style="appStyle">
 
   <h1 class="handwriting" style="font-size:48px">Adventures in Cognitive Biases</h1>
 
@@ -602,11 +527,11 @@ You are going to bring us into this new world of <span class="animated infinite 
 
 
 <keep-alive>
-  <component v-bind:is="visibleScreen" style="position:relative"></component>
+  <component v-bind:is="visibleScreen" style="position:relative" :root-mouse-event="mouseEvent"></component>
 </keep-alive>
 
 
-
+</div> <!-- end center div -->
 </div> <!-- end #app -->
 
 
@@ -670,33 +595,29 @@ You are going to bring us into this new world of <span class="animated infinite 
   :hypotheses="['Nice', 'Evil']" 
   :config="{prior: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable:true}, likelihood: {dist: [10, 1], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes> -->
 <script type="text/x-template" id="triple-bayes-template">
-  <div>
-
-<!--<div style="text-align:center">prior × likelihood ∝ posterior</div> -->
+<div style="display:inline-block">
 
 <div v-if="hasKey('prior')" class="bayes-comp" :style="compStyle('prior')">
   <div class="label normal-div">
-    <div style="font-weight:700">Prior belief</div>
-    <div>What you think before the evidence</div>
+    <div style="font-weight:700">{{title('prior')}}</div>
+    <div>{{subtitle('prior')}}</div>
   </div>
-<!--  <img v-if="isCompRight('prior')" src="images/rainbow.png" class="rainbow">  -->
 
   <samples-chart 
   :xdomain="hypotheses"
   :dist="arrToDist(priorArr)"
   :isDraggable="isDraggable('prior')"
   :chartHeight="chartHeight" :chartWidth="chartWidth"
+  :showRatio="true"
   @dist-changed="priorChanged" /> 
 </div>
 
 
 <div v-if="hasKey('likelihood')" class="bayes-comp" :style="compStyle('likelihood')">
   <div class="label normal-div">
-    <div style="font-weight:700">Likelihood ratio</div>
-    <div>Likelihood ratio of the evidence</div>
+    <div style="font-weight:700">{{title('likelihood')}}</div>
+    <div>{{subtitle('likelihood')}}</div>
   </div>
-<!--  <img v-if="isCompRight('likelihood')" src="images/rainbow.png" class="rainbow"> -->
-
   <samples-chart
   :xdomain="hypotheses"
   :dist="arrToDist(likelihoodArr)"
@@ -707,13 +628,14 @@ You are going to bring us into this new world of <span class="animated infinite 
 
 <div v-if="hasKey('posterior')" class="bayes-comp" :style="compStyle('posterior')">
   <div class="label normal-div">
-    <div style="font-weight:700">Posterior belief</div>
-    <div>What you think after the evidence</div>
+    <div style="font-weight:700">{{title('posterior')}}</div>
+    <div>{{subtitle('posterior')}}</div>
   </div>
   <samples-chart 
   :xdomain="hypotheses"
   :dist="posteriorDist"
   :chartHeight="chartHeight" :chartWidth="chartWidth"
+  :showRatio="true"
   ref="posterior-samples-chart" /> 
 </div>
 
@@ -768,6 +690,14 @@ You are going to bring us into this new world of <span class="animated infinite 
         {{ counts[x] }}
       </text>
 
+      <text v-if="showRatio"
+        v-for="x in xdomain" 
+        :x="xScale(x)+ xScale.bandwidth()/2 - 8"
+        :y="chartHeight + 40"
+        fill="#bbb">
+        {{ prob(x) }}%
+      </text>
+
     </g>
 </svg>
 
@@ -779,7 +709,7 @@ You are going to bring us into this new world of <span class="animated infinite 
       @dragstart="dragstart(x)"
       @dragend="dragend"
       @drag="drag(x, $event)"
-      :style="{left: xScale(x)+ xScale.bandwidth()/2+ 4 + 'px', bottom: yScale(counts[x]) + 2 + 'px'}"></div>
+      :style="{left: xScale(x)+ xScale.bandwidth()/2+ 4 + 'px', bottom: yScale(counts[x]) + 24 + 'px'}"></div>
 
 
 </div>
@@ -1155,40 +1085,45 @@ when each moneybag comes in, trigger the wobble animation
 <script type="text/x-template" id="bayes-unit-template">
 <div>
 
+<div ref="panes" style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:white; width: 555px; z-index:1;">
 
-<div style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:white; width: 555px; z-index:1;">
-
-    <div v-if="knowAbout('location')" 
+    <div 
+          v-if="knowAbout('location')" 
          @click="togglePane('location')" 
          class="toggle"
       style="position:absolute; left: -100px;top:100px">
-      <div :style="toggleStyle('location')" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Kahneman's location?</div>
+      <div ref="location-toggle" 
+        :style="toggleStyle('location')" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Kahneman's location?</div>
     </div>
 
-    <div v-if="knowAbout('food')"
+    <div 
+         v-if="knowAbout('food')"
          class="toggle"
          @click="togglePane('food')" 
          :style="toggleStyle('food')" 
       style="position:absolute; left: -130px;top:100px">
-      <div style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Food to bring?</div>
+      <div ref="food-toggle" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Food to bring?</div>
     </div>
 
-   <triple-bayes v-show="showPane('location')" key="location" style="position:relative; left:100px; top:20px; padding-bottom:24px"
-    :hypotheses="['Cave', 'Tavern']" 
-    :config="{prior: {dist: [2, 3], isActive:true}, likelihood: {dist: [1, 1], correct: [3, 1], isActive: true, isDraggable:true}, posterior: {isActive: true}}"
-    @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+    <transition name="slide-fade">
 
-   <triple-bayes v-show="showPane('food')" key="food" style="position:relative; left:100px; top:20px; padding-bottom:24px"
+   <triple-bayes v-if="showPane('food')" key="food" style="position:relative; left:100px; top:20px; padding-bottom:24px;"
     :hypotheses="['Beer', 'Cookies']" 
     :config="{prior: {dist: [2, 5], isActive:true}, likelihood: {dist: [1, 1], correct: [1, 2],  isActive: true, isDraggable:true}, posterior: {isActive: true}}"
     @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+
+   <triple-bayes v-if="showPane('location')" key="location" style="position:relative; left:100px; top:20px; padding-bottom:24px;"
+    :hypotheses="['Cave', 'Tavern']" 
+    :config="{prior: {dist: [2, 3], isActive:true}, likelihood: {dist: [1, 1], correct: [3, 1], isActive: true, isDraggable:true}, posterior: {isActive: true}}"
+    @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+  </transition>
+
 </div>
-
-
 
 <pset ref="pset">
 
-<!-- <div>
+
+<div>
 <p>
   You have found yourself graduated from monk school on a solo journey across the land to gain knowledge and find Kahneman.
 </p>
@@ -1280,12 +1215,12 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 
 <triple-bayes 
 :hypotheses="['Cave', 'Tavern']" 
-:config="{prior: {isActive: true, isDraggable:true, dist: [1, 1], correct: [2, 3]}}"></triple-bayes>
+:config="{prior: {isActive: true, isDraggable:true, dist: [1, 1], correct: [2, 3], title: 'Belief about Kahneman\'s location', subtitle:''}}"></triple-bayes>
 </div>
 
 <div>
 <p>
-  ORACLE: Correct. This picture is called your <strong>prior belief</strong>.
+  ORACLE: Correct. This picture is called your <bold>prior belief</bold>.
 </p>
 <p>
   ORACLE: Without any additional information, the probability of Kahneman being at either location is shown by this graph. Looking at the heights of the graph, you can visually see that he is 50% more likely to be at the tavern.
@@ -1305,18 +1240,18 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 
 <div>
 <p>
- If the weather is nice, say Kahneman favors going to the cave over the tavern six times more than normal. Incorporate this new <strong>evidence</strong> into you belief by dragging up the evidence bars. 
+ If the weather is nice, say Kahneman favors going to the cave over the tavern six times more than normal. Incorporate this new <bold>evidence</bold> into you belief by dragging up the evidence bars. 
 </p>
 
 <triple-bayes 
   :hypotheses="['Cave', 'Tavern']" 
-  :config="{prior: {dist: [2, 3]}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true}}"></triple-bayes> 
+  :config="{prior: {dist: [2, 3], title: 'Prior belief about Kahneman\'s location', subtitle:''}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true}}"></triple-bayes> 
 
 </div>
 
 <div>
 <p>
-If you think about it, the evidence bars should <bold>multiplicatively scale</bold> up your prior belief to form your <bold>new belief</bold>. This multiplication is something you can perform with your visual system. 
+It turns out that the evidence bars should <bold>multiplicatively scale</bold> up your prior belief to form your <bold>new belief</bold>. This relationship is called the odds ratio form of Bayes Rule. This multiplication is something you can perform with your visual system. 
 </p>
 <next>Show new belief</next>
 </div>
@@ -1324,7 +1259,7 @@ If you think about it, the evidence bars should <bold>multiplicatively scale</bo
 <div>
 <triple-bayes 
 :hypotheses="['Cave', 'Tavern']" 
-:config="{prior: {dist: [2, 3]}, likelihood: {dist: [1, 1], correct: [6, 1]}, posterior: {isActive: true}}"></triple-bayes> 
+:config="{prior: {dist: [2, 3]}, likelihood: {dist: [6, 1], correct: [6, 1]}, posterior: {isActive: true}}"></triple-bayes> 
 
 <p>
 What is the probability that Kahneman is in the cave if the weather is nice?
@@ -1595,11 +1530,13 @@ MAYOR: Oh Kahneman? So many people have been looking for him these days.
 <next>Do you know where he is?</next>
 </div>
 
+
+
 <div>
 <p>
 MAYOR: NOPE.
 </p>
-<next>Do you know if he likes beer or cookies?</next>
+<next @click.native="highlight('food-toggle')">Do you know if he likes beer or cookies?</next>
 </div>
 
 <div data-checkpoint="mayor-cookies">
@@ -1614,6 +1551,7 @@ MAYOR: I'd say that he likes cookies 2 times more than the average person. And h
 <p class="question">
 Use the mayor's information to update your beliefs about Kahneman.
 </p>
+
 </div>
 
 <div>
@@ -1642,7 +1580,7 @@ ADVENTURER: I hear you are looking for Kahneman.
 <p>
 ADVENTURER: I am 90% sure that Kahneman is at the cave of uncertainty!
 </p>
-<next>Oh dear, he probably hasn't been through overconfidence training</next>
+<next @click.native="highlight('location-toggle')">Oh dear, he probably hasn't been through overconfidence training</next>
 </div>
 
 <div data-checkpoint="kahneman-loc-man">
@@ -1658,7 +1596,6 @@ Discounting for his questionable reliability, you think that it is more reasonab
 Use the adventurer's information to update your belief on Kahneman's location.
 </p>
 </div>
- -->
 
 <div>
 <p>
@@ -3012,6 +2949,28 @@ Vue.component('triple-bayes', {
       //console.log(result);
       return result;
     },
+    title(key){
+      if (this.conf[key].title !== undefined){
+        return this.conf[key].title;
+      }
+      const defaultTitles = {
+        'prior': 'Prior Belief',
+        'likelihood': 'Likelihood Ratio',
+        'posterior': 'Posterior Belief'
+      };
+      return defaultTitles[key];
+    },
+    subtitle(key){
+      if (this.conf[key].subtitle !== undefined){
+        return this.conf[key].subtitle;
+      }
+      const defaultTitles = {
+        'prior': 'What you think before the evidence',
+        'likelihood': 'Likelihood ratio of the evidence',
+        'posterior': 'What you think after the evidence'
+      };
+      return defaultTitles[key];
+    },
     hasKey(key){
       return this.conf[key];
     },
@@ -3076,10 +3035,11 @@ Vue.component('samples-chart', {
     margin: {
       type: Object, 
       default: function(){
-        return {top: 10, right: 10, bottom: 20, left: 10};
+        return {top: 10, right: 10, bottom: 40, left: 10};
       }
     },
 
+    showRatio: {type: Boolean, default: false}, 
     isDraggable: {type: Boolean, default: false}, 
     maxCounts: {type: Number, default: 15},
 
@@ -3136,6 +3096,10 @@ Vue.component('samples-chart', {
     },
   },
   methods: {
+    prob(x){
+      const total = _.sum(_.values(this.counts));
+      return this.$root.roundTo(this.counts[x]/total*100, 0);
+    },
     dragstart(x){
       this.draggedDot = x;
     },
@@ -3252,7 +3216,6 @@ Vue.component('dist-question', {
     guessSubmitted(params){
       this.stage = 1;
       this.guess = Number(params.val);
-      // debugger;
       this.$root.scrollWindow();
     },
     beliefSubmitted(){
@@ -3321,12 +3284,13 @@ Vue.component('beliefs-as-dists', {
 });
 
 Vue.component('bayes-unit', {
-  computed: {
+  props: {
+    rootMouseEvent: {type: MouseEvent}, 
   },
   data: function(){
     return {
       activePane: null,
-      knowAboutArr: ['food', 'location'],
+      knowAboutArr: [], //['food', 'location'],
     };
   },
   watch:{
@@ -3336,8 +3300,29 @@ Vue.component('bayes-unit', {
       } else{
         this.$root.isShowingSidePanel = true;               
       }
+    },
+    rootMouseEvent(){
+      // Hide the active pane when the user clicks outside the activePane.
+
+      // If the user is not clicking within one of the panes, hide the pane.
+      if (!isDescendant(this.$refs['panes'], this.rootMouseEvent.target)){
+        this.activePane = null;
+      }
+
+      //   console.log(this.rootMouseEvent.target);
+      // if(this.activePane !== null && this.rootMouseEvent.target.id === 'app'){
+      //   this.activePane = null;
+      // }
     }
   },
+  // computed: {
+  //   showPaneFood(){
+  //     return this.activePane === 'food';
+  //   },
+  //   showPaneLocation(){
+  //     return this.activePane === 'location';
+  //   }
+  // },
   methods:{
     knowAbout(thing){
       return this.knowAboutArr.indexOf(thing) > -1;
@@ -3351,9 +3336,15 @@ Vue.component('bayes-unit', {
       } else {
         this.activePane = paneName; 
       }
+      const refName = paneName + '-toggle';
+      this.$refs[refName].classList.remove('color-change');
     },
     toggleStyle(paneName){
       return {color: this.activePane === paneName ? '#000' : ''};
+    },
+    async highlight(refName){
+      await wait(1000);
+      this.$refs[refName].classList.add('color-change');
     }
   },
   template: '#bayes-unit-template'
@@ -3647,6 +3638,8 @@ new Vue({
 
     windowWidth: 0,
     isShowingSidePanel: false,
+
+    mouseEvent: null, 
   },
   computed: {
     currentChapter: function(){
@@ -3716,6 +3709,11 @@ new Vue({
       });    
     },
     mainClick(event){
+      // When you click on the margins, event.target is the "app" node. 
+      console.log('click');
+      this.mouseEvent = event; //Math.random(); //event.target.id;
+//      debugger;
+
       if (!isDescendant(this.$refs['toc'], event.target)){
         this.showTOC = false;
       }

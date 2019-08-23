@@ -180,15 +180,31 @@ todo:
 If the screen is wide enough, then push the text over when the belief is open
 
 ---
-stopped here:
- be able to change the titles of prior belief/posterior belief to new belief/old belief
+done:
 add the percents onto the triple-bayes view
 also add checkpointing onto the side panel
-
-add pulsing to attract attentionto the toggle butons
-would be nice that clicking outside one of the belifef things closes it
 make sure that proportions work
 
+be able to change the titles of prior belief/posterior belief to new belief/old belief
+
+trying to propagate the app signal down to the child
+would be nice that clicking outside one of the belifef things closes it
+
+add pulsing to attract attention to the toggle butons
+
+make the left:100px triple-bayes tighter so it's possibel to escape the window
 
 
-why does the story not consistently grey out the old boxes?
+---
+
+stopped here:
+
+smooth out the language / fix the math of the weather example
+P(D|H)
+P(H|D)
+
+
+why does the story not consistently grey out the old boxes???
+vue transition always goes down?
+
+
