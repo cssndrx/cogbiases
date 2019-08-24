@@ -1020,11 +1020,14 @@ when each moneybag comes in, trigger the wobble animation
   <div>
     <bold>Monk Lesson: Know thyself</bold>
 
-    <img src="images/monk.png">
 
     <div>
-    It is important to know how much (or how little) you know. Most people tend to be overconfident about their answers. We will attempt to train the Overconfidence Bias out of you.
+    It is important to know how much (or how little) you know. When I was a young monk, I thought there was a single answer to everything... then I learned to see the world as <bold>distributions</bold>.
     </div>
+
+    <div>
+    Distributions are pictures of uncertainty. Let's try it here.
+    </div>    
 
     <next>Begin</next>
   </div>
@@ -1037,9 +1040,11 @@ when each moneybag comes in, trigger the wobble animation
 
     <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()">
 
+      Question 1 out of {{questions.length}}.
+
       <template v-slot:tutorial>
         <div>
-          Drag down the circle so that your belief covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits  based on the height of your graph over the correct answer.
+          Drag down the circle so that the distribution covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits  based on the height of your graph over the correct answer.
         </div>
 
         <div>
@@ -1055,12 +1060,13 @@ when each moneybag comes in, trigger the wobble animation
     v-for="(question, index) in questions" v-if="showGame && index !=0 && index <= questionInd" :question="question"
     :key="question.text"
     @done="nextQuestion($event)">
+    Question {{index + 1}} out of {{questions.length}}.
   </dist-question>
-  </div>
+</div>
 
 <div>
   <p>
-    Thank you for washing {{dishDuty}} days of dishes. Together, with your {{gradUnits}} credits, I think you have gained enough character to graduate from monk school.
+    Thank you for washing {{dishDuty}} days of dishes. Together, with your {{$root.roundTo(gradUnits, 1)}} credits, I think you have gained enough character to graduate from monk school.
   </p>
 
   <p>
@@ -1666,13 +1672,13 @@ After almost a week, you make it to the cave with cookies in hand....
     <buton v-if="viz=='certainty'" 
            v-for="certainty in certainties"  
            :key="certainty" 
-           @click="finishQuestion(certainty)">{{certainty}}%</buton>
+           @click="finishQuestion(certainty)">{{certainty*100}}%</buton>
 
     <buton v-if="viz=='moneybag'" 
-            v-for="numLoseIfWrong in numLoseIfWrongs" :key="numLoseIfWrong">
+            v-for="numLoseIfWrong in numLoseIfWrongs" :key="numLoseIfWrong"
+            @click="finishQuestion($root.paramsFromBet(1, numLoseIfWrong).certainty)">
       <fair-bet  
-      :numLoseIfWrong="numLoseIfWrong"
-      @click="finishQuestion($root.paramsFromFairBet(1, numLoseIfWrong).certainty)"></fair-bet>
+      :numLoseIfWrong="numLoseIfWrong"></fair-bet>
     </buton>
   </div>
 
@@ -1683,7 +1689,7 @@ After almost a week, you make it to the cave with cookies in hand....
 <script type="text/x-template" id="dist-question-template">
 <div>
 
-  <div>{{question.text}}</div>
+  <div><bold><slot></slot></bold> {{question.text}}</div>
 
   <input-box @click="guessSubmitted" :advancePset="false"></input-box>
 
@@ -1747,16 +1753,12 @@ After almost a week, you make it to the cave with cookies in hand....
 
 
 <script type="text/x-template" id="overconfidence-template">
-<pset>
-
-<buton>
-<fair-bet :numLoseIfWrong="1"/>
-</buton>
-<buton>
-<fair-bet :numLoseIfWrong="1"/>
-</buton>
+<pset ref="pset">
 
 <div>
+
+<img src="images/cave.png">
+
 <p>
 You were standing alone in a cave holding a scroll and calling out for Kahneman... when the cave mysteriously started shrinking and the walls closed in.
 </p>
@@ -1768,8 +1770,9 @@ The walls are now uncomfortably close around your chest and vital organs.
 <next>Help!</next>
 </div>
 
-<img src="images/eyes.png" style="width:400px">
 <div>
+<img src="images/eyes.png" style="width:400px">
+
 <p>
 VOICE: Welcome to the Cave of Overconfidence.
 </p>
@@ -1783,21 +1786,16 @@ VOICE: You boldly waltzed in thinking you had it figured out. But did you know t
 
 
 <div>
-
 <p>
-Humans are the worst.
+When humans say they are 70% sure, it turns out that you're only 50% right.
 </p>
 
 <p>
-You underestimate the amount of time it'll take to write a good story. 
+93% of human drivers think they are above average.
 </p>
 
 <p>
-93% of drivers think they are above average.
-</p>
-
-<p>
-And when you say you're 70% sure, it turns out that you're only 50% right.
+And humans underestimate the amount of time it'll take them to write the next chapter of Adventures in Cognitive biases. 
 </p>
 
 <p>
@@ -1834,9 +1832,6 @@ The voice chuckles.
 I was thinking more on the order of... fifty moneybags.
 </p>
 
-<!--If this is the monk's section.
-Hey, higher education isn't free these days. You'll need to pay __ moneybags to graduate from this monastery -->
-
 <next>But I don't have that many</next>
 </div>
 
@@ -1850,56 +1845,50 @@ But if you lose, *walls pulse threatening*.... well, you don't want to happen.
 </p>
 
 <next>Oh no</next>
-</div>
+</div> 
 
 
 <div>
 <p>
-I will ask you a question. 
+I will ask you some questions. But more importantly, I will ask you how sure you are of your answer.  
 </p>
 
 <p>
-Which is more popular?
+  Answer these {{certaintyBundle.questions.length}} questions to see how you do without any calibration.
 </p>
-
-[ice cream] [pizza]
-
-<p>
-But then more importantly, I will ask you how sure you are of your answer. 
-</p>
-
-</div>
-
-
-<div>
-  First, answer these {{certaintyQuestions.length}} questions to see how you do without any calibration.
-</div>
 
 <moneybag-question 
-  v-for="(question, index) in certaintyQuestions" v-if="index <= questionInd" :question="question"
+  v-for="(question, index) in certaintyBundle.questions" 
+  v-if="index <= certaintyBundle.questionInd" 
+  :question="question"
   :key="question.text"
   viz="certainty"
-  @done="nextQuestion">
-  <bold>{{index + 1}} out of {{certaintyQuestions.length}}: </bold>
+  @done="nextQuestion($event, certaintyBundle)">
+  <bold>Problem {{index + 1}} out of {{certaintyBundle.questions.length}}: </bold>
 </moneybag-question>
-
-<div>
-On average, you were ___% sure. And on average, you were __% accurate.
 </div>
 
 <div>
-calibrated:
-This is indeed pretty impressive for a human. 
+  <p>
+  On average, you were {{certaintySureness}}% sure. And on average, you were {{certaintyAccuracy}}% accurate.
+  </p>
 
-overconfident:
-You're a typical human, with more certainty than accuracy.
+  <p v-if="certaintySureness > certaintyAccuracy + 10">
+    You're a typical human, with more certainty than accuracy.
+  </p>
+  <p v-else-if="certaintySureness  + 10 < certaintyAccuracy">
+    How unusual.... you were less certain than you were accurate. 
+  </p>
+  <p v-else>
+    This is indeed pretty impressive for a human. You are reasonably calibrated. You may not need this following tool, but humor me. 
+  </p>
 
-underconfident:
-How unusual.... you were less certain than you were accurate. 
+  <next>Next</next>
 </div>
 
+
+<div>
 <p>
-You may not need this following tool, but humor me. 
 To better calibrate your certainty, think in terms of the fair bet instead. 
 </p>
 
@@ -1907,54 +1896,101 @@ To better calibrate your certainty, think in terms of the fair bet instead.
 For instance, the bet:
 </p>
 
-<buton><fair-bet :showCertainty="false" /></buton>
+<fair-bet :showCertainty="false" style="padding: 8px" />
 
 <p>
 Corresponds to 50% certainty, because if you are correct 50% of the time, this bet would break even.
 </p>
 
+<next>Hm...</next>
+</div>
+
+<div>
 <p>
 The bet:
 </p>
 
-<buton><fair-bet :numLoseIfWrong="4" :showCertainty="false"/></buton>
+<fair-bet :numLoseIfWrong="4" :showCertainty="false" style="padding: 8px" />
 
 <p>
 Corresponds to 80% certainty, because if you are correct 80% of the time, this bet would break even.
 </p>
 
-<p>
-Try it here:
+<next>I think I see the relationship between fair bets and certainty</next>
+</div>
 
-Which weighs more?
+<div>
+
+<p>
+Try it here...
 </p>
-[Goat] [Sheep]
 
-What would you like to wager? 
+<moneybag-question 
+  :question="moneybagBundle.questions[0]"
+  viz="moneybag"
+  @done="logFirstMoneybagQuestion">
+  <bold>Problem 1 out of {{moneybagBundle.questions.length}}: </bold>
+</moneybag-question>
+</div>
 
-[bet] [bet] [bet]
-
+<div>
 <p>
-Since you were correct/incorrect, you win __. 
+Since you were {{firstMoneybagPayout > 0 ? 'correct' : 'incorrect'}}, you {{ firstMoneybagPayout > 0 ? 'win' : 'lose'}} {{firstMoneybagPayout}} moneybags. 
 </p>
 
 <next>Why don't I always pick 50%</next>
+</div>
 
+<div>
 <p>
 Reader, you should answer honestly. If the cave detects any dishonesty, *cave walls close in menancingly*.
 </p>
 
 <next>I'm ready</next>
+</div>
 
-
+<div>
 <moneybag-question 
-  v-for="(question, index) in moneybagQuestions" v-if="index <= questionInd" :question="question"
+  v-for="(question, index) in moneybagBundle.questions" 
+  v-if="index > 0 && index <= moneybagBundle.questionInd" 
+  :question="question"
   :key="question.text"
   viz="moneybag"
-  @done="nextQuestion">
-  <bold>{{index + 1}} out of {{certaintyQuestions.length}}: </bold>
+  @done="nextQuestion($event, moneybagBundle)">
+  <bold>Problem {{index + 1}} out of {{moneybagBundle.questions.length}}: </bold>
 </moneybag-question>
+</div>
 
+<div>
+
+<p>
+  This time, on average, you were {{moneybagSureness}}% sure. And on average, you were {{moneybagAccuracy}}% accurate.
+</p>
+
+<p v-if="improvement > 10">
+  It seems like you're better calibrated than before...
+</p>
+<p v-if="improvement < 0">
+  It seems like you're worse off than before... The mysterious voice sighs.
+</p>
+<p v-else>
+  It seems like you're about the same as before. The mysterious voice sighs.
+</p>
+
+<next>Next</next> 
+</div>
+
+<div>
+<p>
+Out of the darkness steps...
+</p>
+
+<next>Could this be your mentor?</next>
+</div>
+
+<div>
+  To be continued... link here to about.
+</div>
 
 </pset>
 </script>
@@ -2023,31 +2059,31 @@ const numericQuestions = [
   text: 'What percent of the population is left handed?',
   answer: 10,
 },
-// {
-//   text: 'How many hours does an average cat sleep in a day?',
-//   answer: 16,
-// },
-// ,
-// {
-//   text: 'What percent of total electricity consumption goes to refrigerators?',
-//   answer: 7,
-// },
-// {
-//   text: 'What is the estimated age of the universe in billions of years?',
-//   answer: 13.75,
-// },
-// {
-//   text: "What percent of the body's nutrients is consumed by the brain?",
-//   answer: 25,
-// },
-// {
-//   text: 'How many bones are there in the human body?',
-//   answer: 206,
-// },
-// {
-//   text: 'How many kilometers tall is Mt. Everest?',
-//   answer: 8.8
-// },
+{
+  text: 'How many hours does an average cat sleep in a day?',
+  answer: 16,
+},
+,
+{
+  text: 'What percent of total electricity consumption goes to refrigerators?',
+  answer: 7,
+},
+{
+  text: 'What is the estimated age of the universe in billions of years?',
+  answer: 13.75,
+},
+{
+  text: "What percent of the body's nutrients is consumed by the brain?",
+  answer: 25,
+},
+{
+  text: 'How many bones are there in the human body?',
+  answer: 206,
+},
+{
+  text: 'How many kilometers tall is Mt. Everest?',
+  answer: 8.8
+},
 ];
 
 // main source: 'https://www.rd.com/culture/interesting-facts/'
@@ -2130,7 +2166,7 @@ const moneybagQuestions = [
 },
 
 {
-  text: "Nikola Tesla hated what type of jewelry?",
+  text: "Nikola Tesla disliked what type of jewelry?",
   choices: ['silver', 'pearls'],
   answer: ['pearls'],
 },
@@ -2922,12 +2958,12 @@ Vue.component('triple-bayes', {
     allCorrect(){
       const keys = ['prior', 'likelihood', 'posterior'];
       const parts = keys.map(key => !this.conf[key] || !this.conf[key].correct || this.isEqual(this.conf[key].correct, this.conf[key].dist));
-      console.log(parts);
+//      console.log(parts);
       return _.every(parts);
     }
   },
   created(){
-    console.log('mounted');
+//    console.log('mounted');
     this.conf = _.cloneDeep(this.config);
   },
   methods: {
@@ -3168,7 +3204,7 @@ Vue.component('bold', {
 Vue.component('moneybag-question', {
   props: {
     question: {type: Object}, 
-    certainties: {type: Array, default: () => [50, 60, 70, 80, 90]},
+    certainties: {type: Array, default: () => [.5, .6, .7, ,8, .9]},
     numLoseIfWrongs: {type: Array, default: () => [1, 2, 3, 4, 9]},
     viz: {type: String, default: 'certainty'}
   },
@@ -3183,7 +3219,7 @@ Vue.component('moneybag-question', {
   methods: {
     finishQuestion(certainty){
       // $root.paramsFromCertainty(certainty);
-      this.$emit('done', {choice: this.userChoice, userCertainty: this.certainty});
+      this.$emit('done', {question: this.question, choice: this.userChoice, userCertainty: certainty});
     }
   },
   template: '#moneybag-question-template',
@@ -3308,21 +3344,9 @@ Vue.component('bayes-unit', {
       if (!isDescendant(this.$refs['panes'], this.rootMouseEvent.target)){
         this.activePane = null;
       }
-
-      //   console.log(this.rootMouseEvent.target);
-      // if(this.activePane !== null && this.rootMouseEvent.target.id === 'app'){
-      //   this.activePane = null;
-      // }
     }
   },
-  // computed: {
-  //   showPaneFood(){
-  //     return this.activePane === 'food';
-  //   },
-  //   showPaneLocation(){
-  //     return this.activePane === 'location';
-  //   }
-  // },
+
   methods:{
     knowAbout(thing){
       return this.knowAboutArr.indexOf(thing) > -1;
@@ -3354,20 +3378,68 @@ Vue.component('overconfidence', {
   data: function(){
     return {
 
-      certaintyQuestions: certaintyQuestions,
-      moneybagQuestions: moneybagQuestions,
+      certaintyBundle: {
+        questions: certaintyQuestions,
+        questionInd: 0,
+        results: [],
+      },
 
-      questionInd: 0,
+      moneybagBundle:{
+        questions: moneybagQuestions,
+        questionInd: 1,
+        results: []
+      },
 
-      results: [],
+      firstMoneybagPayout: null,
     };
   },
-  methods: {
-    nextQuestion(params){
-//      this.showGame = true;
-      this.questionInd++;
-      this.results.push(params.result);
+  computed: {
+    certaintyAccuracy(){
+      return this.averageAccuracy(this.certaintyBundle);
     },
+    certaintySureness(){
+      return this.averageSureness(this.certaintyBundle);
+    },
+    moneybagAccuracy(){
+      return this.averageAccuracy(this.moneybagBundle);
+    },
+    moneybagSureness(){
+      return this.averageSureness(this.moneybagBundle);
+    },
+    improvement(){
+      return Math.abs(this.certaintyAccuracy - this.certaintySureness) - Math.abs(this.moneybagAccuracy - this.moneybagSureness);
+    }
+  },
+  methods: {
+    nextQuestion(params, bundle){
+      bundle.questionInd++;
+      bundle.results.push(params);
+
+      // No more questions.
+      if(bundle.questionInd === bundle.questions.length){
+        this.$refs['pset'].next();
+      }
+    },
+    // Returns: 74
+    averageAccuracy(bundle){
+      const mean =_.mean(bundle.results.map(x => x.choice === x.question.answer ? 1 : 0));
+      return this.$root.roundTo(mean * 100);
+    },
+    // Returns: 74
+    averageSureness(bundle){
+      return this.$root.roundTo(_.mean(bundle.results.map(x => x.userCertainty)) * 100, 0);
+    },
+    logFirstMoneybagQuestion(params){
+      this.moneybagBundle.results.push(params);
+
+      if (params.choice === params.question.answer){
+        this.firstMoneybagPayout = 1;
+      } else {
+        const bet = this.$root.paramsFromCertainty(params.userCertainty);
+        this.firstMoneybagPayout = -1 * bet.numLoseIfWrong;
+      }
+      this.$refs['pset'].next();
+    }
   },
   template: '#overconfidence-template'
 });
@@ -3626,7 +3698,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 2,
+    chapterInd: 3,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
@@ -3710,9 +3782,7 @@ new Vue({
     },
     mainClick(event){
       // When you click on the margins, event.target is the "app" node. 
-      console.log('click');
-      this.mouseEvent = event; //Math.random(); //event.target.id;
-//      debugger;
+      this.mouseEvent = event; 
 
       if (!isDescendant(this.$refs['toc'], event.target)){
         this.showTOC = false;
