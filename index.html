@@ -527,7 +527,7 @@ You are going to bring us into this new world of <span class="animated infinite 
 
 
 <keep-alive>
-  <component v-bind:is="visibleScreen" style="position:relative" :root-mouse-event="mouseEvent"></component>
+  <component v-bind:is="visibleScreen" style="position:relative; margin-top: 16px" :root-mouse-event="mouseEvent"></component>
 </keep-alive>
 
 
@@ -1015,7 +1015,12 @@ when each moneybag comes in, trigger the wobble animation
 <script type="text/x-template" id="beliefs-as-dists-template">
 <pset ref="pset">
 
-<!--  <dist-question :question="questions[0]" @done="nextQuestion" /> -->
+<!--<div>
+<draggable-dist ref="dist" :guess1="150" :guess2="300"/>
+<draggable-dist ref="dist" :guess1="4" :guess2="5"/>
+<draggable-dist ref="dist" :guess1="24" :guess2="65"/>
+<draggable-dist ref="dist" :guess1="12" :guess2="15"/> humm the shape isn't right for hte cat hours:
+</div> -->
 
   <div>
     <bold>Monk Lesson: Know thyself</bold>
@@ -1694,18 +1699,26 @@ After almost a week, you make it to the cave with cookies in hand....
   <input-box @click="guessSubmitted" :advancePset="false"></input-box>
 
   <div v-if="stage > 0">
+    <p>
+      If you had to make a second guess, what would it be?
+    </p>
+    <input-box @click="secondGuessSubmitted" :advancePset="false"></input-box>
+  </div>
+
+
+  <div v-if="stage > 1">
     <slot name="tutorial"></slot>
-    <draggable-dist ref="dist" :guess="guess"/>
+    <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2"/>
     <buton @click="beliefSubmitted">Submit belief</buton>
   </div>
 
-  <div v-if="stage > 1">
+  <div v-if="stage > 2">
     <div>
       The correct answer was {{question.answer}}. The height of the correct answer on your normalized belief graph was {{$root.roundTo(guessHeight, 5)}}.
     </div>
 
     <div v-if="result.gradUnits">
-      Thereby you accumulate {{$root.roundTo(result.gradUnits, 0)}} units towards graduation. 
+      You accumulate {{$root.roundTo(result.gradUnits, 0)}} units towards graduation. 
     </div>
 
     <div v-if="result.dishDuty">
@@ -2063,7 +2076,6 @@ const numericQuestions = [
   text: 'How many hours does an average cat sleep in a day?',
   answer: 16,
 },
-,
 {
   text: 'What percent of total electricity consumption goes to refrigerators?',
   answer: 7,
@@ -2725,7 +2737,8 @@ Vue.component('draggable-dist', {
   props: {        
     chartHeight: {type: Number, default: 150},
     chartWidth: {type: Number, default: 500},
-    guess: {type: Number, default: 10},
+    guess1: {type: Number, default: 10},
+    guess2: {type: Number, default: 10},
   },
   data(){
     return {
@@ -2741,11 +2754,14 @@ Vue.component('draggable-dist', {
     }
   },
   mounted(){
-    this.conf = [this.guess, this.guess];
+    this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
     this.plotFigure();
     this.plotAxis();
   },
   computed: {
+    guess(){
+      return Math.round((this.guess1 + this.guess2)/2);
+    },
     baseWidth(){
       return lerp(this.conf[1]-this.conf[0], 0, 100, 50, this.chartWidth);
     },
@@ -2803,13 +2819,7 @@ Vue.component('draggable-dist', {
       const mousePos = this.getRelativeMousePos(event, 'dot');
       this.mouseWithinDotPos = mousePos;
     },
-    // dragstart(event){
-    //   console.log('dragstart');
-    // },
     drag(event){
-      // console.log('drag');
-        // var top = $(this).position().top;
-        // var left = $(this).position().left;
         const height = this.chartHeight;
         const width = this.chartWidth;
         const guess = this.guess;
@@ -2823,26 +2833,28 @@ Vue.component('draggable-dist', {
         this.dotTop = top;
         this.dotLeft = left;
 
+        // Enforce a min beta because the distribution gets pretty spiky and unpredictable for lower values.
         const peakiness = (height - top) / height * 10;
         const skew = left/width;
+        const beta_a = Math.max(1.2, peakiness * skew);
+        const beta_b = Math.max(1.2, peakiness * (1-skew));
 
-//        console.log('peakiness: ' + peakiness + ' skew: ' + skew);
-        const beta_a = Math.max(1.1, peakiness * skew);
-        const beta_b = Math.max(1.1, peakiness * (1-skew));
         
-        // [0, 1] -> [0, 30]
-        //var spread = Math.round(top/height * 30);
-        const spreadScale = d3.scalePow().exponent(3).range([0, 100]);
-        const spread = spreadScale(top/height);
-
+        // Convert distance from top to spread by enforcing 3 critical points (max, start, min).
+        const origDistance = Math.abs(this.guess1-this.guess2)/2;
+        const maxSpread = Math.min(origDistance*50, 150);
+        const spreadScale = d3.scaleLinear()
+          .domain([0, 28, height]).range([0, origDistance, maxSpread]);
+        const spread = spreadScale(top);
 
         const mode = (beta_a - 1)/(beta_a + beta_b - 2);
-        var conf = [guess - mode*spread, guess + (1-mode)*spread];
-        //var val = Math.round(lerp(mode, 0, 1, conf[0], conf[1]));
 
-        if (conf[0] < 0){
-          conf = [0, spread];
-        }
+//        debugger;
+
+        // Enforce positive lower bound for interval.
+        var conf = [Math.max(0, this.guess - mode*spread), 
+                                this.guess + (1-mode)*spread];
+
         this.conf = conf;
         this.betaA = beta_a;
         this.betaB = beta_b;
@@ -3233,7 +3245,8 @@ Vue.component('dist-question', {
   data(){
     return {
       stage: 0,
-      guess: null,
+      guess1: null,
+      guess2: null,
     };
   },
   computed: {
@@ -3251,11 +3264,16 @@ Vue.component('dist-question', {
   methods: {
     guessSubmitted(params){
       this.stage = 1;
-      this.guess = Number(params.val);
+      this.guess1 = Number(params.val);
+      this.$root.scrollWindow();
+    },
+    secondGuessSubmitted(params){
+      this.stage = 2;
+      this.guess2 = Number(params.val);
       this.$root.scrollWindow();
     },
     beliefSubmitted(){
-      this.stage = 2;
+      this.stage = 3;
       this.$root.scrollWindow();
       // this.guessHeight = this.$refs['dist'].getPDF(this.question.answer);
     },
@@ -3698,7 +3716,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 3,
+    chapterInd: 1,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,

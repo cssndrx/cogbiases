@@ -223,3 +223,47 @@ do we still want to add two guesses for the dist question?
 
 add more story to the beginning of the monk chapter??
 
+---
+
+stopped here: playtest the new section so we can see how we want to order the story
+
+who'd be good for this??
+
+in either case, this is better than what we currently have...
+
+---
+
+draggable-dist y axis is a little weird
+
+todo: figure out the two scales
+baseWidth(){
+  return lerp(this.conf[1]-this.conf[0], 0, 100, 50, this.chartWidth);
+},
+
+const spreadScale = d3.scalePow().exponent(3).range([0, 100]);
+const spread = spreadScale(top/height);
+
+
+what's up with:
+var conf = [guess - mode*spread, guess + (1-mode)*spread];
+
+
+can we fix this just by adding a constraint??
+
+---
+
+hmm:
+the units towards graduation metric depends on the scale of the problem
+so like, you get fewer points when it's num countries/num bones as opposed to percent...
+--> what to do??
+
+----
+
+
+smooth out the language / fix the math of the weather example
+P(D|H)
+P(H|D)
+
+
+add more story
+add the icons back in
