@@ -260,6 +260,9 @@ so like, you get fewer points when it's num countries/num bones as opposed to pe
 ----
 
 
+draggable-dist looks a lot better with a fixed constraint.
+experiment with 
+
 smooth out the language / fix the math of the weather example
 P(D|H)
 P(H|D)
@@ -267,3 +270,18 @@ P(H|D)
 
 add more story
 add the icons back in
+
+---
+
+add google analytics to see far how people get
+add thanks section
+
+
+gtag('event', 'v2', {
+  'event_category': 'read',
+  'event_label': chapter_name,
+  'value': 1
+});
+
+google friend
+fred bertsch

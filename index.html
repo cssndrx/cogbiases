@@ -1,24 +1,17 @@
 <!doctype html>
-
-
 <head>
 <meta charset="utf-8" />
-<!--<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700,900" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">-->
 
-<!--
-font-family: 'VT323', monospace;
-font-family: 'Princess Sofia', cursive;
-font-family: 'Indie Flower', cursive;
-font-family: 'Dokdo', cursive;
-font-family: 'East Sea Dokdo', cursive;
-font-family: 'Creepster', cursive;
-font-family: 'Bungee Hairline', cursive;
-font-family: 'Bungee', cursive;
-font-family: 'Bungee Shade', cursive;
-font-family: 'Bungee Inline', cursive;
-font-family: 'Cormorant Garamond', serif;
--->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=59181255"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '59181255');
+</script>
+
 
 <!-- todo: strip and remove the unused -->
 <link href="https://fonts.googleapis.com/css?family=Schoolbell|Dokdo|Fira+Sans:300,700" rel="stylesheet">
@@ -452,9 +445,9 @@ button{
     color: #000;
   }
 }
-
-
 </style>
+
+</head>
 
 <body>
 
@@ -895,6 +888,7 @@ You are going to bring us into this new world of <span class="animated infinite 
   <buton @click="next()"><slot></slot></buton>
 </script>
 
+
 <script type="text/x-template" id="intro-scene-template">
 <pset>
 
@@ -1012,6 +1006,11 @@ when each moneybag comes in, trigger the wobble animation
 
 </script>
 
+
+<script type="text/x-template" id="inline-img-template">
+  <img :src="'images/' + src" style="height:28px; display:inline-block">
+</script>
+
 <script type="text/x-template" id="beliefs-as-dists-template">
 <pset ref="pset">
 
@@ -1022,21 +1021,37 @@ when each moneybag comes in, trigger the wobble animation
 <draggable-dist ref="dist" :guess1="12" :guess2="15"/> humm the shape isn't right for hte cat hours:
 </div> -->
 
+
   <div>
-    <bold>Monk Lesson: Know thyself</bold>
+    <p>
+    MONK: When I first joined the monastery, I was searching for truth. I was looking for one "true answer" to every question I had. 
+    </p>
 
+    <p>
+      However, in my search, I have discovered that there is almost always uncertainty around beliefs and "answers". When I learned to model this uncertainty as <bold>distributions</bold>, that is when others say I became an old, wise monk. 
+    </p>      
 
-    <div>
-    It is important to know how much (or how little) you know. When I was a young monk, I thought there was a single answer to everything... then I learned to see the world as <bold>distributions</bold>.
-    </div>
-
-    <div>
-    Distributions are pictures of uncertainty. Let's try it here.
-    </div>    
-
-    <next>Begin</next>
+    <next>Why would I want to do that?</next>
   </div>
 
+  <div>
+    <p>
+      MONK: You do not need to old, but seeing distributions may be a helpful concept. A distribution is a picture of uncertainty where the outcomes are on the x-axis, and the probabilities assigned to them are in the y-axis.
+    </p>
+
+    <p>
+      MONK: It allows you to shift from using language like "pretty sure", to knowing exactly what you think.
+    </p>
+
+    <p>
+      Example distributions: ____. // weather example
+    </p>
+
+    <p>
+      Now, practice thinking in distributions. 
+    </p>
+    <next>Begin</next>
+  </div>
 
   <div>
     <p>
@@ -1053,7 +1068,7 @@ when each moneybag comes in, trigger the wobble animation
         </div>
 
         <div>
-          But be careful... if you assign zero probability to the correct answer, you will get monastery dish duty.
+          But to add some stakes in the game... if you assign zero probability to the correct answer, you will get monastery dish duty <inline-img src="dishes.png" />.
         </div>
       </template>
     
@@ -1071,7 +1086,7 @@ when each moneybag comes in, trigger the wobble animation
 
 <div>
   <p>
-    Thank you for washing {{dishDuty}} days of dishes. Together, with your {{$root.roundTo(gradUnits, 1)}} credits, I think you have gained enough character to graduate from monk school.
+    Thank you for washing {{dishDuty}} days of dishes <inline-img src="dishes.png" />. Together, with your {{$root.roundTo(gradUnits, 1)}} credits <inline-img src="grad.jpg" />, I think you have gained enough character to graduate from monk school.
   </p>
 
   <p>
@@ -1708,7 +1723,7 @@ After almost a week, you make it to the cave with cookies in hand....
 
   <div v-if="stage > 1">
     <slot name="tutorial"></slot>
-    <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2"/>
+    <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2" :maxBound="question.maxBound" />
     <buton @click="beliefSubmitted">Submit belief</buton>
   </div>
 
@@ -1718,11 +1733,11 @@ After almost a week, you make it to the cave with cookies in hand....
     </div>
 
     <div v-if="result.gradUnits">
-      You accumulate {{$root.roundTo(result.gradUnits, 0)}} units towards graduation. 
+      You accumulate {{$root.roundTo(result.gradUnits, 1)}} units towards graduation <inline-img src="grad.jpg" />. 
     </div>
 
     <div v-if="result.dishDuty">
-      Thereby you will be washing dishes for {{result.dishDuty}} night.
+      Thereby you will be washing dishes for {{result.dishDuty}} night <inline-img src="dishes.png" />.
     </div>
   
     <buton @click="finishQuestion">Onwards</buton>
@@ -1800,19 +1815,19 @@ VOICE: You boldly waltzed in thinking you had it figured out. But did you know t
 
 <div>
 <p>
-When humans say they are 70% sure, it turns out that you're only 50% right.
+VOICE: When humans say they are 70% sure, it turns out that you're only 50% right.
 </p>
 
 <p>
-93% of human drivers think they are above average.
+VOICE: 93% of human drivers think they are above average.
 </p>
 
 <p>
-And humans underestimate the amount of time it'll take them to write the next chapter of Adventures in Cognitive biases. 
+VOICE: And humans grossly underestimate the amount of time it'll take them to write the next chapter of Adventures in Cognitive biases. 
 </p>
 
 <p>
-I'm tired of all these little lies humans tell eachother and themselves.
+VOICE: I'm tired of all these little lies humans tell eachother and themselves.
 </p>
 
 <next> Who are you? Please let me go.</next>
@@ -1821,11 +1836,11 @@ I'm tired of all these little lies humans tell eachother and themselves.
 
 <div>
 <p>
-I'll let you go... for a price. 
+VOICE: I'll let you go... for a price. 
 </p>
 
 <p>
-How much money do you have on you? 
+VOICE: How much money do you have on you? 
 </p>
 
 <p>
@@ -1842,7 +1857,7 @@ The voice chuckles.
 </p>
 
 <p>
-I was thinking more on the order of... fifty moneybags.
+VOICE: I was thinking more on the order of... fifty moneybags.
 </p>
 
 <next>But I don't have that many</next>
@@ -1854,7 +1869,7 @@ You can bet with me to earn more money...
 </p>
 
 <p>
-But if you lose, *walls pulse threatening*.... well, you don't want to happen. 
+But if you lose, *walls closein further*.... well, you don't want to happen. 
 </p>
 
 <next>Oh no</next>
@@ -2056,6 +2071,56 @@ Out of the darkness steps...
 
 </script>
 
+
+<script type="text/x-template" id="thanks-template">
+<div>
+<p>
+  The list of people to thank here is huge. 
+</p>
+<p>
+  ___
+
+  If you enjoyed the story so far and want to buy the monk some tea, ___.
+
+The list of people to thank is very long: 
+  Anand + Kernel
+  Spencer
+  Friends nearby
+</p>
+
+<p>
+The original verison of this game was built as part of a masters thesis with the MIT Media Lab's Fluid Interfaces Group headed by Pattie Maes. Ideas in the game were also heavily influenced by two classes at MIT (9.660 by Prof. Josh Tenenbaum) and (6.437 by Prof. Lizhong Zheng). 
+</p>
+
+<p>
+Many friends and advisors helped with one or more incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li and Ruwen Liu, Pattie Maes, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, BV, Victoria Xia, and Sophia Youn. And I'm sure I'm forgetting some! 
+</p>
+
+<p>
+The backers and supporters of Ishaan's Journey, including Brienne and Eliezer Yudkowsky, Eric Chisholm, Alia McCutcheon and other folks from the LessWrong scene who encouraged me to develop this further and who were very patient with me as I took several unnecessary detours. 
+</p>
+
+<p>
+Nicky Case who helped nurture an amazing community around explorable  explanations, and created multiple examples for how to make experiences both fun + educational. And thank you to people who wrote in with encouragement and offers to help (___). 
+</p>
+
+<p>
+Spencer Greenberg and Mike Mozer who ___.
+
+RMO
+Josh Cai
+
+Vue.js which greatly simplified and cleaned the code needed for this project, and actually made it pleasant to write.
+</p>
+
+<p>
+If you'd like to submit feedback or buy the monk a coffee, both would be very appreciated!
+</p>
+
+
+</div>
+</script>
+
 <!-- end templates -->
 
 
@@ -2065,20 +2130,23 @@ Out of the darkness steps...
 
 const numericQuestions = [
 {
+  text: 'How many hours does an average cat sleep in a day?',
+  answer: 16,
+  maxBound: 24,
+},
+{
+  text: 'What percent of total electricity consumption goes to refrigerators?',
+  answer: 7,
+  maxBound: 100,
+},
+{
   text: 'How many countries are there in the world?',
   answer: 196,
 },
 {
   text: 'What percent of the population is left handed?',
   answer: 10,
-},
-{
-  text: 'How many hours does an average cat sleep in a day?',
-  answer: 16,
-},
-{
-  text: 'What percent of total electricity consumption goes to refrigerators?',
-  answer: 7,
+  maxBound: 100,
 },
 {
   text: 'What is the estimated age of the universe in billions of years?',
@@ -2087,6 +2155,7 @@ const numericQuestions = [
 {
   text: "What percent of the body's nutrients is consumed by the brain?",
   answer: 25,
+  maxBound: 100,
 },
 {
   text: 'How many bones are there in the human body?',
@@ -2672,6 +2741,14 @@ Vue.component('distribution', {
   template: '#distribution-template'
 });
 
+
+Vue.component('inline-img', {
+  props: {
+    src: {type: String},
+  },
+  template: '#inline-img-template'
+});
+
 Vue.component('samples-from-distribution', {
   props: {
     title: {type: String},
@@ -2739,6 +2816,9 @@ Vue.component('draggable-dist', {
     chartWidth: {type: Number, default: 500},
     guess1: {type: Number, default: 10},
     guess2: {type: Number, default: 10},
+
+    // Optional max value to cap the distribution to.
+    maxBound: {type: Number},
   },
   data(){
     return {
@@ -2852,8 +2932,10 @@ Vue.component('draggable-dist', {
 //        debugger;
 
         // Enforce positive lower bound for interval.
-        var conf = [Math.max(0, this.guess - mode*spread), 
-                                this.guess + (1-mode)*spread];
+        const lowerConf = Math.max(0, this.guess - mode*spread);
+        const upperConf = this.guess + (1-mode)*spread;     
+
+        const conf = this.maxBound === undefined ? [lowerConf, upperConf] : [lowerConf, Math.min(upperConf, this.maxBound)];
 
         this.conf = conf;
         this.betaA = beta_a;
@@ -3492,6 +3574,7 @@ Vue.component('delay', {
   template: `<span v-if="shouldTrigger" style="compStyle"><slot></slot></span>`,
 });
 
+
 // Hides content until it is revealed as part of the story.
 Vue.component('story', {
   props: {
@@ -3507,8 +3590,6 @@ Vue.component('story', {
   },
   template: '#story-template'
 });
-
-
 
 /*
 How should this work:
@@ -3617,6 +3698,8 @@ Vue.component('pset', {
     for (var i=1; i<this.elms.length; i++){
       this.elms[i].style.display = 'none';
     }
+
+    this.$root.report(0);
   },
   methods: {
     next(){
@@ -3635,6 +3718,7 @@ Vue.component('pset', {
       // make current ind, fully visible
       this.elms[this.ind].style.display = 'initial';
 
+      this.$root.report(this.ind);
       this.$root.scrollWindow();
     }
   },
@@ -3834,7 +3918,18 @@ new Vue({
         await wait(30);
       }
       this.isScrolling = false;
-    }    
+    },
+    report(ind){
+      const chapterName = this.currentChapter.component;
+      console.log('reporting ' + chapterName + ' ' + ind);
+      gtag('event', 'v2', {
+        'event_category': 'read',
+        'event_label': chapterName,
+        'value': ind
+      });
+    },
+
+
   } // end methods
 });
 </script>
