@@ -423,9 +423,9 @@ button{
   color: #000;
 }
 
-.toggle:hover div:first-child{
-  background-color: #eee;
-}
+/*.toggle div:first-child{
+  text-decoration: underline;
+}*/
 
 .color-change{
   position: absolute;
@@ -444,6 +444,14 @@ button{
   100%{
     color: #000;
   }
+}
+
+.thanks, .thanks * {
+  font-size: 14px;
+}
+
+.disabled, .disabled * { 
+  pointer-events: none; 
 }
 </style>
 
@@ -465,7 +473,11 @@ button{
       <img :src="'images/' + currentChapter.image" 
            style="max-width:50px; max-height:100px">
 
-      <span style="top:60px; font-size:12px; display: inline-block; margin:8px; vertical-align: top"><bold style="font-size:12px">Chapter {{chapterInd}}</bold><br> {{currentChapter.description}}</span>
+      <span style="top:60px; font-size:12px; display: inline-block; margin:8px; vertical-align: top">
+        <bold style="font-size:12px">{{ chapterInd < chapters.length-1 ? 'Chapter ' + chapterInd : 'Thanks' }}</bold>
+        <br> 
+        {{currentChapter.description}}
+      </span>
     
       <span style="position:absolute; right:16px; top:16px">▼</span>
     </div>
@@ -481,41 +493,29 @@ button{
         <img :class="{'story-point-silhouette': currentChapter !== chapter}"
             :src="'images/' + chapter.image" 
             style="max-width:50px; max-height:100px">
-        <span style="top:60px; font-size:12px; display: inline-block; margin:8px;"><bold style="font-size:12px">Chapter {{ind}}</bold><br> {{chapter.description}}</span>
+        <span style="top:60px; font-size:12px; display: inline-block; margin:8px;">
+          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : 'Thanks' }}</bold>
+          <br> 
+          {{chapter.description}}
+        </span>
       </div>
     </div>
     </transition>
   </div>
 
 <!--
-<transition name="slide-fade">
-<div v-if="show" style="background-color: blue; width:200px; height:200px;"></div>
-</transition>
-  <button @click="show = !show">
-    Toggle render
-  </button>
-<button class="rainbow-text">Test</button>
-<story :visible="true">
-Are you here?
-If so, you are in the <a @click="show('waiting')">right place</a>.
-What is the probability that you will succeed?
-</story>
-<once-group>
-<once-button>1/2</once-button>
-<once-button>1/4</once-button>
-<once-button>1/8</once-button>
-</once-group>
+
 <story ref="waiting">
 I have been <a @click="show('changing')">waiting</a> for you. 
 </story>
 <story ref="changing">
 The times are changing.
 The prophecies are unclear, but the times are changing.
-This planet is <a @click="show('new-world')">changing</a>.
+This planet is changing.
 </story>
 <story ref="new-world">
 <div>
-You are going to bring us into this new world of <span class="animated infinite jello" style="display:inline-block">uncertainty</span>.
+You are going to bring us into this new world of uncertainty.
 </div>-->
 
 
@@ -784,11 +784,6 @@ You are going to bring us into this new world of <span class="animated infinite 
 </script>
 
 
-
-<script type="text/x-template" id="story-template">
-<div v-if="isVisible"><slot></slot></div>
-</script>
-
 <script type="text/x-template" id="live-text-template">
   <div>
     <transition-group name="fade" tag="span">
@@ -851,20 +846,20 @@ You are going to bring us into this new world of <span class="animated infinite 
 </script>
 
 <script type="text/x-template" id="buton-template">
-<span style="margin-bottom:0px; position:relative; display:inline-block">
-  <div v-if="showX" 
-       class="handwriting" 
-       style="display:inline-block; position:absolute; color:red; font-size: 64px; left: calc(50% - 20px); top:-4px">X</div>
-  <button 
-    @click="butonClicked()" v-on="$listeners" 
-    :class="{'rainbow-text': showRainbowText, 'clicked-button': clickedButton}" 
-    class="buton handwriting"><slot></slot>
-  </button>
-<!--  <transition name="fade">
-    <div v-if="showNopeText" class="nope" style="margin-bottom:8px; position:relative; top:-4px;">
-      {{nope}}
-    </div>
-  </transition>-->
+<span style="margin-bottom:0px; position:relative; display:inline-block; vertical-align:top" class="normal-div">
+  <div style="display:inline-block">
+    <div v-if="showX" 
+         class="handwriting" 
+         style="display:inline-block; position:absolute; color:#777; font-size: 48px; left: calc(50% - 20px); top:-4px">X</div>
+    <button 
+      @click="butonClicked()" v-on="$listeners" 
+      :class="{'clicked-button': clickedButton}" 
+      class="handwriting"
+      :style="buttonStyle"
+      style="margin-bottom:4px"><slot></slot>
+    </button>
+  </div>
+
 </span>
 </script>
 
@@ -1036,15 +1031,11 @@ when each moneybag comes in, trigger the wobble animation
 
   <div>
     <p>
-      MONK: You do not need to old, but seeing distributions may be a helpful concept. A distribution is a picture of uncertainty where the outcomes are on the x-axis, and the probabilities assigned to them are in the y-axis.
+      MONK: You do not need to be old, but seeing distributions may be a helpful concept. A distribution is a picture of uncertainty where the outcomes are on the x-axis, and the probabilities assigned to them are in the y-axis.
     </p>
 
     <p>
       MONK: It allows you to shift from using language like "pretty sure", to knowing exactly what you think.
-    </p>
-
-    <p>
-      Example distributions: ____. // weather example
     </p>
 
     <p>
@@ -1064,7 +1055,7 @@ when each moneybag comes in, trigger the wobble animation
 
       <template v-slot:tutorial>
         <div>
-          Drag down the circle so that the distribution covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits  based on the height of your graph over the correct answer.
+          Drag down the circle so that the distribution covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits <inline-img src="grad.jpg" /> based on the height of your graph over the correct answer.
         </div>
 
         <div>
@@ -1113,22 +1104,28 @@ when each moneybag comes in, trigger the wobble animation
 
 <div ref="panes" style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:white; width: 555px; z-index:1;">
 
-    <div 
-          v-if="knowAbout('location')" 
+    <div v-if="knowAbout('location')" 
          @click="togglePane('location')" 
          class="toggle"
       style="position:absolute; left: -100px;top:100px">
       <div ref="location-toggle" 
-        :style="toggleStyle('location')" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Kahneman's location?</div>
+        :style="toggleStyle('location')" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:350px;">
+          Belief: Kahneman's location?
+          <inline-img src="cave.png" />
+          <inline-img src="tavern.png" />
+        </div>
     </div>
 
-    <div 
-         v-if="knowAbout('food')"
+    <div v-if="knowAbout('food')"
          class="toggle"
          @click="togglePane('food')" 
          :style="toggleStyle('food')" 
       style="position:absolute; left: -130px;top:100px">
-      <div ref="food-toggle" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:300px;">Belief: Food to bring?</div>
+      <div ref="food-toggle" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:350px;">
+        Belief: Food to bring?
+        <inline-img src="beer.gif" />
+        <inline-img src="cookies.jpg" />
+      </div>
     </div>
 
     <transition name="slide-fade">
@@ -1271,7 +1268,7 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 
 <triple-bayes 
   :hypotheses="['Cave', 'Tavern']" 
-  :config="{prior: {dist: [2, 3], title: 'Prior belief about Kahneman\'s location', subtitle:''}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true}}"></triple-bayes> 
+  :config="{prior: {dist: [2, 3], title: 'Prior belief', subtitle:'Base rate on Kahenman\'s location'}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true, subtitle:'Relative likelihood of good weather'}}"></triple-bayes> 
 
 </div>
 
@@ -1462,7 +1459,7 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
 
   <triple-bayes 
   :hypotheses="['Raccoon', 'Fox']" 
-  :config="{prior: {dist: [1, 1], correct: [7, 3], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 5], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes>
+  :config="{prior: {dist: [1, 1], correct: [7, 3], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 5], isActive: true, isDraggable: true}, posterior: {isActive:true}}"></triple-bayes>
 </div>
 
 <div>
@@ -1505,7 +1502,7 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
 <img src="images/thinking-man.jpg" width="300">
 
 <p>
-It's a small town so you are able to walk straight into the mayor's office. The mayor is rubbing his beard with a furrow on his brow.
+It's a small town so you are able to walk straight into the mayor's office. The mayor is rubbing his chin with a furrow on his brow.
 </p>
 
 <next>Talk to the mayor</next>
@@ -1527,7 +1524,7 @@ Show the mayor the appropriate belief.
 
  <triple-bayes 
   :hypotheses="['Billy', 'Bob']" 
-  :config="{prior: {dist: [1, 1], correct: [3, 2], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable: true}, posterior: {}}"></triple-bayes>
+  :config="{prior: {dist: [1, 1], correct: [3, 2], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable: true}, posterior: {isActive:true}}"></triple-bayes>
 </div>
 
 <div>
@@ -1622,6 +1619,7 @@ Discounting for his questionable reliability, you think that it is more reasonab
 Use the adventurer's information to update your belief on Kahneman's location.
 </p>
 </div>
+-->
 
 <div>
 <p>
@@ -1641,7 +1639,7 @@ And you think that you might want to bring some:<br>
 
 <div>
 <p>
-You shift course and proceed directly to the Cave of Uncertainty.
+You shift course and proceed directly to Picabo's Cookie Store.
 </p>
 <next>Go forth</next>
 </div>
@@ -1649,7 +1647,7 @@ You shift course and proceed directly to the Cave of Uncertainty.
 <div>
 <img src="images/cave.png" width="450px">
 <p>
-After almost a week, you make it to the cave with cookies in hand....
+After almost a week, you make it to the cave with peanut butter cookies in hand....
 </p>
 <next>Enter the cave</next>
 </div>
@@ -1666,9 +1664,7 @@ After almost a week, you make it to the cave with cookies in hand....
   The sound of your voice echoes deep into the cave. The walls of the cave begin to shudder and hiss. The walls begin to fold in, and you are suddently uncertain that this was truly the Cave of Uncertainty. 
   </p>
 
-  <p>
-    To be continued...
-  </p>
+  <next @click.native="$root.nextChapter()">Next</next>
 </div>
 
 </pset>
@@ -1680,26 +1676,28 @@ After almost a week, you make it to the cave with cookies in hand....
 
   <div><slot></slot>{{question.text}}</div>
 
-  <div>
+  <once-group>
     <buton v-for="choice in question.choices" :key="choice" @click.native="userChoice = choice">{{choice}}</buton>
-  </div>
+  </once-group>
 
   <div v-if="userChoice">
     <div>
     And, how sure are you about your answer?
     </div>
 
-    <buton v-if="viz=='certainty'" 
-           v-for="certainty in certainties"  
-           :key="certainty" 
-           @click="finishQuestion(certainty)">{{certainty*100}}%</buton>
+    <once-group>
+      <buton v-if="viz=='certainty'" 
+             v-for="certainty in certainties"  
+             :key="certainty" 
+             @click="finishQuestion(certainty)">{{certainty*100}}%</buton>
 
-    <buton v-if="viz=='moneybag'" 
-            v-for="numLoseIfWrong in numLoseIfWrongs" :key="numLoseIfWrong"
-            @click="finishQuestion($root.paramsFromBet(1, numLoseIfWrong).certainty)">
-      <fair-bet  
-      :numLoseIfWrong="numLoseIfWrong"></fair-bet>
-    </buton>
+      <buton v-if="viz=='moneybag'" 
+              v-for="numLoseIfWrong in numLoseIfWrongs" :key="numLoseIfWrong"
+              @click="finishQuestion($root.paramsFromBet(1, numLoseIfWrong).certainty)">
+        <fair-bet  
+        :numLoseIfWrong="numLoseIfWrong"></fair-bet>
+      </buton>
+    </once-group>
   </div>
 
 </div>
@@ -1783,8 +1781,12 @@ After almost a week, you make it to the cave with cookies in hand....
 <script type="text/x-template" id="overconfidence-template">
 <pset ref="pset">
 
-<div>
+<!-- <moneybag-question 
+  :question="certaintyBundle.questions[0]"
+  viz="certainty">
+</moneybag-question> -->
 
+<div>
 <img src="images/cave.png">
 
 <p>
@@ -1823,7 +1825,7 @@ VOICE: 93% of human drivers think they are above average.
 </p>
 
 <p>
-VOICE: And humans grossly underestimate the amount of time it'll take them to write the next chapter of Adventures in Cognitive biases. 
+VOICE: And one human grossly underestimated the amount of time it would take them to write the next chapter of Adventures in Cognitive Biases. 
 </p>
 
 <p>
@@ -1840,14 +1842,10 @@ VOICE: I'll let you go... for a price.
 </p>
 
 <p>
-VOICE: How much money do you have on you? 
+VOICE: How many cookies do you have on you? 
 </p>
 
-<p>
-You feel around your pockets and realize that you've got money! 
-</p>
-
-<next>I have five moneybags</next>
+<next>Five cookies</next>
 </div>
 
 <div>
@@ -1857,7 +1855,7 @@ The voice chuckles.
 </p>
 
 <p>
-VOICE: I was thinking more on the order of... fifty moneybags.
+VOICE: I was thinking more on the order of... fifty cookies.
 </p>
 
 <next>But I don't have that many</next>
@@ -1865,7 +1863,7 @@ VOICE: I was thinking more on the order of... fifty moneybags.
 
 <div>
 <p>
-You can bet with me to earn more money...
+You can bet with me to earn more cookies...
 </p>
 
 <p>
@@ -2013,16 +2011,15 @@ Reader, you should answer honestly. If the cave detects any dishonesty, *cave wa
 Out of the darkness steps...
 </p>
 
-<next>Could this be your mentor?</next>
-</div>
-
-<div>
-  To be continued... link here to about.
+<next @click.native="$root.nextChapter()">Could this be your mentor?</next>
 </div>
 
 </pset>
 </script>
 
+<script type="text/x-template" id="once-group-template">
+<div :class="{disabled: isClicked}"><slot></slot></div>
+</script>
 
 <script type="text/x-template" id="certainty-widget-template">
 <div>
@@ -2040,7 +2037,7 @@ Out of the darkness steps...
   <img v-for="n in Math.ceil(number)" 
        :style="{width: width+'px', display: isHorizontal ? 'inline-block': 'block'}" 
        style="margin-right:2px"
-       src="images/moneybag.png">
+       src="images/cookie.png">
 
   <!-- cover up to make a fractional moneybag -->
    <span v-if="positiveFraction > 0.01"
@@ -2073,19 +2070,23 @@ Out of the darkness steps...
 
 
 <script type="text/x-template" id="thanks-template">
-<div>
+<div class="thanks">
+
+<p>
+  <bold>To be continued...</bold>
+</p>
+
 <p>
   The list of people to thank here is huge. 
 </p>
 <p>
   ___
 
-  If you enjoyed the story so far and want to buy the monk some tea, ___.
-
 The list of people to thank is very long: 
   Anand + Kernel
   Spencer
   Friends nearby
+   And I'm sure I'm forgetting some! 
 </p>
 
 <p>
@@ -2093,7 +2094,7 @@ The original verison of this game was built as part of a masters thesis with the
 </p>
 
 <p>
-Many friends and advisors helped with one or more incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li and Ruwen Liu, Pattie Maes, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, BV, Victoria Xia, and Sophia Youn. And I'm sure I'm forgetting some! 
+Many friends and advisors helped with one or more incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li and Ruwen Liu, Pattie Maes, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, BV, Victoria Xia, and Sophia Youn.
 </p>
 
 <p>
@@ -2109,6 +2110,7 @@ Spencer Greenberg and Mike Mozer who ___.
 
 RMO
 Josh Cai
+Fred Bertsch
 
 Vue.js which greatly simplified and cleaned the code needed for this project, and actually made it pleasant to write.
 </p>
@@ -2127,6 +2129,8 @@ If you'd like to submit feedback or buy the monk a coffee, both would be very ap
 <script>
 // lightblue = #D1D9E0
 // darkblue = #2F77A1
+
+const DEBUG = false;
 
 const numericQuestions = [
 {
@@ -2170,7 +2174,6 @@ const numericQuestions = [
 // main source: 'https://www.rd.com/culture/interesting-facts/'
 // https://bestlifeonline.com/random-fun-facts/
 const certaintyQuestions = [
-
 {
   text: 'Which has the greater population?',
   choices: ['Hyderabad', 'Islamabad'],
@@ -2541,15 +2544,19 @@ Vue.component('buton', {
   },
   data: function(){
     return {
-      showNopeText: false,
-      showRainbowText: false,
-      showX: false,
+//      showX: false,
       clickedButton: false,
+//      showRainbow: false,
     }
   },
   computed: {
     nopeText: function(){
-      return this.nope;
+      if (this.nope){
+        return this.nope;        
+      }
+      if (this.isNope){
+        return 'Nope';
+      }
     },
     // Returns true for: <buton nope> or <buton nope="why not">
     isNope: function(){
@@ -2558,47 +2565,68 @@ Vue.component('buton', {
     isYay: function(){
       return 'yay' in this.$attrs;
     },
-    // buttonStyle: function(){
-    //   if (this.$slots.default){
-    //     return {'font-size': this.$slots.default[0].text.length > 40 ? '16px' : ''};        
-    //   }
-    // }
+    buttonStyle: function(){
+      return {'font-size': this.$slots.default[0].text.length > 40 ? '16px' : '20px'};
+    },
+    showNopeText(){
+      return (DEBUG || this.clickedButton) && this.isNope;
+    },
+    showRainbow(){
+      return (DEBUG || this.clickedButton) && this.isYay;
+    },
+    showX(){
+      return this.clickedButton && this.isNope;
+    }
   },
   methods: {
     butonClicked: async function(){
       this.$root.play('buton');
+
+      // See if the buton is within a once-group, if it is make sure we
+      // are allowed to click it.
+      const onceGroup = firstAncestorOfComponent(this, 'once-group');
+      if (onceGroup){
+        onceGroup.childClicked();
+      }
+
       this.clickedButton = true;
-      const avatar = firstAncestorOfComponent(this, 'avatar');
+      // const avatar = firstAncestorOfComponent(this, 'avatar');
 
-      // Tell those listening on the bus that the buton has been clicked... unless it's a buton within an input-box.
-      if(!firstAncestorOfComponent(this, 'input-box')){
-        // Don't emit again if this is the buton inside PS either.
-        if (avatar && avatar.psButton !== this){
-          bus.$emit('answer-submitted', this);        
-        }
-      }
+      // // Tell those listening on the bus that the buton has been clicked... unless it's a buton within an input-box.
+      // if(!firstAncestorOfComponent(this, 'input-box')){
+      //   // Don't emit again if this is the buton inside PS either.
+      //   if (avatar && avatar.psButton !== this){
+      //     bus.$emit('answer-submitted', this);        
+      //   }
+      // }
 
-      // Mark the buton as wrong.
-      if (this.isNope){
-        this.showX = true;
-      } else {
+      // Check if it has a PS. Early return if so, we don't want to hit event handling.
+      // if (!this.isNope && avatar && avatar.hasSlot('ps') && avatar.showPS === false){
+      //   avatar.showPS = true;
+      //   avatar.psButton = this;        
+      //   return;
+      // }
 
-        // Check if it has a PS. Early return if so, we don't want to hit event handling.
-        if (avatar && avatar.hasSlot('ps') && avatar.showPS === false){
-          avatar.showPS = true;
-          avatar.psButton = this;        
-          return;
-        }
-      }
 
       // Event handling.
-      await wait(1000);
-      this.$emit('clik');
-      if (!this.isNope && this.$parent.onClick !== undefined){
-        // Add delay so any custom handlers on the buton execute before the generic buton-group executes.
-        await wait(1000);
-        this.$parent.$emit('clik'); // onClick();        
+      // this.$emit('clik');
+
+      // Add yourself to parent butonGroup's clicked children
+      // so it can show feedback.
+      const butonGroup = firstAncestorOfComponent(this, 'buton-group');
+      if (butonGroup){
+        butonGroup.clickedChildren.push(this);
       }
+
+      // Move the screen along.
+      if (this.isYay){
+        const pset = firstAncestorOfComponent(this, 'pset');
+        if (pset){
+          pset.next();
+        }        
+      }
+      this.$root.scrollWindow();
+
     },
   },
   template: '#buton-template'
@@ -3298,7 +3326,7 @@ Vue.component('bold', {
 Vue.component('moneybag-question', {
   props: {
     question: {type: Object}, 
-    certainties: {type: Array, default: () => [.5, .6, .7, ,8, .9]},
+    certainties: {type: Array, default: () => [.5, .6, .7, .8, .9]},
     numLoseIfWrongs: {type: Array, default: () => [1, 2, 3, 4, 9]},
     viz: {type: String, default: 'certainty'}
   },
@@ -3347,16 +3375,16 @@ Vue.component('dist-question', {
     guessSubmitted(params){
       this.stage = 1;
       this.guess1 = Number(params.val);
-      this.$root.scrollWindow();
+//      this.$root.scrollWindow();
     },
     secondGuessSubmitted(params){
       this.stage = 2;
       this.guess2 = Number(params.val);
-      this.$root.scrollWindow();
+//      this.$root.scrollWindow();
     },
     beliefSubmitted(){
       this.stage = 3;
-      this.$root.scrollWindow();
+ //     this.$root.scrollWindow();
       // this.guessHeight = this.$refs['dist'].getPDF(this.question.answer);
     },
     finishQuestion(){
@@ -3384,6 +3412,10 @@ Vue.component('interstitial', {
 
 Vue.component('intro-scene', {
   template: '#intro-scene-template'
+});
+
+Vue.component('thanks', {
+  template: '#thanks-template'
 });
 
 Vue.component('beliefs-as-dists', {
@@ -3575,22 +3607,6 @@ Vue.component('delay', {
 });
 
 
-// Hides content until it is revealed as part of the story.
-Vue.component('story', {
-  props: {
-    visible: {type: Boolean, default:false},
-  },
-  data: function(){
-    return {
-      isVisible: this.visible,
-    };
-  },
-  watch: {
-    isVisible: scrollWindow,
-  },
-  template: '#story-template'
-});
-
 /*
 How should this work:
 - split the text into words
@@ -3695,9 +3711,9 @@ Vue.component('pset', {
 
   mounted: function(){
     // Hides elements initially.
-    for (var i=1; i<this.elms.length; i++){
-      this.elms[i].style.display = 'none';
-    }
+    // for (var i=1; i<this.elms.length; i++){
+    //   this.elms[i].style.display = 'none';
+    // }
 
     this.$root.report(0);
   },
@@ -3725,49 +3741,24 @@ Vue.component('pset', {
   template: '#pset-template'
 });
 
-// https://jsfiddle.net/39hkrot0/5/
+// Put a buton inside a once-group to ensure it is only clicked once.
 Vue.component('once-group', {
   data: function(){
     return {
       isClicked: false
     }
   },
-  template: `<div><slot></slot></div>`,
   methods: {
-
     childClicked: function(childComponent) {
       if (this.isClicked){
         return;
       }
       this.isClicked = true;
-
-      // Change the buttons to indicate that it is disabled.
-      var this_ = this;
-      this.$slots.default.forEach((item, index) => {
-        if (item.tag) {
-          // var button_value = item.componentInstance.$props.value;
-          // if (button_value === this_.userAnswer){
-          if (childComponent === item.componentInstance){
-            item.elm.classList.add('clicked-button');
-          } else {
-            item.elm.setAttribute('disabled', true); 
-          }
-        }
-      });
-    }
-  }
-});
-
-// once-button must live inside a once-group
-// The once-group enforces that only one child can be called once.
-Vue.component('once-button', {
-  data: function(){
-    return {
-      self: this
     }
   },
-  template: '<buton @click.native="$parent.childClicked(self)"><slot></slot></buton>'
+  template: '#once-group-template',
 });
+
 
 const chapters = [
 {
@@ -3788,8 +3779,15 @@ const chapters = [
 {
   component: 'overconfidence',
   description: 'Overconfidence Bias',
-  image: 'moneybag.png',
+  image: 'cookie.png',
 },
+
+{
+  component: 'thanks',
+  description: 'To be continued?',
+  image: 'bird-heart.png',
+},
+
 ];
 
 // Gotchas:
@@ -3800,7 +3798,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 1,
+    chapterInd: 2,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
@@ -3900,6 +3898,7 @@ new Vue({
       window.scrollTo(0, 0);
     },
     async scrollWindow(){
+      console.log('scrollWindow');
       if (this.isScrolling){
         return;
       }
@@ -3910,11 +3909,21 @@ new Vue({
       // Or if we have somehow traveled up (i.e. user has moved the mouse)
       while (true){
         const startY = window.scrollY;
+        console.log('lastStartY: ' + this.lastStartY + ' startY: ' + startY);
         if (this.lastStartY >= startY){
-          break;
+
+          // Hack: Wait and try one more time to scroll before exiting. 
+          // Seems like there might be a delay to add stuff to the DOM?
+          await wait(100);
+          window.scrollBy(0, 10);
+          if (this.lastStartY >= window.scrollY){
+            console.log('break');
+            break;
+          }
         }
         this.lastStartY = startY;
         window.scrollBy(0, 10);
+        console.log('scrolling');
         await wait(30);
       }
       this.isScrolling = false;
@@ -3922,7 +3931,7 @@ new Vue({
     report(ind){
       const chapterName = this.currentChapter.component;
       console.log('reporting ' + chapterName + ' ' + ind);
-      gtag('event', 'v2', {
+      gtag('event', 'cogbiases_v2', {
         'event_category': 'read',
         'event_label': chapterName,
         'value': ind
