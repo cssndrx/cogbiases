@@ -285,6 +285,11 @@ gtag('event', 'v2', {
 
 ---draw the distributions
 
+
+34 - 34 doesn't work 
+makes a narrow skinny thing -- that's because there were restrictions on the cat thing
+
+
 ----
 
 Fred playtest
@@ -308,35 +313,25 @@ maybe motivate it from Superforecasters
 can motivate discrete distributions which come up in the next chapter 
 bayes rule bias
 
+
+---
+
 need more decimal points
 1.2 0.3
 
-34 - 34 doesn't work 
-makes a narrow skinny thing
+could add validation to answers in distribution thing
+stopped here: adding validation
 
 
 
 (2)
 
-was trying to adjust hte percentages down there, rather than the numbers up there --> make it clearer to drag the circle
-
-
-unexpected that the cave/tavern got normalized there
+unexpected that the cave/tavern got normalized there -- try normalizing upon submit. see what happens.
 
 
 somehow it got offset --  there is 1 more clickable button than there s
 
+smooth over the story
 
-ooh after you put in the info it in -- and close, the tab resets 
-
-
-(3)
-
-
-
-
-you want to know the correct answer
-er.... the answe ris accordion
-
-
-
+todo:
+find another playtester

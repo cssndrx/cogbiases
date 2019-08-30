@@ -310,6 +310,26 @@ button{
 }
 
 
+.slideright-enter-active {
+  animation: slideright .3s;
+}
+.slideright-leave-active {
+  animation: slideright .3s reverse;
+}
+@keyframes slideright {
+  0% {
+    transform: translateX(-300px);
+    opacity: 0;
+    z-index: -1;
+  }
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+    z-index: 1;
+  }
+}
+
+
 .slide-fade-enter-active, .slide-fade-leave-active {
   transition: all .3s ease;
 }
@@ -415,6 +435,7 @@ button{
 }
 
 .toggle{
+  width: 0px; /* needed so toggle doesn't capture horizontal click space */
   color: #999;
 }
 
@@ -451,7 +472,8 @@ button{
 }
 
 .disabled, .disabled * { 
-  pointer-events: none; 
+  pointer-events: none;
+  user-select: none; 
 }
 </style>
 
@@ -602,6 +624,7 @@ You are going to bring us into this new world of uncertainty.
   :isDraggable="isDraggable('prior')"
   :chartHeight="chartHeight" :chartWidth="chartWidth"
   :showRatio="true"
+  :colors="colors"
   @dist-changed="priorChanged" /> 
 </div>
 
@@ -616,6 +639,7 @@ You are going to bring us into this new world of uncertainty.
   :dist="arrToDist(likelihoodArr)"
   :isDraggable="isDraggable('likelihood')"
   :chartHeight="chartHeight" :chartWidth="chartWidth"
+  :colors="colors"
   @dist-changed="likelihoodChanged" /> 
 </div>
 
@@ -629,6 +653,7 @@ You are going to bring us into this new world of uncertainty.
   :dist="posteriorDist"
   :chartHeight="chartHeight" :chartWidth="chartWidth"
   :showRatio="true"
+  :colors="colors"
   ref="posterior-samples-chart" /> 
 </div>
 
@@ -673,7 +698,7 @@ You are going to bring us into this new world of uncertainty.
           :width="xScale.bandwidth()"
           :height="yScaleBandwidth-2"
           :key="x + countInd"
-          fill="#D1D9E0"/>
+          :fill="colors.bar || '#D1D9E0'"/>
         </g>
 
 
@@ -702,7 +727,7 @@ You are going to bring us into this new world of uncertainty.
       @dragstart="dragstart(x)"
       @dragend="dragend"
       @drag="drag(x, $event)"
-      :style="{left: xScale(x)+ xScale.bandwidth()/2+ 4 + 'px', bottom: yScale(counts[x]) + 24 + 'px'}"></div>
+      :style="dotStyle(x)"></div>
 
 
 </div>
@@ -855,7 +880,6 @@ You are going to bring us into this new world of uncertainty.
       @click="butonClicked()" v-on="$listeners" 
       :class="{'clicked-button': clickedButton}" 
       class="handwriting"
-      :style="buttonStyle"
       style="margin-bottom:4px"><slot></slot>
     </button>
   </div>
@@ -866,7 +890,7 @@ You are going to bring us into this new world of uncertainty.
 
 <script type="text/x-template" id="input-box-template">
   <div style="display:inline-block; position:relative;">
-    <input v-model="val" placeholder="?" style="width:50px; display:inline" v-on:keyup.enter="answerSubmit">
+    <input v-model="val" placeholder="?" style="width:50px; display:inline" v-on:keyup.enter="answerSubmit" :min="min" :max="max">
     <slot></slot>
     <buton style="display:inline" @click="answerSubmit">Go</buton>
   
@@ -1009,7 +1033,10 @@ when each moneybag comes in, trigger the wobble animation
 <script type="text/x-template" id="beliefs-as-dists-template">
 <pset ref="pset">
 
+
 <!--<div>
+<draggable-dist ref="dist" :guess1="34" :guess2="34"/>
+
 <draggable-dist ref="dist" :guess1="150" :guess2="300"/>
 <draggable-dist ref="dist" :guess1="4" :guess2="5"/>
 <draggable-dist ref="dist" :guess1="24" :guess2="65"/>
@@ -1102,7 +1129,7 @@ when each moneybag comes in, trigger the wobble animation
 <script type="text/x-template" id="bayes-unit-template">
 <div>
 
-<div ref="panes" style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:white; width: 555px; z-index:1;">
+<div ref="panes" style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:rgba(255,255,255,0.97); width: 555px; z-index:1;">
 
     <div v-if="knowAbout('location')" 
          @click="togglePane('location')" 
@@ -1128,18 +1155,26 @@ when each moneybag comes in, trigger the wobble animation
       </div>
     </div>
 
-    <transition name="slide-fade">
+<!--    <transition name="bounce"> -->
+    <keep-alive>
+       <triple-bayes v-if="showPane('food')" key="food" style="position:relative; left:100px; top:20px; padding-bottom:24px;"
+        :hypotheses="['Beer', 'Cookies']" 
+        :config="{prior: {dist: [2, 5], isActive:true}, likelihood: {dist: [1, 1], correct: [1, 2],  isActive: true, isDraggable:true}, posterior: {isActive: true}}"
+        :colors="{bar: '#CB9C44', dot: '#FC8E03'}"
+        @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+    </keep-alive>
+<!--    </transition>
 
-   <triple-bayes v-if="showPane('food')" key="food" style="position:relative; left:100px; top:20px; padding-bottom:24px;"
-    :hypotheses="['Beer', 'Cookies']" 
-    :config="{prior: {dist: [2, 5], isActive:true}, likelihood: {dist: [1, 1], correct: [1, 2],  isActive: true, isDraggable:true}, posterior: {isActive: true}}"
-    @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+    <transition name="bounce"> -->
+    <keep-alive>
+       <triple-bayes v-if="showPane('location')" key="location" style="position:relative; left:100px; top:20px; padding-bottom:24px;"
+        :hypotheses="['Cave', 'Tavern']" 
+        :config="{prior: {dist: [2, 3], isActive:true}, likelihood: {dist: [1, 1], correct: [3, 1], isActive: true, isDraggable:true}, posterior: {isActive: true}}"
+        :colors="{bar: '#D8D8D8', dot: '#2F77A1'}"
+        @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
+    </keep-alive>
+<!--    </transition> -->
 
-   <triple-bayes v-if="showPane('location')" key="location" style="position:relative; left:100px; top:20px; padding-bottom:24px;"
-    :hypotheses="['Cave', 'Tavern']" 
-    :config="{prior: {dist: [2, 3], isActive:true}, likelihood: {dist: [1, 1], correct: [3, 1], isActive: true, isDraggable:true}, posterior: {isActive: true}}"
-    @yay="activePane=null; $refs['pset'].next()"></triple-bayes> 
-  </transition>
 
 </div>
 
@@ -1233,12 +1268,13 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 </p>
 
 <p>
-  ORACLE: You can use this information to create a visual picture of your knowledge. Drag up the bars until their relative heights reflect what you currently know about Kahneman's location.
+  ORACLE: You can use this information to create a visual picture of your knowledge. Drag the circles until the bar heights reflect what you currently know about Kahneman's location.
 </p>
 
 <triple-bayes 
 :hypotheses="['Cave', 'Tavern']" 
-:config="{prior: {isActive: true, isDraggable:true, dist: [1, 1], correct: [2, 3], title: 'Belief about Kahneman\'s location', subtitle:''}}"></triple-bayes>
+:config="{prior: {isActive: true, isDraggable:true, dist: [1, 1], correct: [2, 3], title: 'Belief about Kahneman\'s location', subtitle:''}}"
+:colors="{bar: '#D8D8D8', dot: '#2F77A1'}"></triple-bayes>
 </div>
 
 <div>
@@ -1268,7 +1304,8 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 
 <triple-bayes 
   :hypotheses="['Cave', 'Tavern']" 
-  :config="{prior: {dist: [2, 3], title: 'Prior belief', subtitle:'Base rate on Kahenman\'s location'}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true, subtitle:'Relative likelihood of good weather'}}"></triple-bayes> 
+  :config="{prior: {dist: [2, 3], title: 'Prior belief', subtitle:'Base rate on Kahenman\'s location'}, likelihood: {dist: [1, 1], correct: [6, 1], isActive: true, isDraggable: true, subtitle:'Relative likelihood of good weather'}}"
+  :colors="{bar: '#D8D8D8', dot: '#2F77A1'}"></triple-bayes> 
 
 </div>
 
@@ -1282,7 +1319,8 @@ It turns out that the evidence bars should <bold>multiplicatively scale</bold> u
 <div>
 <triple-bayes 
 :hypotheses="['Cave', 'Tavern']" 
-:config="{prior: {dist: [2, 3]}, likelihood: {dist: [6, 1], correct: [6, 1]}, posterior: {isActive: true}}"></triple-bayes> 
+:config="{prior: {dist: [2, 3]}, likelihood: {dist: [6, 1], correct: [6, 1]}, posterior: {isActive: true}}"
+:colors="{bar: '#D8D8D8', dot: '#2F77A1'}"></triple-bayes> 
 
 <p>
 What is the probability that Kahneman is in the cave if the weather is nice?
@@ -1459,7 +1497,8 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
 
   <triple-bayes 
   :hypotheses="['Raccoon', 'Fox']" 
-  :config="{prior: {dist: [1, 1], correct: [7, 3], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 5], isActive: true, isDraggable: true}, posterior: {isActive:true}}"></triple-bayes>
+  :config="{prior: {dist: [1, 1], correct: [7, 3], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 5], isActive: true, isDraggable: true}, posterior: {isActive:true}}"
+  :colors="{bar: '', dot: '#EF6D21'}"></triple-bayes>
 </div>
 
 <div>
@@ -1524,7 +1563,8 @@ Show the mayor the appropriate belief.
 
  <triple-bayes 
   :hypotheses="['Billy', 'Bob']" 
-  :config="{prior: {dist: [1, 1], correct: [3, 2], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable: true}, posterior: {isActive:true}}"></triple-bayes>
+  :config="{prior: {dist: [1, 1], correct: [3, 2], isActive: true, isDraggable:true}, likelihood: {dist: [1, 1], correct: [1, 2], isActive: true, isDraggable: true}, posterior: {isActive:true}}"
+  :colors="{bar: '#ccc', dot: '#D6732A'}"></triple-bayes>
 </div>
 
 <div>
@@ -1619,7 +1659,6 @@ Discounting for his questionable reliability, you think that it is more reasonab
 Use the adventurer's information to update your belief on Kahneman's location.
 </p>
 </div>
--->
 
 <div>
 <p>
@@ -1700,6 +1739,7 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
     </once-group>
   </div>
 
+  <transition name="fade"><div>{{userFeedback}}</div></transition>
 </div>
 </script>
 
@@ -1709,20 +1749,27 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
 
   <div><bold><slot></slot></bold> {{question.text}}</div>
 
-  <input-box @click="guessSubmitted" :advancePset="false"></input-box>
+  <once-group>
+    <input-box @click="guessSubmitted" :advancePset="false" min=
+    "0" :max="question.maxBound"></input-box>
+  </once-group>
 
   <div v-if="stage > 0">
     <p>
       If you had to make a second guess, what would it be?
     </p>
-    <input-box @click="secondGuessSubmitted" :advancePset="false"></input-box>
+    <once-group>
+      <input-box @click="secondGuessSubmitted" :advancePset="false" min="0" :max="question.maxBound"></input-box>
+    </once-group>
   </div>
 
 
   <div v-if="stage > 1">
     <slot name="tutorial"></slot>
-    <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2" :maxBound="question.maxBound" />
-    <buton @click="beliefSubmitted">Submit belief</buton>
+    <once-group>
+      <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2" :maxBound="question.maxBound" />
+      <buton @click="beliefSubmitted">Submit belief</buton>
+    </once-group>
   </div>
 
   <div v-if="stage > 2">
@@ -2041,7 +2088,7 @@ Out of the darkness steps...
 
   <!-- cover up to make a fractional moneybag -->
    <span v-if="positiveFraction > 0.01"
-         style="background-color:rgba(255,255,255,0.8); position:absolute; right: 0px; bottom:4px;" 
+         style="background-color:rgb(255,255,255,0.8); position:absolute; right: 0px; bottom:4px;" 
          :style="fractionalCoverStyle"></span>
 </span>
 
@@ -2195,19 +2242,19 @@ const certaintyQuestions = [
 {
   text: 'How many words does Scotland have for snow?',
   choices: [42, 421],
-  answer: [421],
+  answer: 421,
 },
 
 {
   text: "A cashew is not technically a nut, because a nut is a 'hard-shelled dry fruit or seed with a separable rind or shell and interior kernel'. A cashew is actually a...",
   choices: ['legume', 'seed'],
-  answer: ['seed'],
+  answer: 'seed',
 },
 
 {
   text: 'The longest English word is how many letters long?',
   choices: [819, 189819],
-  answer: [189819]
+  answer: 189819
 },
 
 ];
@@ -2216,49 +2263,49 @@ const moneybagQuestions = [
 {
   text: 'How many calories are consumed by a blue whale in one mouthful?',
   choices: [50000, 500000],
-  answer: [500000],
+  answer: 500000,
 },
 
 {
   text: 'What is the tiny pocket in jeans meant to store?',
   choices: ['Watch', 'Coins'],
-  answer: ['Watch'],
+  answer: 'Watch',
 }, 
 
 {
   text: "President Theodore Roosevelt had which of these as a pet?",
   choices: ['owl', 'moose'],
-  answer: ['owl'],
+  answer: 'owl',
 },
 
 {
   text: "Where is the world's largest desert?",
   choices: ['Africa', 'Antarctica'],
-  answer: ['Antarctica'],
+  answer: 'Antarctica',
 },
 
 {
   text: "Which two body parts keeps growing as we reach late adulthood?",
   choices: ['Ears and nose', 'Teeth and liver'],
-  answer: ['Ears and nose'],
+  answer: 'Ears and nose',
 },
 
 {
   text: "Pigeon poop was used to make what item?",
   choices: ['paint', 'gun powder'],
-  answer: ['gun powder'],
+  answer: 'gun powder',
 },
 
 {
   text: "Nikola Tesla disliked what type of jewelry?",
   choices: ['silver', 'pearls'],
-  answer: ['pearls'],
+  answer: 'pearls',
 },
 
 {
   text: "What is the most popular instrument in North Korea?",
   choices: ['flute', 'accordion'],
-  answer: ['accordion'],
+  answer: 'accordion',
 },
 
 ];
@@ -2307,6 +2354,9 @@ var sounds = {
   'curious': {clip: new Audio('sounds/curious.wav')},
   'achievement': {clip: new Audio('sounds/achievement.wav')},
 
+  'open': {clip: new Audio('sounds/swish0.wav')},
+  'close': {clip: new Audio('sounds/swish1.wav')},
+
   'remove': {clip: new Audio('sounds/swish1.wav')},
 };
 
@@ -2333,6 +2383,8 @@ Vue.component('input-box', {
     feedback: {type: Boolean, default: true},
     advancePset: {type: Boolean, default: true},
 
+    min: {type: [String, Number]},
+    max: {type: [String, Number]},
   },
   computed: {
     feedbackString: function(){
@@ -2564,9 +2616,6 @@ Vue.component('buton', {
     },
     isYay: function(){
       return 'yay' in this.$attrs;
-    },
-    buttonStyle: function(){
-      return {'font-size': this.$slots.default[0].text.length > 40 ? '16px' : '20px'};
     },
     showNopeText(){
       return (DEBUG || this.clickedButton) && this.isNope;
@@ -3053,6 +3102,13 @@ Vue.component('triple-bayes', {
     // Missing keys from config are not rendered.
     // {prior: {dist: [1, 4]}, likelihood: {isActive: true, isDraggable: true, dist: [1, 10]}, posterior: {}}
     config: {type: Object},
+
+    colors: {
+      type: Object, 
+      default: function(){
+        return {bar: '', dot: ''};
+      }
+    },
   },
   data: function(){
     return {
@@ -3201,6 +3257,13 @@ Vue.component('samples-chart', {
     isDraggable: {type: Boolean, default: false}, 
     maxCounts: {type: Number, default: 15},
 
+    colors: {
+      type: Object, 
+      default: function(){
+        return {bar: '', dot: ''};
+      }
+    },
+
   },
   computed: {
     xScale(){
@@ -3274,6 +3337,13 @@ Vue.component('samples-chart', {
           }));
       }
     },
+    dotStyle(x){
+      return {
+        left: this.xScale(x)+ this.xScale.bandwidth()/2+ 4 + 'px', 
+        bottom: this.yScale(this.counts[x]) + 24 + 'px',
+        'background-color': this.colors.dot,
+      };
+    },
     drag(x, event){
       //console.log('dragging');
       //debugger;
@@ -3336,12 +3406,16 @@ Vue.component('moneybag-question', {
       userCertainty: null,
       // stage: 0,
       // guess: null,
+      userFeedback: null,
     };
   },
   methods: {
     finishQuestion(certainty){
       // $root.paramsFromCertainty(certainty);
+      //debugger;
       this.$emit('done', {question: this.question, choice: this.userChoice, userCertainty: certainty});
+
+      this.userFeedback = 'Your guess was ' + (this.question.answer === this.userChoice ? 'correct.' : 'incorrect.');
     }
   },
   template: '#moneybag-question-template',
@@ -3489,8 +3563,10 @@ Vue.component('bayes-unit', {
     togglePane(paneName){
       if(this.activePane === paneName){
         this.activePane = null;
+        this.$root.play('close');
       } else {
         this.activePane = paneName; 
+        this.$root.play('open');
       }
       const refName = paneName + '-toggle';
       this.$refs[refName].classList.remove('color-change');
@@ -3798,7 +3874,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 2,
+    chapterInd: 1,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
@@ -3909,7 +3985,7 @@ new Vue({
       // Or if we have somehow traveled up (i.e. user has moved the mouse)
       while (true){
         const startY = window.scrollY;
-        console.log('lastStartY: ' + this.lastStartY + ' startY: ' + startY);
+//        console.log('lastStartY: ' + this.lastStartY + ' startY: ' + startY);
         if (this.lastStartY >= startY){
 
           // Hack: Wait and try one more time to scroll before exiting. 
@@ -3923,7 +3999,7 @@ new Vue({
         }
         this.lastStartY = startY;
         window.scrollBy(0, 10);
-        console.log('scrolling');
+//        console.log('scrolling');
         await wait(30);
       }
       this.isScrolling = false;
