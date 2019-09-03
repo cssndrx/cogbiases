@@ -559,6 +559,13 @@ You are going to bring us into this new world of uncertainty.
 </centered>
 </script>
 
+<script type="text/x-template" id="buton-group-template">
+<div>
+  <slot></slot>
+  <div v-if="showHint" class="hint"><slot name="hint"></slot></div>
+</div>
+</script>
+
 
 <script type="text/x-template" id="centered-template">
 <div class="centered">
@@ -2629,7 +2636,7 @@ Vue.component('buton', {
   },
   methods: {
     butonClicked: async function(){
-      this.$root.play('buton');
+//      this.$root.play('buton');
 
       // See if the buton is within a once-group, if it is make sure we
       // are allowed to click it.
@@ -3383,8 +3390,30 @@ Vue.component('buton-group', {
     onClick: {type: Function, 
               default: () => console.warn('buton-group should have onClick') },
   },
-  template: '<div><slot></slot></div>'
+  computed: {
+    lastChild(){
+      if (this.clickedChildren.length > 0){
+        return this.clickedChildren[this.clickedChildren.length-1];
+      }
+    },
+    showHint(){
+      if (DEBUG){
+        return true;
+      }
+      if (this.lastChild){
+        return this.lastChild.isNope;
+      }
+      return false;
+    }
+  },
+  data: function(){
+    return {
+      clickedChildren: [],
+    }
+  },
+  template: '#buton-group-template'
 });
+
 Vue.component('centered', {
   template: '#centered-template'
 });
@@ -3787,9 +3816,9 @@ Vue.component('pset', {
 
   mounted: function(){
     // Hides elements initially.
-    // for (var i=1; i<this.elms.length; i++){
-    //   this.elms[i].style.display = 'none';
-    // }
+    for (var i=1; i<this.elms.length; i++){
+      this.elms[i].style.display = 'none';
+    }
 
     this.$root.report(0);
   },
@@ -3874,7 +3903,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 1,
+    chapterInd: 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
