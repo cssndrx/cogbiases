@@ -16,6 +16,7 @@
 <!-- todo: strip and remove the unused -->
 <link href="https://fonts.googleapis.com/css?family=Schoolbell|Dokdo|Fira+Sans:300,700" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Itim&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700&display=swap" rel="stylesheet">
 
 <script src="js/lodash.min.js"></script>
 <script src="js/d3.v5.min.js"></script>
@@ -29,6 +30,21 @@
 <script src="js/monk.js"></script>
 
 <style>
+
+*{
+/*  font-family: 'Fira Sans', sans-serif;*/
+font-family: 'Roboto Mono', monospace;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+
+/* remove ?? */
+.slot-text, .slot-text *{
+  text-align: justify;
+}
+
+
 html, body, #app{
   height: 100%;
 }
@@ -84,11 +100,6 @@ text{
 /*  font-family: 'Schoolbell', cursive;*/
 }
 
-*{
-  font-family: 'Fira Sans', sans-serif;
-  font-size: 18px;
-  font-weight: 300;
-}
 
 ul{
   list-style-type:none;    
@@ -286,7 +297,7 @@ button{
 /*  font-size: 14px;*/
 }
 .smaller-children, .smaller-children *{
-  font-size: 16px;
+  font-size: 13px;
 }
 /* https://w3bits.com/rainbow-text/ */
 .rainbow-text {
@@ -516,7 +527,7 @@ button{
             :src="'images/' + chapter.image" 
             style="max-width:50px; max-height:100px">
         <span style="top:60px; font-size:12px; display: inline-block; margin:8px;">
-          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : 'Thanks' }}</bold>
+          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : '???' }}</bold>
           <br> 
           {{chapter.description}}
         </span>
@@ -743,77 +754,18 @@ You are going to bring us into this new world of uncertainty.
 <script type="text/x-template" id="avatar-template">
 <div style="position: relative; width:600px; margin:0 auto; margin-top:16px">
 
-<!--
-<transition name="slide-fade">
- <div v-if="showOverlay && hasSlot('overlay')"
-     style="position:absolute; z-index:1; height: 500px; width:100%; opacity:0.9; background-color: white; color:black;">
-  <centered>
-      <slot name="overlay"></slot>
-  </centered>
+ <div class="cropcircle" :style="cropCircleStyle" style="display:inline-block; vertical-align:top">
+ </div>
+
+
+<div style="display:inline-block; position:absolute; top:0px" class="slot-text" :style="slotStyle">
+    <div>{{text}}<slot name="text"></slot></div>
+    <slot></slot>
 </div>
-</transition> -->
-
-<img v-if="showRainbow" src="images/rainbow.png">
-
-<img :src="imgSrc" 
-     :class="imgClasses"
-     style="height: 300px; left: 0px; position:absolute; top:0px;">
-
-<!-- Dialog box -->
-<div style="position:absolute; left: 200px; top:0px;"
-  v-if="showLiveText">
-  <img src="images/dialog.png" :style="imgStyle" style="width:642px">
-  <div style="position: absolute; left:40px; top:23px;" 
-    class="dialog-text"
-    ref="dialog-text"
-    :class="dialogClass">
-    <live-text  
-        ref="initial-text"
-        key="initial-text"
-        @live-text-complete="showQuestion=true">
-        <slot name="dialog"></slot>
-      {{text}}
-    </live-text> 
-  </div>
-</div>
-
-<!-- Mini dialog 
-<div v-if="showMiniDialog" style="position:absolute; left: 100px; top:300px;">
-  <img src="images/mini_dialog.png" style="width:150px">
-  <div style="position: absolute; left:40px; top:40px;" class="small-dialog-text">
-    Yep!
-  </div>
-</div>-->
-
-
-<!-- bottom -->
-<div style="position:absolute; left: 0px; top: 330px; width: 600px;">
-
-<div v-if="nopeText || showHint || showPS" style="background-color: #372F26; color: white; padding: 16px;" class="handwriting">
-  <!-- Hint via nopeText or nope slot -->
-  <div v-if="nopeText" style="margin-top:16px">{{nopeText}}</div>
-  <div v-if="showHint && !showPS">
-    <slot name="hint"></slot>
-  </div> 
-  <div v-if="showPS">
-    <div><slot name="ps"></slot></div>
-    <buton @click="clickpsButton">Next</buton>
-  </div>
-</div>
-
-<div class="question" :style="{'text-align':textAlign}">
-  <transition name="fade" mode="out-in">  
-    <div v-if="showQuestion">  
-      <slot></slot>
-    </div>
-  </transition>
-</div>
-
-</div> <!-- end bottom -->
-
 
 </div>
 </script>
+
 
 
 <script type="text/x-template" id="live-text-template">
@@ -829,7 +781,7 @@ You are going to bring us into this new world of uncertainty.
 <script type="text/x-template" id="monk-head-template">
 <div class="handwriting normal-div"
       style="display:inline-block; position:relative; white-space: nowrap;">
-  <img src="images/monk_head.png" style="width:80px;">
+  <img src="images/monk.png" style="width:80px;">
 
   <!-- speech pointing to left -->
   <div v-if="hasSlot('lhs')">
@@ -928,18 +880,18 @@ You are going to bring us into this new world of uncertainty.
 
   <div>
     A monk greets you.
-    <img src="images/monk.png">
+    <img src="images/monk_big.png">
     <next>Next</next>
   </div>
 
 
   <div>
     <div>
-      MONK: Hello, young explorer....
+      MONK: Hello, explorer....
     </div>
 
     <div>
-    MONK: I am training explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
+    MONK: For years I have trained explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
     </div>
 
     <next @click.native="$root.nextChapter()">Start lesson</next>
@@ -1034,7 +986,7 @@ when each moneybag comes in, trigger the wobble animation
 
 
 <script type="text/x-template" id="inline-img-template">
-  <img :src="'images/' + src" style="height:28px; display:inline-block">
+  <img :src="'images/' + src" style="display:inline-block" :style="{height: height+'px'}">
 </script>
 
 <script type="text/x-template" id="beliefs-as-dists-template">
@@ -1051,54 +1003,134 @@ when each moneybag comes in, trigger the wobble animation
 </div> -->
 
 
-  <div>
-    <p>
-    MONK: When I first joined the monastery, I was searching for truth. I was looking for one "true answer" to every question I had. 
-    </p>
+<div>
+  <p>
+  MONK: You should probably sit down.
+  </p>
+  <next>Sit</next>
+</div>
 
-    <p>
-      However, in my search, I have discovered that there is almost always uncertainty around beliefs and "answers". When I learned to model this uncertainty as <bold>distributions</bold>, that is when others say I became an old, wise monk. 
-    </p>      
+<div>
+  <p>
+  MONK: I have been in search for my successor for a long time. The prophecy says that today is the last possible day for us to meet.
+  </p>
+  
+  <next>Next</next>
+</div>
 
-    <next>Why would I want to do that?</next>
-  </div>
+<div>
 
-  <div>
-    <p>
-      MONK: You do not need to be old, but seeing distributions may be a helpful concept. A distribution is a picture of uncertainty where the outcomes are on the x-axis, and the probabilities assigned to them are in the y-axis.
-    </p>
+  <img src="images/world.png" style="width:200px; margin:0 auto; margin-bottom:16px">
 
-    <p>
-      MONK: It allows you to shift from using language like "pretty sure", to knowing exactly what you think.
-    </p>
+  <p>
+  MONK: The world is in danger.
+  </p>
 
-    <p>
-      Now, practice thinking in distributions. 
-    </p>
-    <next>Begin</next>
-  </div>
+  <p>
+    Through the <bold>Bystander Effect</bold> we have been sitting by the side and watching as a few entities heat up the world and knock systems out of a precarious balance. //  todo: other global warming biases
+  </p>
+  
+  <next>Next</next>
+</div>
 
-  <div>
-    <p>
-      Answer this question to the best of your ability.
-    </p>
 
-    <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()">
+<div>
+  <p>
+  The prophecy says that my successor is a tortured soul who will face a perilous journey to rid themselves of 13 biases and change the way how others see the world.
+  </p>
+  <next>13?!?!</next>
+</div>
 
-      Question 1 out of {{questions.length}}.
+<div>
+  <p>
+    MONK: The prophecy actually said 88, but I thought it would be better to reduce it to 13 or else I'd never find anyone. 
+  </p>
 
-      <template v-slot:tutorial>
+  <p>
+    But before we worry about the biases of other people, let's work on the ones within ourselves. 
+  </p>
+
+  <next>Oh dear</next>
+</div>
+
+
+<div style="font-size:24px" class="handwriting">Magic Answer Fallacy</div>
+
+<div>
+<div>
+The first bias is so pervasive, that it's not formally recognized as a cognitive bias. I call it the <bold>Magic Answer Fallacy</bold>. 
+</div>
+
+<div>
+It's the tendency to respond to questions with a simple "magic answer".
+</div>
+<next>Next</next>
+</div>
+
+<div>
+<div>
+For instance, how many days are in a year? 
+</div>
+
+<div>
+Most people would just say 365. But the true length of a year on Earth is ~365.2422 days. That is why we have leap years, but even leap years don't fully account for it.
+</div>
+<next>Next</next>
+</div>
+
+
+<div>
+<div>
+MONK: The first step is to accept that most questions don't have magic answers. Most answers are uncertain, and to capture the uncertainty we draw it as a distribution.
+</div>
+
+<div>
+A <bold>distribution</bold> has the possibilities on the x-axis and the probabilities on the y-axis. // todo: add picture?
+</div>
+
+<next>Next</next>
+</div>
+
+<div>
+<div>
+MONK: Distributions allow us to shift from using vague language like "pretty sure", to having a picture of exactly what we think.
+</div>
+
+<div>
+Now, begin thinking in distributions instead of magic answers. 
+</div>
+
+<next>Begin</next>
+</div>
+
+
+<div>
+  <p>
+    Answer this question to the best of your ability.
+  </p>
+
+  <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()">
+
+    Question 1 out of {{questions.length}}.
+
+    <template v-slot:tutorial>
+      <div class="smaller-children">
         <div>
-          Drag down the circle so that the distribution covers all answers that you think are reasonable. This diagram is your belief graph. You will earn monastery graduation credits <inline-img src="grad.jpg" /> based on the height of your graph over the correct answer.
+          Drag down the circle so that the distribution covers all answers that you think are reasonable. You can also drag the circle left and right to fine-tune the shape. This diagram is your <bold>belief graph</bold>. 
         </div>
 
         <div>
-          But to add some stakes in the game... if you assign zero probability to the correct answer, you will get monastery dish duty <inline-img src="dishes.png" />.
+            You will earn wisdom credits with the monk based on the height of your graph over the magic answer <inline-img src="grad.jpg" :height="16" />.
         </div>
-      </template>
-    
-    </dist-question>
-  </div>
+
+        <div>
+          But to add some stakes in the game, if you assign 0 probability to the magic answer, you will have to do the dishes <inline-img src="dishes.png" :height="16" />.
+        </div>
+      </div>
+    </template>
+  
+  </dist-question>
+</div>
 
 <div>
   <dist-question 
@@ -1111,18 +1143,15 @@ when each moneybag comes in, trigger the wobble animation
 
 <div>
   <p>
-    Thank you for washing {{dishDuty}} days of dishes <inline-img src="dishes.png" />. Together, with your {{$root.roundTo(gradUnits, 1)}} credits <inline-img src="grad.jpg" />, I think you have gained enough character to graduate from monk school.
+    Thank you for washing {{dishDuty}} days of dishes <inline-img src="dishes.png" />. Together, with your {{$root.roundTo(gradUnits, 1)}} wisdom points <inline-img src="grad.jpg" />, I think you should be allowed to proceed.
   </p>
 
-  <p>
-  MONK: By the way, I think we might have reduced your susceptibility to the Overconfidence Bias...
-  </p>
-  <next>I'm not too sure about that</next>
+  <next>Next</next>
 </div>
 
 <div>
   <p>
-  MONK: Very good. To reach the next stage in your journey to reduce cognitive biases, you may want to seek out a figure named Kahneman. He will administer to you a test of your abilities.
+  MONK: I'm still uncertain whether you or one of the 20 adventurers before you is destined to be my successor. But to aid my decision would you be so kind as to seek out a figure named Kahneman? He can administer a test of your abilities.
   </p>
   <p>
   MONK: His whereabouts have been unknown for some time, so good luck finding him.
@@ -1190,7 +1219,7 @@ when each moneybag comes in, trigger the wobble animation
 
 <div>
 <p>
-  You have found yourself graduated from monk school on a solo journey across the land to gain knowledge and find Kahneman.
+  You have found yourself on a solo journey across the land to gain knowledge and find Kahneman.
 </p>
 <p>
   You decide to seek help from the oracle on top of the mountain. 
@@ -1648,9 +1677,9 @@ An adventurer approaches you.
 ADVENTURER: I hear you are looking for Kahneman.
 </p>
 <p>
-ADVENTURER: I am 90% sure that Kahneman is at the cave of uncertainty!
+ADVENTURER: I am 99% sure that Kahneman is at the cave of uncertainty!
 </p>
-<next @click.native="highlight('location-toggle')">Oh dear, he probably hasn't been through overconfidence training</next>
+<next @click.native="highlight('location-toggle')">Oh dear, he probably hasn't been through Magic Answer training</next>
 </div>
 
 <div data-checkpoint="kahneman-loc-man">
@@ -1659,7 +1688,7 @@ You talk to the adventurer in attempt to find out his intentions. He seems to ha
 </p>
 
 <p>
-Discounting for his questionable reliability, you think that it is more reasonable to assume that the man is correct with 75% probability (3 : 1) instead of 90% (9 : 1). 
+Discounting for his questionable reliability, you think that it is more reasonable to assume that the man is correct with 75% probability (3 : 1) instead of 99% (99 : 1). 
 </p>
 
 <p class="question">
@@ -1781,11 +1810,11 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
 
   <div v-if="stage > 2">
     <div>
-      The correct answer was {{question.answer}}. The height of the correct answer on your normalized belief graph was {{$root.roundTo(guessHeight, 5)}}.
+      The magic answer was {{question.answer}}. The height of the magic answer on your normalized belief graph was {{$root.roundTo(guessHeight, 5)}}.
     </div>
 
     <div v-if="result.gradUnits">
-      You accumulate {{$root.roundTo(result.gradUnits, 1)}} units towards graduation <inline-img src="grad.jpg" />. 
+      You accumulate {{$root.roundTo(result.gradUnits, 1)}} wisdom points <inline-img src="grad.jpg" />. 
     </div>
 
     <div v-if="result.dishDuty">
@@ -2065,7 +2094,7 @@ Reader, you should answer honestly. If the cave detects any dishonesty, *cave wa
 Out of the darkness steps...
 </p>
 
-<next @click.native="$root.nextChapter()">Could this be your mentor?</next>
+<next @click.native="$root.nextChapter()">Could this be Kahneman?</next>
 </div>
 
 </pset>
@@ -2163,10 +2192,9 @@ Nicky Case who helped nurture an amazing community around explorable  explanatio
 Spencer Greenberg and Mike Mozer who ___.
 
 RMO
-Josh Cai
-Fred Bertsch
+Fred Bertsch and Vivek Sri
 
-Vue.js which greatly simplified and cleaned the code needed for this project, and actually made it pleasant to write.
+Vue.js which greatly simplified and cleaned the code needed for this project, and actually made it pleasant to write. And jpegslayer who helped me on the forums.
 </p>
 
 <p>
@@ -2478,6 +2506,11 @@ function isDescendant(ancestor, maybeChild){
 
   return false;
 }
+
+function hasSlot(name){
+  return !!this.$slots[ name ] || !!this.$scopedSlots[ name ];
+}
+
 Vue.component('avatar', {
   props: {
     image: {type: String}, // 'girl.png'
@@ -2529,6 +2562,12 @@ Vue.component('avatar', {
     // }, 3000);
   },
   computed: {
+    cropCircleStyle: function(){
+      return {'background-image': 'url("images/' + this.image + '")', opacity: this.image ? 1 : 0};
+    },
+    slotStyle: function(){
+      return {width: this.image ? '400px': '400px', left: this.image ? '120px' : '120px'};
+    },
     imgClasses: function(){
       var classes = {fallover: this.showFall};
       classes[this.animation] = true;
@@ -2562,9 +2601,7 @@ Vue.component('avatar', {
     }
   },
   methods: {
-    hasSlot: function(name){
-      return !!this.$slots[ name ] || !!this.$scopedSlots[ name ];
-    },
+    hasSlot: hasSlot,
     // For some reason, this need to be a separate fn, rather than inside the bus.
     // when the player clicks on a nope button, if the button has nope text, that is rendered.
     // otherwise, if the avatar has a hint slot that is shown.     
@@ -2583,6 +2620,8 @@ Vue.component('avatar', {
   },
   template: '#avatar-template'
 });
+
+
 // Just like a button, but with some special abilities.
 // When clicked it looks at it's parent to see if it's a buton-group.
 // Executes the onClick event if so.
@@ -2829,6 +2868,7 @@ Vue.component('distribution', {
 Vue.component('inline-img', {
   props: {
     src: {type: String},
+    height: {type: Number, default: 24},
   },
   template: '#inline-img-template'
 });
@@ -3816,9 +3856,9 @@ Vue.component('pset', {
 
   mounted: function(){
     // Hides elements initially.
-    for (var i=1; i<this.elms.length; i++){
-      this.elms[i].style.display = 'none';
-    }
+    // for (var i=1; i<this.elms.length; i++){
+    //   this.elms[i].style.display = 'none';
+    // }
 
     this.$root.report(0);
   },
@@ -3889,7 +3929,7 @@ const chapters = [
 
 {
   component: 'thanks',
-  description: 'To be continued?',
+  description: 'To be continued',
   image: 'bird-heart.png',
 },
 
@@ -3903,7 +3943,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: 0,
+    chapterInd: 1,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,

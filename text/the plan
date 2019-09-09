@@ -334,12 +334,65 @@ somehow it got offset --  there is 1 more clickable button than there s
 
 ---
 
-todo:
+figuring out visual design given that we only have one character -- the monk
+
+could change the font for monk
+
+eh... should we just leave it? 
+and kick out the door? 
+font actually improves it a lot
+
+we might need to add a few more pictures to improve it
+
+
+
+---
+
 smooth over the story
 find another playtester
 sounds are repetitive
 visual design is a little bleh
 not obvious that you have to drag the belief circle
-
-stopped here:
 adding more story to story aug 30.html
+I think adding headers might help too
+
+----
+
+fixing the story
+
+is the first unit about overconfidence bias or is it not?? -- it's not
+
+
+monk is looking for a successor
+
+what is monk looking for in a successor??
+13 obstacles
+
+the prophecies say that my successor will face a perilous journey and rid themselves of 13 biases.
+tortured soul that needs to rid themselves of 13 biases.
+
+13??!
+
+well, the prophecy actually said 88, but I thought it would be better to reduce it to 13 or else I'd never find anyone.
+
+
+
+very interesting... you have passed my first test.
+you have to find kahneman who will administer a test of your abilities
+
+
+
+strip out: 
+  MONK: By the way, I think we might have reduced your susceptibility to the Overconfidence Bias...
+
+
+consider fading away the next buton after it is clicked by default?
+
+---
+
+
+
+enforce the constraints for the input box??
+fix the todos --
+kick this out the door?
+
