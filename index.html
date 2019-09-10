@@ -595,9 +595,10 @@ You are going to bring us into this new world of uncertainty.
 </script>
 
 
+
 <script type="text/x-template" id="distribution-template">
-<div class="distribution">
-<div v-if="title" class="handwriting" style="text-align: center;">{{title}}</div>
+<div class="distribution" style="display:inline-block; text-align:center">
+<div v-if="title" style="text-align: center; font-size: 16px; text-transform:capitalize" :style="titleStyle">{{title}}</div>
 
 <svg :width="chartWidth+margin.left+margin.right" 
      :height="chartHeight+margin.top+margin.bottom">
@@ -610,15 +611,14 @@ You are going to bring us into this new world of uncertainty.
           :width="xScale.bandwidth()"
           :height="chartHeight - yScale(outcome.y)"
           :key="outcome.x"
-          fill="#001681"/>
+          :fill="barColor"/>
 
-      <!-- top of bar -->
+      <!-- top of bar 
       <text v-for="outcome in outcomes" 
         :x="xScale(outcome.x) + xScale.bandwidth()/2 - 8"
         :y="yScale(outcome.y) - 2">
         {{ outcome.y }}
-      </text>
-
+      </text>-->
     </g>
 </svg>
 </div>
@@ -1035,7 +1035,7 @@ when each moneybag comes in, trigger the wobble animation
   </p>
 
   <p>
-    Through the <bold>Bystander Effect</bold> we have been sitting by the side and watching as a few entities heat up the world and knock systems out of a precarious balance. //  todo: other global warming biases
+    Through the <a href="//en.wikipedia.org/wiki/Bystander_effect" target="_blank">Bystander Effect</a> we have been sitting by the side and watching as a few entities heat up the world and knock systems out of a precarious balance.
   </p>
   
   <next>Next</next>
@@ -1044,14 +1044,14 @@ when each moneybag comes in, trigger the wobble animation
 
 <div>
   <p>
-  The prophecy says that my successor is a tortured soul who will face a perilous journey to rid themselves of 13 biases and change the way how others see the world.
+  The prophecy says that my successor is a tortured soul who will face a perilous journey to rid themselves of 13 biases or so and change the way how others see the world.
   </p>
   <next>13?!?!</next>
 </div>
 
 <div>
   <p>
-    MONK: The prophecy actually said 88, but I thought it would be better to reduce it to 13 or else I'd never find anyone. 
+    MONK: The prophecy actually thought 88 was more likely, but I thought it would be better to reduce it to 13 or else I'd never find anyone. 
   </p>
 
   <p>
@@ -1092,16 +1092,31 @@ Most people would just say 365. But the true length of a year on Earth is ~365.2
 MONK: The first step is to accept that most questions don't have magic answers. Most answers are uncertain, and to capture the uncertainty we draw it as a distribution.
 </div>
 
-<div>
-A <bold>distribution</bold> has the possibilities on the x-axis and the probabilities on the y-axis. // todo: add picture?
-</div>
-
+<p>A <bold>distribution</bold> has the possibilities on the x-axis and the probabilities on the y-axis. Consider these distributions from the prophecy.</p>
 <next>Next</next>
 </div>
 
 <div>
+  <p>Our hero will likely face a very large number of cognitive biases in their quest... but possibly only 13!</p>
+  <div>
+    <distribution :outcomes="[{x: 13, y: 0.1}, {x: 88, y: 0.5}, {x: 108, y: 0.2},]" xLabel="Number of biases hero needs to overcome" yLabel="Probability" />
+  </div>
+  <next>Gee</next>
+</div>
+
 <div>
-MONK: Distributions allow us to shift from using vague language like "pretty sure", to having a picture of exactly what we think.
+  <div>
+    Our hero is in search of a guide... who will likely be human, but may very well be animal or inanimate.
+  </div>
+  <div>
+  <distribution :outcomes="[{x: 'human', y: 0.6},{x: 'animal', y: 0.2}, {x: 'book', y: 0.2},]" xLabel="Who will be the hero's guide?" yLabel="Probability" />
+  </div>
+  <next>Okay...</next>
+</div>
+
+<div>
+<div>
+MONK: This point is, distributions allow us to shift from using vague language like "pretty sure", to having a picture of exactly what we think.
 </div>
 
 <div>
@@ -2858,44 +2873,54 @@ function drawIndFromOutcomes(outcomes){
 //   {x: 4, y: 0.4},
 // ]
 
+
 // histogram example
 // https://bl.ocks.org/d3noob/96b74d0bd6d11427dd797892551a103c
 Vue.component('distribution', {
   props: {
 
     title: {type: String},
+    xLabel: {type: String},
+    yLabel: {type: String},
+
     // Pass in outcomes directly.
     outcomes: {type: Array, default: function(){
       return [
         {x: 'tattoos', y: 0.2},
         {x: 'no tattoos', y: 0.8},
       ];
-
-      // return [
-      //   {x: 1, y: 0.1},
-      //   {x: 2, y: 0.2},
-      //   {x: 3, y: 0.3},
-      //   {x: 4, y: 0.4},
-      // ];
     }},
-    chartHeight: {type: Number, default: 150},
-    chartWidth: {type: Number, default: 200},
+    chartHeight: {type: Number, default: 200},
+    chartWidth: {type: Number, default: 300},
+    barColor: {type:String, default:'#518891'},
     margin: {
       type: Object, 
       default: function(){
-        return {top: 10, right: 10, bottom: 20, left: 30};
+        return {top: 10, right: 10, bottom: 50, left: 50};
       }
     },
   },
   computed: {
     xScale(){
       return d3.scaleBand()
-          .domain(this.outcomes.map(d => d.x)).paddingInner(.1).range([0, this.chartWidth]);
+          .domain(this.outcomes.map(d => d.x)).paddingInner(0.01).range([0, this.chartWidth]);
+    },
+    xScaleContinuous(){
+      const domain = this.xScale.domain();
+      const range = this.xScale.range();
+      const bandwidth = this.xScale.bandwidth();
+      return d3.scaleLinear().domain([domain[0], domain[domain.length-1]]).range([range[0] + bandwidth/2, range[1] - bandwidth/2]);
     },
     yScale(){
       return d3.scaleLinear()
           .domain([0, 1]).range([this.chartHeight, 0]);
-    }
+    },
+    titleStyle(){
+      return {'margin-left': this.margin.left + 'px', 'margin-right': this.margin.right + 'px'};
+    },
+    mean: function(){
+      return _.sum(this.outcomes.map(outcome => outcome.x * outcome.y));
+    },
   },
   data: function(){
     return {
@@ -2914,11 +2939,25 @@ Vue.component('distribution', {
     const chart = d3.select(this.$el).select('.container');
     chart.append('g').call(yAxis);
     chart.append('g').attr('transform', 'translate(0,' + this.chartHeight + ')').call(xAxis);
-  },
-  methods: {
-    draw(){
-      return drawFromOutcomes(this.outcomes);
-    }
+
+
+    // x axis label
+    chart.append("text")             
+      .attr("transform",
+            "translate(" + (this.chartWidth/2) + " ," + 
+                           (this.chartHeight + this.margin.top + 30) + ")")
+      .style("text-anchor", "middle")
+      .text(this.xLabel);
+
+    // y axis label
+    chart.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - this.margin.left)
+      .attr("x",0 - (this.chartHeight / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text(this.yLabel);    
+
   },
   template: '#distribution-template'
 });
@@ -2932,35 +2971,6 @@ Vue.component('inline-img', {
   template: '#inline-img-template'
 });
 
-Vue.component('samples-from-distribution', {
-  props: {
-    title: {type: String},
-    outcomes: {type: Array, default: function(){
-      return  [
-          {x: 'Confuse people', y: .3},
-          {x: 'Annoy people', y: .4},
-          {x: 'Scare people', y: .3},
-        ];
-    }},
-  },
-  data(){
-    return {
-      samples: [],
-    };
-  },
-  computed: {
-    xDomain(){
-      return this.outcomes.map(d => d.x);
-    },
-  },
-  methods: {
-    draw(){
-      const outcome = this.$refs['distribution'].draw();
-      this.samples.push(outcome);
-    }
-  },
-  template: '#samples-from-distribution-template'
-});
 
 
 function canvasPlotCoords(context, coords, fill){
@@ -3574,7 +3584,6 @@ Vue.component('dist-question', {
   },
   computed: {
     guessHeight(){
-      // todo: fish these numbers out
       return this.$refs['dist'].getPDF(this.question.answer);
     },
     result(){
@@ -3588,17 +3597,13 @@ Vue.component('dist-question', {
     guessSubmitted(params){
       this.stage = Math.max(this.stage, 1);
       this.guess1 = Number(params.val);
-//      this.$root.scrollWindow();
     },
     secondGuessSubmitted(params){
       this.stage = 2;
       this.guess2 = Number(params.val);
-//      this.$root.scrollWindow();
     },
     beliefSubmitted(){
       this.stage = 3;
- //     this.$root.scrollWindow();
-      // this.guessHeight = this.$refs['dist'].getPDF(this.question.answer);
     },
     finishQuestion(){
       this.$emit('done', {result: this.result});
