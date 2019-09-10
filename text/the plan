@@ -320,7 +320,6 @@ need more decimal points
 1.2 0.3
 
 could add validation to answers in distribution thing
-stopped here: adding validation
 
 
 
@@ -329,7 +328,6 @@ stopped here: adding validation
 unexpected that the cave/tavern got normalized there -- try normalizing upon submit. see what happens.
 
 
-somehow it got offset --  there is 1 more clickable button than there s
 
 
 ---
@@ -392,7 +390,7 @@ consider fading away the next buton after it is clicked by default?
 
 
 
-enforce the constraints for the input box??
-fix the todos --
-kick this out the door?
+somehow it got offset --  there is 1 more clickable button than there s
+add in sounds? 
+
 

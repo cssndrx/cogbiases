@@ -848,18 +848,26 @@ You are going to bring us into this new world of uncertainty.
 
 
 <script type="text/x-template" id="input-box-template">
-  <div style="display:inline-block; position:relative;">
-    <input v-model="val" placeholder="?" style="width:50px; display:inline" v-on:keyup.enter="answerSubmit" :min="min" :max="max">
-    <slot></slot>
-    <buton style="display:inline" @click="answerSubmit">Go</buton>
-  
-    <transition name="fade">
-      <span v-if="showFeedback" class="nope" style="position:absolute; bottom: -8px; margin-bottom:0px" :style="feedbackStyle">
-        {{feedbackString}}
-      </span>
-    </transition>
+<div style="display:inline-block; position:relative; top:-16px;" class="normal-div">
+
+  <input v-model="val" placeholder="?" style="width:70px; display:inline; position:relative; top:16px" v-on:keyup.enter="answerSubmit">
+  <span style="position:relative; top:12px"><slot></slot></span>
+  <buton style="display:inline" @click="answerSubmit">Go</buton>
+
+  <div v-if="showCannedHint" class="hint">
+    {{cannedHint}}
   </div>
+  <div v-if="showYay" class="rainbow-text">
+    Yay!
+  </div>
+
+
+  <div v-if="showHintSlot" class="hint normal-div">
+    <slot name="hint"></slot>
+  </div>
+</div>
 </script>
+
 
 
 <script type="text/x-template" id="next-template">
@@ -1785,23 +1793,20 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
 
   <div><bold><slot></slot></bold> {{question.text}}</div>
 
-  <once-group>
-    <input-box @click="guessSubmitted" :advancePset="false" min=
-    "0" :max="question.maxBound"></input-box>
-  </once-group>
+  <input-box @click="guessSubmitted" :advancePset="false" :min=
+  "0" :max="question.maxBound"></input-box>
 
   <div v-if="stage > 0">
     <p>
       If you had to make a second guess, what would it be?
     </p>
-    <once-group>
-      <input-box @click="secondGuessSubmitted" :advancePset="false" min="0" :max="question.maxBound"></input-box>
-    </once-group>
+    <input-box @click="secondGuessSubmitted" :advancePset="false" :min="0" :max="question.maxBound"></input-box>
   </div>
 
 
   <div v-if="stage > 1">
     <slot name="tutorial"></slot>
+
     <once-group>
       <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2" :maxBound="question.maxBound" />
       <buton @click="beliefSubmitted">Submit belief</buton>
@@ -2407,6 +2412,7 @@ Vue.component('next', {
   template: '#next-template'
 });
 
+
 Vue.component('input-box', {
   props: {
     right: {type: String},
@@ -2414,62 +2420,115 @@ Vue.component('input-box', {
       type: Array, 
       default: function(){ return ['Try again', 'Nope']; },
     },
-    // Give feedback if there is a right answer
-    feedback: {type: Boolean, default: true},
-    advancePset: {type: Boolean, default: true},
 
-    min: {type: [String, Number]},
-    max: {type: [String, Number]},
+    advancePset: {type: Boolean, default: true},
+    min: {type: Number},
+    max: {type: Number},
   },
   computed: {
-    feedbackString: function(){
-      if (this.isYay){
-        return 'Yay!';
-      }
-      return this.hints[this.numWrong % this.hints.length];
+    isValid(){
+      const passMinCheck = this.min === undefined || (this.numericVal && this.numericVal >= this.min);
+      const passMaxCheck = this.max === undefined || (this.numericVal && this.numericVal <= this.max);
+      return passMinCheck && passMaxCheck;
     },
-    feedbackStyle: function(){
-      return {'color': this.isYay ? 'green' : 'red'};
+    validationErrorString(){
+      if (this.min === undefined){
+        return 'Value must be less than or equal to ' + this.max + '.';
+      }
+      if (this.max === undefined){
+        return 'Value must be greater than or equal to ' + this.min + '.';
+      }
+      return 'Value must be between ' + this.min + ' and ' + this.max + '.';
+    },
+    cannedHint(){
+      if (!this.isValid){
+        return this.validationErrorString;
+      }
+      return this.hints[this.answers.length % this.hints.length];      
+    },
+    numericVal(){
+      try{
+        return Number(this.val);        
+      } catch {
+        return null;
+      }
     },
     isYay: function(){
-      const matchesRight = this.val === this.right;
-      const exists = this.right === undefined && this.val !== null;
-      return  matchesRight || exists;
+      return this.isMatch(this.val, this.right);
     },
     isNope: function(){
       return !this.isYay;
+    },
+    showYay(){
+      return this.checkedAnswer && this.isYay;
+    },
+    showCannedHint(){
+      if (!this.checkedAnswer){
+        return false;
+      }
+      if (!this.isValid){
+        return true;
+      }
+      if (this.right === undefined){
+        return false;
+      }
+      return !this.hasSlot('hint') && this.isNope;
+    },
+    showHintSlot(){
+      return (DEBUG || this.checkedAnswer) && this.hasSlot('hint') && this.isNope;
     }
   },
   data: function(){
     return {
       val: null,
-      showFeedback: false,
-      numWrong: 0,
+      answers: [],
+
+      checkedAnswer: false,
+    }
+  },
+  watch:{
+    val(){
+      this.checkedAnswer = false;
     }
   },
   methods: {
+    isMatch(val, right){
+      if (val === undefined || val === null){
+        return false;
+      }
+      const exactMatch = val == right;
+      const europeanCommaMatch = val.replace(',', '.') == right;
+      var evalMatch;
+      try {
+        evalMatch = approx(eval(val), eval(right));
+      } catch(err){
+        evalMatch = false;
+      }
+      return exactMatch || europeanCommaMatch || evalMatch;
+    },
     answerSubmit: async function(){
-      this.$emit('click', {val: this.val});
-      if (this.feedback && this.right !== undefined){
-        this.showFeedback = true;
-        await wait(500);
+
+      this.checkedAnswer = true;        
+
+      if (this.isValid){
+        this.$emit('click', {val: this.val});        
+        this.answers.push(this.val);
       }
 
-      bus.$emit('answer-submitted', this);
-      // look at the value in the input.
       if (this.isYay){
-        await wait(1000);
-        this.$emit('yay'); //onRight();
+//        this.$root.play('yay');
+        this.$emit('yay');
 
         const pset = firstAncestorOfComponent(this, 'pset');
         if (pset && this.advancePset){
           pset.next();
         }
       } else {
-        this.numWrong++;
+//        this.$root.play('nope');
       }
 
-    }
+    },
+    hasSlot: hasSlot,
   },
   template: '#input-box-template'
 });
@@ -2957,10 +3016,16 @@ Vue.component('draggable-dist', {
       mouseWithinDotPos: null,
     }
   },
+  watch: {
+    guess1(){
+      this.init();
+    },
+    guess2(){
+      this.init();
+    }
+  },
   mounted(){
-    this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
-    this.plotFigure();
-    this.plotAxis();
+    this.init();
   },
   computed: {
     guess(){
@@ -2991,6 +3056,11 @@ Vue.component('draggable-dist', {
     }
   },
   methods: {
+    init(){
+      this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
+      this.plotFigure();
+      this.plotAxis();
+    },
     getPDF(val){
       if (val < this.conf[0] || val > this.conf[1]){
         return 0;
@@ -3227,7 +3297,7 @@ Vue.component('triple-bayes', {
       }
       const defaultTitles = {
         'prior': 'What you think before the evidence',
-        'likelihood': 'Likelihood ratio of the evidence',
+        'likelihood': 'Likelihood of the evidence under each hypothesis',
         'posterior': 'What you think after the evidence'
       };
       return defaultTitles[key];
@@ -3516,7 +3586,7 @@ Vue.component('dist-question', {
   },
   methods: {
     guessSubmitted(params){
-      this.stage = 1;
+      this.stage = Math.max(this.stage, 1);
       this.guess1 = Number(params.val);
 //      this.$root.scrollWindow();
     },
