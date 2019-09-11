@@ -393,4 +393,11 @@ consider fading away the next buton after it is clicked by default?
 somehow it got offset --  there is 1 more clickable button than there s
 add in sounds? 
 
+stopped here:
+stripping down
+adding sound
+
+should we investigate the scroll?
+
+one idea to fix the scroll: always scroll twice
 
