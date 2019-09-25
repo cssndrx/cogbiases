@@ -455,20 +455,26 @@ button{
 <script type="text/x-template" id="input-box-template">
 <div style="display:inline-block; position:relative; top:-16px;" class="normal-div">
 
-  <input v-model="val" placeholder="?" style="width:70px; display:inline; position:relative; top:16px" v-on:keyup.enter="answerSubmit">
+  <input v-model="val" 
+         placeholder="?" 
+         style="width:70px; display:inline; position:relative; top:16px" 
+         v-on:keyup.enter="answerSubmit"
+         @blur="answerSubmit">
   <span style="position:relative; top:12px"><slot></slot></span>
-  <buton style="display:inline" @click="answerSubmit">Go</buton>
+  <buton v-if="showButon" style="display:inline" @click="answerSubmit">Go</buton>
 
-  <div v-if="showCannedHint" class="hint">
-    {{cannedHint}}
-  </div>
-  <div v-if="showYay" class="rainbow-text">
-    Yay!
-  </div>
+  <div style="margin-top: 16px">
+    <div v-if="showCannedHint" class="hint">
+      {{cannedHint}}
+    </div>
+    <div v-if="showYay" class="rainbow-text">
+      Yay!
+    </div>
 
 
-  <div v-if="showHintSlot" class="hint normal-div">
-    <slot name="hint"></slot>
+    <div v-if="showHintSlot" class="hint normal-div">
+      <slot name="hint"></slot>
+    </div>
   </div>
 </div>
 </script>
@@ -491,23 +497,13 @@ button{
     <next>Next</next>
   </div>
 
-  <div>
-    A monk greets you.
-    <img src="images/monk_big.png">
-    <next>Next</next>
-  </div>
-
 
   <div>
-    <div>
-      MONK: Hello, explorer....
+    <div>A curious sign hangs on the door.</div>
+    <div class="handwriting" style="margin: 32px; font-size:24px">
+      Come rid yourself of <a href="//en.wikipedia.org/wiki/List_of_cognitive_biases" target="_blank" style="font-size:24px">cognitive biases</a> — circumstances in which many humans make irrational decisions.
     </div>
-
-    <div>
-    MONK: For years I have trained explorers like yourself to rid themselves of cognitive biases. Cognitive biases are instances in which humans consistently make irrational decisions. Would you like a lesson?
-    </div>
-
-    <next @click.native="$root.nextChapter()">Start lesson</next>
+    <next @click.native="$root.nextChapter()">Knock</next>
   </div>
 
 </pset>
@@ -554,11 +550,17 @@ button{
 <script type="text/x-template" id="beliefs-as-dists-template">
 <pset ref="pset">
 
+
   <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()" />
 
 
 
-<!--<div>
+<!--
+
+
+
+
+  <div>
 <draggable-dist ref="dist" :guess1="34" :guess2="34"/>
 
 <draggable-dist ref="dist" :guess1="150" :guess2="300"/>
@@ -569,15 +571,14 @@ button{
 
 
 <div>
-  <p>
-  MONK: You should probably sit down.
-  </p>
-  <next>Sit</next>
+  A monk greets you.
+  <img src="images/monk_big.png">
+  <next>Next</next>
 </div>
 
 <div>
   <p>
-  MONK: I have been in search for my successor for a long time. The prophecy says that today is the last possible day for us to meet.
+  MONK: Hello, I have been in search for my successor for a long time. The prophecy says that today is the last possible day for us to meet.
   </p>
   
   <next>Next</next>
@@ -701,11 +702,7 @@ Now, begin thinking in distributions instead of magic answers.
         </div>
 
         <div>
-            You will earn wisdom credits with the monk based on the height of your graph over the magic answer <inline-img src="grad.jpg" :height="16" />.
-        </div>
-
-        <div>
-          But to add some stakes in the game, if you assign 0 probability to the magic answer, you will have to do the dishes <inline-img src="dishes.png" :height="16" />.
+          If you assign 0 probability to the magic answer, you will have to do the dishes <inline-img src="dishes.png" :height="16" />.
         </div>
       </div>
     </template>
@@ -724,7 +721,7 @@ Now, begin thinking in distributions instead of magic answers.
 
 <div>
   <p>
-    Thank you for washing {{dishDuty}} days of dishes <inline-img src="dishes.png" />. Together, with your {{$root.roundTo(gradUnits, 1)}} wisdom points <inline-img src="grad.jpg" />, I think you should be allowed to proceed.
+    Thank you for washing {{dishDuty}} days of dishes <inline-img src="dishes.png" />. Together, with your demonstrated wisdom, most of my belief distribution rests on allowing you to proceed.
   </p>
 
   <next>Next</next>
@@ -1363,27 +1360,22 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
   <div><bold><slot></slot></bold> {{question.text}}</div>
 
   <div style="display:flex">
-    <div style="flex:50%">
+    <div class="smaller-children" style="flex:50%">
       <div>Min guess</div>
-      <input v-model="guess1"></input>
+      <input-box ref="guess1" v-model="guess1" :min="0" :max="question.maxBound" :show-buton="false" />
     </div>
 
-    <div style="flex:50%">
-    <div>Max guess</div>
-    <input v-model="guess2"></input>
+    <div class="smaller-children" style="flex:50%">
+      <div>Max guess</div>
+      <input-box ref="guess2" v-model="guess2" :min="0" :max="question.maxBound" :show-buton="false" />
     </div>
+
+    <buton @click.native="guessesSubmitted" style="position:relative; top: 16px">Next</buton>
+
   </div>
 
-  <buton @click.native="stage=2">Next</buton>
 
-
-<!--  <input-box @click="guessSubmitted" :advancePset="false" :min=
-  "0" :max="question.maxBound"></input-box>
-
-  <input-box @click="secondGuessSubmitted" :advancePset="false" :min="0" :max="question.maxBound"></input-box> -->
-
-
-  <div v-if="stage > 1">
+  <div v-if="stage >= 2">
     <slot name="tutorial"></slot>
 
     <once-group>
@@ -1392,13 +1384,9 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
     </once-group>
   </div>
 
-  <div v-if="stage > 2">
+  <div v-if="stage >= 3">
     <div>
       The magic answer was {{question.answer}}. The height of the magic answer on your normalized belief graph was {{$root.roundTo(guessHeight, 5)}}.
-    </div>
-
-    <div v-if="result.gradUnits">
-      You accumulate {{$root.roundTo(result.gradUnits, 1)}} wisdom points <inline-img src="grad.jpg" />. 
     </div>
 
     <div v-if="result.dishDuty">
@@ -1722,7 +1710,7 @@ Nicky Case who helped nurture an amazing community around explorable  explanatio
 </p>
 
 <p>
-Anand Babu and Google Kernel friends that provided a safe space and the final push of energy to rewrite this story. Fred Bertsch and Vivek Sri who helped massage the story. Tianyu Liu for always recommending inspirational prior work. Meg Gordon the tireless cheerleader and content expert. Nathan Martz, the oracle that was right about all the pitfalls.
+Anand Babu and Google Kernel friends that provided a safe space and the final push of energy to rewrite this story. Fred Bertsch and Vivek Sri who helped massage the story. Tianyu Liu for always recommending inspirational prior work. Meg Gordon the tireless cheerleader and content expert. Boris Smus who gave great design feedback. Nathan Martz, the oracle that was right about all the pitfalls.
 </p>
 
 <p>
@@ -1919,8 +1907,13 @@ Vue.component('input-box', {
     },
 
     advancePset: {type: Boolean, default: true},
+    showButon: {type: Boolean, default: true},
+
     min: {type: Number},
     max: {type: Number},
+
+    // https://scotch.io/tutorials/add-v-model-support-to-custom-vuejs-component
+    value: {type: Object},
   },
   computed: {
     isValid(){
@@ -1977,7 +1970,7 @@ Vue.component('input-box', {
   },
   data: function(){
     return {
-      val: null,
+      val: this.value,
       answers: [],
 
       checkedAnswer: false,
@@ -2003,7 +1996,7 @@ Vue.component('input-box', {
       }
       return exactMatch || europeanCommaMatch || evalMatch;
     },
-    answerSubmit: async function(){
+    answerSubmit: function(){
 
       this.checkedAnswer = true;        
 
@@ -2025,6 +2018,9 @@ Vue.component('input-box', {
       if (this.isNope) {
         this.$root.play('nope');
       }
+
+      // Emit the event regardless of whether it is valid or not.
+      this.$emit('input', this.val);
 
     },
     hasSlot: hasSlot,
@@ -2167,7 +2163,7 @@ Vue.component('distribution', {
     }},
     chartHeight: {type: Number, default: 200},
     chartWidth: {type: Number, default: 300},
-    barColor: {type:String, default:'#518891'},
+    barColor: {type:String, default:'#2F77A1'},
     margin: {
       type: Object, 
       default: function(){
@@ -2285,6 +2281,9 @@ Vue.component('draggable-dist', {
     guess1: {type: Number, default: 10},
     guess2: {type: Number, default: 10},
 
+    // Optional correct answer to highlight.
+    answer: {type:Number},
+
     // Optional max value to cap the distribution to.
     maxBound: {type: Number},
   },
@@ -2317,6 +2316,9 @@ Vue.component('draggable-dist', {
       return Math.round((this.guess1 + this.guess2)/2);
     },
     baseWidth(){
+      // The difference between the upper and lower points should be 
+      // min 50px, max chartWidth.
+      // baseWidth: the spacing between left + right points of the figure.
       return lerp(this.conf[1]-this.conf[0], 0, 100, 50, this.chartWidth);
     },
     mode(){
@@ -2443,6 +2445,11 @@ Vue.component('draggable-dist', {
         const y_scale = 50;
         context.clearRect(0, 0, this.chartWidth, this.chartHeight);
  
+        // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform
+        // scale x by baseWidth
+        // scale y by -yscale
+        // translate x by (this.chartWidth-this.baseWidth)/2
+        // translate y by this.chartHeight
         context.setTransform(this.baseWidth, 0, 0, -y_scale, (this.chartWidth-this.baseWidth)/2, this.chartHeight);
         
         const x_coords = _.range(0, 1, .01);
@@ -2452,6 +2459,10 @@ Vue.component('draggable-dist', {
         });
         y_coords.push([1, y_coords[0][0]]);
         canvasPlotCoords(context, y_coords, 'rgba(27,64,99,.2)');      
+     },
+
+     plotAnswer(){
+      // canvasplotcoords
      },
 
      plotAxis(){
@@ -2860,14 +2871,13 @@ Vue.component('dist-question', {
     }
   },
   methods: {
-    // guessSubmitted(params){
-    //   this.stage = Math.max(this.stage, 1);
-    //   this.guess1 = Number(params.val);
-    // },
-    // secondGuessSubmitted(params){
-    //   this.stage = 2;
-    //   this.guess2 = Number(params.val);
-    // },
+    guessesSubmitted(){
+      if (this.$refs['guess1'].isValid && this.$refs['guess2'].isValid){
+        this.stage = 2;
+      } else {
+        this.stage = 0;
+      }
+    },
     beliefSubmitted(){
       this.stage = 3;
     },
@@ -3182,7 +3192,7 @@ const chapters = [
 {
   component: 'thanks',
   description: 'To be continued',
-  image: 'bird-heart.png',
+  image: 'monk_big.png',
 },
 
 ];

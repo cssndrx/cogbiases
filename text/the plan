@@ -408,12 +408,16 @@ one idea to fix the scroll: always scroll twice
 boris feedback:
 want the post-oracle stuff to be more interactive
 remove the points, or make it persist through the narrative
-
-
 enter could scroll -- too much mousing
 
+
+
+---
+
 stopped here:
-upper and lower bound guess 
+draw the true answer onto the distribution widget
 
 
-
+todo: 
+test input-box stuff
+set up a donation link
