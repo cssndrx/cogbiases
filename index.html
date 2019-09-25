@@ -554,6 +554,9 @@ button{
 <script type="text/x-template" id="beliefs-as-dists-template">
 <pset ref="pset">
 
+  <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()" />
+
+
 
 <!--<div>
 <draggable-dist ref="dist" :guess1="34" :guess2="34"/>
@@ -1359,22 +1362,32 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
 
   <div><bold><slot></slot></bold> {{question.text}}</div>
 
-  <input-box @click="guessSubmitted" :advancePset="false" :min=
+  <div style="display:flex">
+    <div style="flex:50%">
+      <div>Min guess</div>
+      <input v-model="guess1"></input>
+    </div>
+
+    <div style="flex:50%">
+    <div>Max guess</div>
+    <input v-model="guess2"></input>
+    </div>
+  </div>
+
+  <buton @click.native="stage=2">Next</buton>
+
+
+<!--  <input-box @click="guessSubmitted" :advancePset="false" :min=
   "0" :max="question.maxBound"></input-box>
 
-  <div v-if="stage > 0">
-    <p>
-      If you had to make a second guess, what would it be?
-    </p>
-    <input-box @click="secondGuessSubmitted" :advancePset="false" :min="0" :max="question.maxBound"></input-box>
-  </div>
+  <input-box @click="secondGuessSubmitted" :advancePset="false" :min="0" :max="question.maxBound"></input-box> -->
 
 
   <div v-if="stage > 1">
     <slot name="tutorial"></slot>
 
     <once-group>
-      <draggable-dist ref="dist" :guess1="guess1" :guess2="guess2" :maxBound="question.maxBound" />
+      <draggable-dist ref="dist" :guess1="Number(guess1)" :guess2="Number(guess2)" :maxBound="question.maxBound" />
       <buton @click="beliefSubmitted">Submit belief</buton>
     </once-group>
   </div>
@@ -1583,7 +1596,7 @@ Try it here...
 
 <div>
 <p>
-Since you were {{firstMoneybagPayout > 0 ? 'correct' : 'incorrect'}}, you {{ firstMoneybagPayout > 0 ? 'win' : 'lose'}} {{firstMoneybagPayout}} moneybags. 
+Since you were {{firstMoneybagPayout > 0 ? 'correct' : 'incorrect'}}, you {{ firstMoneybagPayout > 0 ? 'win' : 'lose'}} {{firstMoneybagPayout}} cookies. 
 </p>
 
 <next>Why don't I always pick 50%</next>
@@ -1730,7 +1743,7 @@ If you'd like to submit feedback or buy the monk a coffee, both would be very ap
 <script>
 // lightblue = #D1D9E0
 // darkblue = #2F77A1
-const DEBUG = false;
+const DEBUG = true;
 
 
 var sounds = {
@@ -2104,7 +2117,7 @@ Vue.component('buton', {
       } else if (this.isNope){
         this.$root.play('nope');
       } else{
-        this.$root.play('buton');        
+        // this.$root.play('buton');        
       }
 
       this.clickedButton = true;
@@ -2847,14 +2860,14 @@ Vue.component('dist-question', {
     }
   },
   methods: {
-    guessSubmitted(params){
-      this.stage = Math.max(this.stage, 1);
-      this.guess1 = Number(params.val);
-    },
-    secondGuessSubmitted(params){
-      this.stage = 2;
-      this.guess2 = Number(params.val);
-    },
+    // guessSubmitted(params){
+    //   this.stage = Math.max(this.stage, 1);
+    //   this.guess1 = Number(params.val);
+    // },
+    // secondGuessSubmitted(params){
+    //   this.stage = 2;
+    //   this.guess2 = Number(params.val);
+    // },
     beliefSubmitted(){
       this.stage = 3;
     },
@@ -3192,7 +3205,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: DEBUG ? 2 : 0,
+    chapterInd: DEBUG ? 1 : 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
