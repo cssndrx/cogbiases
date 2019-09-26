@@ -414,10 +414,9 @@ enter could scroll -- too much mousing
 
 ---
 
-stopped here:
-draw the true answer onto the distribution widget
-
-
 todo: 
 test input-box stuff
-set up a donation link
+have bayes widget number show up more visibly while dragging?
+test subscribe link live
+
+

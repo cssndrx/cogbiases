@@ -230,7 +230,7 @@ button{
            style="max-width:50px; max-height:100px">
 
       <span style="top:60px; font-size:12px; display: inline-block; margin:8px; vertical-align: top">
-        <bold style="font-size:12px">{{ chapterInd < chapters.length-1 ? 'Chapter ' + chapterInd : 'Thanks' }}</bold>
+        <bold style="font-size:12px">{{ chapterInd < chapters.length-1 ? 'Chapter ' + chapterInd : '?' }}</bold>
         <br> 
         {{currentChapter.description}}
       </span>
@@ -249,7 +249,7 @@ button{
             :src="'images/' + chapter.image" 
             style="max-width:50px; max-height:100px">
         <span style="top:60px; font-size:12px; display: inline-block; margin:8px;">
-          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : '???' }}</bold>
+          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : '?' }}</bold>
           <br> 
           {{chapter.description}}
         </span>
@@ -551,13 +551,15 @@ button{
 <pset ref="pset">
 
 
+<!--
+
+<draggable-dist ref="dist" :guess1="2" :guess2="16" :answer="16"/>
+
+
   <dist-question :question="questions[0]" @done="nextQuestion($event); $refs['pset'].next()" />
 
 
-
-<!--
-
-
+<draggable-dist ref="dist" :guess1="2" :guess2="18" :answer="26"/>
 
 
   <div>
@@ -1379,7 +1381,7 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
     <slot name="tutorial"></slot>
 
     <once-group>
-      <draggable-dist ref="dist" :guess1="Number(guess1)" :guess2="Number(guess2)" :maxBound="question.maxBound" />
+      <draggable-dist ref="dist" :guess1="Number(guess1)" :guess2="Number(guess2)" :maxBound="question.maxBound" :answer="stage >= 3 ? question.answer : undefined" />
       <buton @click="beliefSubmitted">Submit belief</buton>
     </once-group>
   </div>
@@ -1686,40 +1688,56 @@ Out of the darkness steps...
 <div class="thanks">
 
 <p>
-  <bold>To be continued...</bold>
+  <bold>To be continued</bold>
 </p>
 
 <p>
-The list of people to thank is very long: 
+  Give me your <a href="//eepurl.com/gEx3i1" target="_blank" class="bold">email address</a> to be notified when a new episode comes out.
 </p>
 
 <p>
+  Give me <a target="_blank" href="//forms.gle/LV58xe6WEFFWo2hq6" class="bold">feedback</a> on what could have been better, or tell me your ideas for future chapters.
+</p>
+
+<p style="margin-top: 64px" class="bold">
+People to thank
+</p>
+
 The original verison of this game was built as part of a masters thesis with the MIT Media Lab's Fluid Interfaces Group headed by Pattie Maes. Ideas in the game were also heavily influenced by two classes at MIT (9.660 by Prof. Josh Tenenbaum) and (6.437 by Prof. Lizhong Zheng). 
 </p>
 
 <p>
-Many friends and advisors helped with early incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li and Ruwen Liu, Pattie Maes, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, BV, Victoria Xia, and Sophia Youn.
+Many friends and advisors helped with early incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li and Ruwen Liu, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, Victoria Xia, and Sophia Youn. And BV who set me on this impossible quest.
 </p>
 
 <p>
-The backers and supporters of Ishaan's Journey, including Brienne and Eliezer Yudkowsky, Eric Chisholm, Alia McCutcheon and other folks from the LessWrong scene who encouraged me to develop this further and who were very patient with me as I took several unnecessary detours. 
+The backers and supporters of Ishaan's Journey, including Vivek Ramkrishnan, Brienne and Eliezer Yudkowsky, Eric Chisholm, Alia McCutcheon and other folks from the LessWrong scene encouraged me to develop this further and who were very patient with me as I took several unnecessary detours. 
 </p>
 
 <p>
-Nicky Case who helped nurture an amazing community around explorable  explanations, and created multiple examples for how to make experiences both fun + educational. Spencer Greenberg and Mike Mozer who kept the project alive through their enthuasism and insightful critique on the original version. And thank you to all the folks who emailed in with encouragement and offers to help. 
+Nicky Case who created multiple examples for how to make experiences both fun + educational. Spencer Greenberg and Mike Mozer who kept the project alive through their enthuasism and insightful critique on the original version. And thank you to all the folks who emailed in with encouragement and offers to help. 
 </p>
 
 <p>
-Anand Babu and Google Kernel friends that provided a safe space and the final push of energy to rewrite this story. Fred Bertsch and Vivek Sri who helped massage the story. Tianyu Liu for always recommending inspirational prior work. Meg Gordon the tireless cheerleader and content expert. Boris Smus who gave great design feedback. Nathan Martz, the oracle that was right about all the pitfalls.
+Anand Babu and Google Kernel friends provided a safe space and the final push of energy to rewrite this. Fred Bertsch and Vivek Sri  greatly improved the story in different ways. Tianyu Liu recommended the perfect pieces of prior work. Boris Smus gave thoughtful and useful playtest feedback. Nathan Martz was the oracle who was right about all the pitfalls.
 </p>
 
 <p>
-On the tech side, Vue.js greatly simplified the code needed for this project, and actually made it pleasant to write. And jpegslayer who helped me on the friendly Vue forums.
+On the tech side, <a href="//vuejs.org/" target="_blank">Vue.js</a> greatly simplified the code needed for this project, omgggg try it out. I think it's better than React. I also want to thank jpegslayer who helped me on the friendly Vue forums.
 </p>
 
 <p>
-If you'd like to submit feedback or buy the monk a coffee, both would be very appreciated!
+If after all this, you're still here and want to buy me a coffee, that would be a great boost to my ego!
 </p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_donations" />
+<input type="hidden" name="business" value="cssndrx@gmail.com" />
+<input type="hidden" name="currency_code" value="USD" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
 
 
 </div>
@@ -1731,7 +1749,7 @@ If you'd like to submit feedback or buy the monk a coffee, both would be very ap
 <script>
 // lightblue = #D1D9E0
 // darkblue = #2F77A1
-const DEBUG = true;
+const DEBUG = false;
 
 
 var sounds = {
@@ -2266,9 +2284,9 @@ function canvasPlotCoords(context, coords, fill){
   context.stroke();     
 }
 
-function canvasAddText(context, text, coord, font){
-  context.font = font;
-  context.fillStyle = "black";
+function canvasAddText(context, text, coord, color){
+  context.font = '12px Arial';
+  context.fillStyle = color;
   // calculate the numbers that 
   context.fillText(text, coord[0], coord[1]);                   
 }
@@ -2302,23 +2320,27 @@ Vue.component('draggable-dist', {
   },
   watch: {
     guess1(){
-      this.init();
+      this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
+      this.redraw();
     },
     guess2(){
-      this.init();
+      this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
+      this.redraw();
+    },
+    answer(){
+      this.redraw();
     }
   },
   mounted(){
-    this.init();
+    this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
+    this.redraw();
   },
   computed: {
     guess(){
       return Math.round((this.guess1 + this.guess2)/2);
     },
+    // Pixel difference between left and right points of the curve.
     baseWidth(){
-      // The difference between the upper and lower points should be 
-      // min 50px, max chartWidth.
-      // baseWidth: the spacing between left + right points of the figure.
       return lerp(this.conf[1]-this.conf[0], 0, 100, 50, this.chartWidth);
     },
     mode(){
@@ -2340,13 +2362,18 @@ Vue.component('draggable-dist', {
         left: this.dotLeft + 'px',
         top: this.dotTop + 'px'
       };
-    }
+    },
   },
   methods: {
-    init(){
-      this.conf = [Math.min(this.guess1, this.guess2), Math.max(this.guess1, this.guess2)];
-      this.plotFigure();
-      this.plotAxis();
+    redraw(){
+      this.drawFigure();
+      this.drawAnswer();
+      this.drawAxis();
+    },
+    realToPixels(x){
+      return d3.scaleLinear()
+          .domain([this.conf[0], this.conf[1]])
+          .range([this.chartWidth/2 - this.baseWidth/2, this.chartWidth/2 + this.baseWidth/2])(x);
     },
     getPDF(val){
       if (val < this.conf[0] || val > this.conf[1]){
@@ -2419,8 +2446,8 @@ Vue.component('draggable-dist', {
         this.betaA = beta_a;
         this.betaB = beta_b;
 
-        this.plotFigure();
-        this.plotAxis();
+        this.drawFigure();
+        this.drawAxis();
      },
      dragend(){
         this.isDragging = false;
@@ -2440,7 +2467,7 @@ Vue.component('draggable-dist', {
         this.dotTop = top;
      },
 
-     plotFigure(){
+     drawFigure(){
         const context = this.context;
         const y_scale = 50;
         context.clearRect(0, 0, this.chartWidth, this.chartHeight);
@@ -2461,38 +2488,52 @@ Vue.component('draggable-dist', {
         canvasPlotCoords(context, y_coords, 'rgba(27,64,99,.2)');      
      },
 
-     plotAnswer(){
-      // canvasplotcoords
+     drawAnswer(){
+        if (this.answer === undefined){
+          return;
+        }
+
+        const context = this.context;
+        const y_scale = 50;
+
+        context.setTransform(this.baseWidth, 0, 0, -y_scale, (this.chartWidth-this.baseWidth)/2, this.chartHeight);
+        
+
+        // Convert the coords into 0 / 1
+        const pad = 0.5;
+        const xs = [this.answer - pad, this.answer + pad];
+        const xs_01 = xs.map( x => lerp(x, this.conf[0], this.conf[1], 0, 1));
+
+        // Get the y coordinate
+        const ys = xs_01.map( x => jStat.beta.pdf(x, this.betaA, this.betaB) || 1);
+
+        const zeros = [[xs_01[1], 0], [xs_01[0], 0]];
+        const coords = _.concat(_.zip(xs_01, ys), zeros);
+
+        canvasPlotCoords(context, coords, 'orange');      
      },
 
-     plotAxis(){
+     drawAxis(){
         const context = this.context;
         context.setTransform(1, 0, 0, 1, 0, 0);
 
         const conf = this.conf;
         const guess = this.guess;
 
-        const font = "18px Arial";
-        const txtfont = '12px Arial';
-
         const width = this.chartWidth;
         const height = this.chartHeight;
 
-        const yoff = -15;
+        const yoff = 0; //15;
 
-        const low = Math.max((width - this.baseWidth)/2, 0);
-        const high = Math.min( (width + this.baseWidth)/2 - 5, width-20 );
-        canvasAddText(context, '[', [low, height], font);
-        canvasAddText(context, Math.round(conf[0]), [low, height+yoff], txtfont);
+        const low = Math.max(this.realToPixels(conf[0]), 0);
+        canvasAddText(context, Math.round(conf[0]), [low, height+yoff], '#999');
 
-        canvasAddText(context, ']', [high, height], font);
-        canvasAddText(context, Math.round(conf[1]), [high, height+yoff], txtfont);
+        const high = Math.min(this.realToPixels(conf[1])-4, width-20);
+        canvasAddText(context, Math.round(conf[1]), [high, height+yoff], '#999');
 
-        if (conf[1] - conf[0] > 0  && conf[1] - guess > 2){
-          const pos = lerp(this.mode, 0, 1, low, high);
-          const val = Math.round(lerp(this.mode, 0, 1, conf[0], conf[1]));
-          canvasAddText(context, '|', [pos, height], font);
-          canvasAddText(context, val, [pos, height+yoff], txtfont);          
+        if (this.answer && this.answer !== conf[0] && this.answer !== conf[1]){
+          const answerPx = this.realToPixels(this.answer) -4;
+          canvasAddText(context, this.answer, [answerPx, height+yoff], '#000');
         }
       },
   },
@@ -2838,7 +2879,6 @@ Vue.component('moneybag-question', {
   methods: {
     finishQuestion(certainty){
       // $root.paramsFromCertainty(certainty);
-      //debugger;
       this.$emit('done', {question: this.question, choice: this.userChoice, userCertainty: certainty});
 
       this.userFeedback = 'Your guess was ' + (this.question.answer === this.userChoice ? 'correct.' : 'incorrect.');
@@ -3215,7 +3255,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: DEBUG ? 1 : 0,
+    chapterInd: DEBUG ? 4 : 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
