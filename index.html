@@ -18,7 +18,9 @@
 <script src="js/d3.v5.min.js"></script>
 <script src="js/vue.min.js"></script>
 <script src="js/jstat-mybuild.js"></script>
+<!--<script src="js/index.min.js"></script> -->
 
+<!-- vue2-hammer-2.1.2-->
 <style>
 
 html, body, #app{
@@ -428,6 +430,11 @@ button{
       @dragstart="dragstart(x)"
       @dragend="dragend"
       @drag="drag(x, $event)"
+
+      @touchstart="dragstart(x)"
+      @touchend="dragend"
+      @touchmove="drag(x, $event)"
+
       :style="dotStyle(x)"></div>
 
 
@@ -527,6 +534,7 @@ button{
     v-if="!isDragging"
     style="position:absolute; background-color:#2F77A1"
     @mousedown="mousedown($event)"
+    @touchstart="mousedown($event)"
     :style="redDotStyle"
     draggable="true"></div>    
 
@@ -535,6 +543,9 @@ button{
     style="position:absolute; background-color:#2F77A1"
     @dragend="dragend"
     @drag="drag($event)"
+
+    @touchend="dragend"
+    @touchmove="drag($event)"
 
     :style="ghostDotStyle"></div>    
 </div>
@@ -551,7 +562,10 @@ button{
 <pset ref="pset">
 
 
+
 <!--
+
+<draggable-dist ref="dist" :guess1="2" :guess2="16" :answer="16"/>
 
 <draggable-dist ref="dist" :guess1="2" :guess2="16" :answer="16"/>
 
@@ -1708,7 +1722,7 @@ The original verison of this game was built as part of a masters thesis with the
 </p>
 
 <p>
-Many friends and advisors helped with early incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li and Ruwen Liu, Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, Victoria Xia, and Sophia Youn. And BV who set me on this impossible quest.
+Many friends and advisors helped with early incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li, Ruwen Liu (who drew the famous monk in this story), Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, Victoria Xia, and Sophia Youn. And BV who set me on this impossible quest.
 </p>
 
 <p>
@@ -2361,7 +2375,7 @@ Vue.component('draggable-dist', {
     ghostDotStyle(){
       return {
         left: this.dotLeft + 'px',
-        top: this.dotTop + 'px'
+        top: this.dotTop + 'px',
       };
     },
   },
@@ -2393,14 +2407,17 @@ Vue.component('draggable-dist', {
         refElement = refElement.parentElement;
       }
 
+      const clientX = event.clientX || event.touches[0].clientX;
+      const clientY = event.clientY || event.touches[0].clientY;
       const result = {
-        left: event.clientX - refElement.getBoundingClientRect().x,
-        top: event.clientY - refElement.getBoundingClientRect().y
+        left: clientX - refElement.getBoundingClientRect().x,
+        top: clientY - refElement.getBoundingClientRect().y
       };
       return result;
     },
 
     mousedown(event){
+      console.log('mousedown');
       this.isDragging = true;
 
       // Need this to create a more accurate ghost
@@ -2408,6 +2425,7 @@ Vue.component('draggable-dist', {
       this.mouseWithinDotPos = mousePos;
     },
     drag(event){
+      console.log('drag');
         const height = this.chartHeight;
         const width = this.chartWidth;
         const guess = this.guess;
@@ -2451,6 +2469,7 @@ Vue.component('draggable-dist', {
         this.drawAxis();
      },
      dragend(){
+      console.log('dragend');
         this.isDragging = false;
 
         // snap the draggable to the mode
@@ -2817,7 +2836,9 @@ Vue.component('samples-chart', {
       while (refElement.className !== 'samples-chart'){
         refElement = refElement.parentElement;
       }
-      return event.clientY - refElement.getBoundingClientRect().y;
+
+      const clientY = event.clientY || event.touches[0].clientY;
+      return clientY - refElement.getBoundingClientRect().y;
     },
 
   },
@@ -3256,7 +3277,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: DEBUG ? 4 : 0,
+    chapterInd: DEBUG ? 1 : 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
