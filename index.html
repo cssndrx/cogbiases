@@ -74,8 +74,6 @@ html, body, #app{
 
 .dot{
   border-radius: 50%;
-  width: 12px;
-  height: 12px;
   background-color: #2F77A1;
   cursor: ns-resize;
 }
@@ -111,12 +109,9 @@ img{
   max-width: 400px;
 }
 
-
-.small-text, .small-text *{
-  font-size: 16px;
-}
-.smaller-children, .smaller-children *{
-  font-size: 13px;
+.small-grey, .small-grey *{
+  font-size: 14px;
+  color: #777;
 }
 
 button{
@@ -464,11 +459,11 @@ button{
 
   <input v-model="val" 
          placeholder="?" 
-         style="width:70px; display:inline; position:relative; top:16px" 
+         style="width:100px; display:inline; position:relative; top:16px; font-size:28px" 
          v-on:keyup.enter="answerSubmit"
          @blur="answerSubmit">
   <span style="position:relative; top:12px"><slot></slot></span>
-  <buton v-if="showButon" style="display:inline" @click="answerSubmit">Go</buton>
+  <buton v-if="showButon" style="display:inline; top:8px; position:relative" @click="answerSubmit">Go</buton>
 
   <div style="margin-top: 16px">
     <div v-if="showCannedHint" class="hint">
@@ -510,7 +505,11 @@ button{
     <div class="handwriting" style="margin: 32px; font-size:24px">
       Come rid yourself of <a href="//en.wikipedia.org/wiki/List_of_cognitive_biases" target="_blank" style="font-size:24px">cognitive biases</a> — circumstances in which many humans make irrational decisions.
     </div>
+
+    <div>Note: This story is best played on desktop, although it is possible on mobile with some determination.</div>
+
     <next @click.native="$root.nextChapter()">Knock</next>
+
   </div>
 
 </pset>
@@ -712,7 +711,7 @@ Now, begin thinking in distributions instead of magic answers.
     Question 1 out of {{questions.length}}.
 
     <template v-slot:tutorial>
-      <div class="smaller-children">
+      <div class="small-grey">
         <div>
           Drag down the circle so that the distribution covers all answers that you think are reasonable. You can also drag the circle left and right to fine-tune the shape. This diagram is your <bold>belief graph</bold>. 
         </div>
@@ -1376,17 +1375,17 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
   <div><bold><slot></slot></bold> {{question.text}}</div>
 
   <div style="display:flex">
-    <div class="smaller-children" style="flex:50%">
+    <div class="small-grey" style="flex:50%">
       <div>Min guess</div>
       <input-box ref="guess1" v-model="guess1" :min="0" :max="question.maxBound" :show-buton="false" />
     </div>
 
-    <div class="smaller-children" style="flex:50%">
+    <div class="small-grey" style="flex:50%">
       <div>Max guess</div>
       <input-box ref="guess2" v-model="guess2" :min="0" :max="question.maxBound" :show-buton="false" />
     </div>
 
-    <buton @click.native="guessesSubmitted" style="position:relative; top: 16px">Next</buton>
+    <buton @click.native="guessesSubmitted" style="position:relative; top: 24px">Next</buton>
 
   </div>
 
@@ -1678,15 +1677,15 @@ Out of the darkness steps...
 
 <script type="text/x-template" id="fair-bet-template">
 
-<div class="small-text normal-div fair-bet" style="text-align:left; user-select:none">
+<div class="small-grey normal-div fair-bet" style="text-align:left; user-select:none">
 
   <div>
-    <div>Win if right ({{numWinIfRight}})</div>
+    <div style="margin-bottom:8px">Win if right ({{numWinIfRight}})</div>
     <moneybag :number="numWinIfRight"></moneybag>
   </div>
 
   <div>
-    <div>Lose if wrong ({{numLoseIfWrong}})</div>
+    <div style="margin-bottom:8px">Lose if wrong ({{numLoseIfWrong}})</div>
     <moneybag :number="numLoseIfWrong"></moneybag>
   </div> 
 
@@ -1764,7 +1763,7 @@ If after all this, you're still here and want to buy me a coffee, that would be 
 <script>
 // lightblue = #D1D9E0
 // darkblue = #2F77A1
-const DEBUG = false;
+const DEBUG = true;
 
 
 var sounds = {
@@ -2319,6 +2318,7 @@ Vue.component('draggable-dist', {
 
     // Optional max value to cap the distribution to.
     maxBound: {type: Number},
+    dotSize: {type: Number, default: 20},
   },
   data(){
     return {
@@ -2326,7 +2326,7 @@ Vue.component('draggable-dist', {
       betaB: 4, 
       yScale: 50,
       conf: [10, 20],
-      dotLeft: 244,
+      dotLeft: 240,
       dotTop: 38,
       isDragging: false,
 
@@ -2376,6 +2376,8 @@ Vue.component('draggable-dist', {
       return {
         left: this.dotLeft + 'px',
         top: this.dotTop + 'px',
+        width: this.dotSize + 'px',
+        height: this.dotSize + 'px',
       };
     },
   },
@@ -2407,8 +2409,12 @@ Vue.component('draggable-dist', {
         refElement = refElement.parentElement;
       }
 
-      const clientX = event.clientX || event.touches[0].clientX;
-      const clientY = event.clientY || event.touches[0].clientY;
+      var clientX = event.clientX;
+      var clientY = event.clientY;
+      if (event.touches){
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      }
       const result = {
         left: clientX - refElement.getBoundingClientRect().x,
         top: clientY - refElement.getBoundingClientRect().y
@@ -2436,8 +2442,8 @@ Vue.component('draggable-dist', {
         if (top < 0 || left < 0){
           return;
         }
-        this.dotTop = top;
-        this.dotLeft = left;
+        this.dotTop = top - this.dotSize /2;
+        this.dotLeft = left - this.dotSize / 2;
 
         // Enforce a min beta because the distribution gets pretty spiky and unpredictable for lower values.
         const peakiness = (height - top) / height * 10;
@@ -2474,7 +2480,7 @@ Vue.component('draggable-dist', {
 
         // snap the draggable to the mode
         const y_scale = 50;
-        const diameter = 10;
+        const diameter = this.dotSize;
 
         const height = this.chartHeight;
         const width = this.chartWidth;
@@ -2996,7 +3002,7 @@ Vue.component('moneybag', {
   props: {
     color: {type: String, default: 'brown'},
     number: {type: Number, default: 1},
-    width: {type: Number, default: 20},
+    width: {type: Number, default: 36},
     isHorizontal: {type: Boolean, default: true},
   },
   computed:{
@@ -3277,7 +3283,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: DEBUG ? 1 : 0,
+    chapterInd: DEBUG ? 2 : 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
