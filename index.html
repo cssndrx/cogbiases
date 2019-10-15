@@ -1484,9 +1484,14 @@ VOICE: I'm tired of all these little lies humans tell eachother and themselves.
 
 <div>
 <p>
-VOICE: I'll let you go... for a price. 
+VOICE: I don't know about that... I'm pretty hungry...
 </p>
 
+<next>Yikes!</next>
+</div>
+
+
+</div>
 <p>
 VOICE: How many cookies do you have on you? 
 </p>
@@ -1497,11 +1502,7 @@ VOICE: How many cookies do you have on you?
 <div>
 
 <p>
-The voice chuckles.
-</p>
-
-<p>
-VOICE: I was thinking more on the order of... fifty cookies.
+VOICE: Not bad, but I was thinking more on the order of... fifty cookies.
 </p>
 
 <next>But I don't have that many</next>
@@ -1509,7 +1510,7 @@ VOICE: I was thinking more on the order of... fifty cookies.
 
 <div>
 <p>
-You can bet with me to earn more cookies...
+VOICE: Well, you can bet with me to earn more cookies...
 </p>
 
 <p>
@@ -1653,10 +1654,36 @@ Reader, you should answer honestly. If the cave detects any dishonesty, *cave wa
 
 <div>
 <p>
-Out of the darkness steps...
+Out of the darkness...
 </p>
 
-<buton @click.native="$root.nextChapter()" :scroll="false">Could this be Kahneman?</buton>
+<next>Next</next>
+</div>
+
+<div>
+<p>
+steps...
+</p>
+
+<next>Next</next>
+</div>
+
+
+<div>
+<p>
+a
+</p>
+
+<next>Next</next>
+</div>
+
+<div>
+
+<p>
+  ...?!
+</p>
+
+<buton @click.native="$root.nextChapter()" :scroll="false">To be continued</buton>
 </div>
 
 </pset>

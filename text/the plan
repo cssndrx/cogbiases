@@ -410,16 +410,3 @@ want the post-oracle stuff to be more interactive
 remove the points, or make it persist through the narrative
 enter could scroll -- too much mousing
 
-
----
-
-seems to be a bug in the section...
-
-"What is the probability that Kahneman is in the cave if the weather is nice?"
-
-preloads too much of the story
-add css so it fits better on mobile
-
-stopped here:
-test play this on mobile
-and push out
