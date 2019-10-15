@@ -1,6 +1,7 @@
 <!doctype html>
 <head>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-59181255-1"></script>
@@ -414,7 +415,9 @@ button{
     v-if="isCreated"
     notify-on="change"
     input-type="number"
-    v-for="x in xdomain" :show-buton="false" :input-width="50"
+    v-for="x in xdomain" 
+    :show-buton="false" 
+    :input-width="50"
     :key="x" 
     v-model="counts[x]" />
 </div> 
@@ -799,7 +802,7 @@ Now, begin thinking in distributions instead of magic answers.
 
 <pset ref="pset">
 
-
+<!--
 <div>
 <p>
   You have found yourself on a solo journey across the land to gain knowledge and find Kahneman.
@@ -883,11 +886,11 @@ ORACLE: Well, I could tell you where he is but that would defeat the point.
 
 <div>
 <p>
-  ORACLE: Well, Kahneman goes to the tavern to study people's decision-making abilities. He goes to the cave to process his data and write papers. In the past Kahneman has split his time between the cave and the tavern in a roughly 2 to 3 ratio (40% vs 60%).
+  ORACLE: Well, Kahneman goes to the tavern to study people's decision-making abilities. He goes to the cave to process his data and write papers. In the past Kahneman has split his time between the cave and the tavern in a roughly 2 to 3 ratio (40% vs 60%). Use this information to create a visual picture of your knowledge.
 </p>
 
 <p>
-  ORACLE: You can use this information to create a visual picture of your knowledge. Enter what you know about Kahneman's location.
+  Enter what you know about Kahneman's location.
 </p>
 
 <triple-bayes 
@@ -935,6 +938,7 @@ It turns out that the evidence bars should <bold>multiplicatively scale</bold> u
 <next>Show new belief</next>
 </div>
 
+
 <div>
 <triple-bayes 
 :hypotheses="['Cave', 'Tavern']" 
@@ -944,7 +948,7 @@ It turns out that the evidence bars should <bold>multiplicatively scale</bold> u
 <p>
 What is the probability that Kahneman is in the cave if the weather is nice?
 </p>
-<input-box right="80">%</input-box>
+<input-box right="80" :advance-pset="true">%</input-box>
 </div>
 
 
@@ -968,8 +972,8 @@ ORACLE: During a case you discover some new evidence. What you think after obtai
 <next>Pretty intuitive</next>
 </div>
 
-<div>
 
+<div>
 <p>
 These two parts go by other names including
 </p>
@@ -983,6 +987,8 @@ When making guesses, sometimes people use the new evidence and forget to include
 
 <next>Sounds reasonable</next>
 </div>
+
+-->
 
 <div>
 <p>
@@ -1124,7 +1130,7 @@ At this point, all you have is the 2:3 prior on Kahneman's location. The weather
   <p>
   FARMER: So what is the numerical probability that it will be a fox?
   </p>
-  <input-box right="68">%</input-box>
+  <input-box right="68" :advance-pset="true">%</input-box>
   </div>
 
   <div>
@@ -1190,7 +1196,7 @@ Show the mayor the appropriate belief.
 <p>
 MAYOR: So what is the probability that Bob will do a better job than Billy?
 </p>
-<input-box right="57">%</input-box>
+<input-box right="57" :advance-pset="true">%</input-box>
 </div>
 
 <div>
@@ -1369,13 +1375,13 @@ After almost a week, you make it to the cave with peanut butter cookies in hand.
   <div><bold><slot></slot></bold> {{question.text}}</div>
 
   <div style="display:flex">
-    <div class="small-grey" style="flex:50%">
-      <div>Min guess</div>
+    <div style="flex:50%">
+      <div class="small-grey">Min guess</div>
       <input-box ref="guess1" v-model="guess1" input-type="number" :min="0"  :max="question.maxBound" :show-buton="false" />
     </div>
 
-    <div class="small-grey" style="flex:50%">
-      <div>Max guess</div>
+    <div style="flex:50%">
+      <div class="small-grey">Max guess</div>
       <input-box ref="guess2" v-model="guess2" input-type="number" :min="0" :max="question.maxBound" :show-buton="false" />
     </div>
 
@@ -1757,7 +1763,7 @@ If after all this, you're still here and want to buy me a coffee, that would be 
 <script>
 // lightblue = #D1D9E0
 // darkblue = #2F77A1
-const DEBUG = true;
+const DEBUG = false;
 
 
 var sounds = {
@@ -1932,19 +1938,20 @@ Vue.component('input-box', {
       default: function(){ return ['Try again', 'Nope']; },
     },
 
-    advancePset: {type: Boolean, default: true},
-    showButon: {type: Boolean, default: true},
-
     min: {type: Number},
     max: {type: Number},
 
     // https://scotch.io/tutorials/add-v-model-support-to-custom-vuejs-component
     value: {},
 
+
     inputType: {type: String, default: 'string'},
     inputWidth: {type: Number, default: 100},
 
-    notifyOn: {type: String, default: 'enter'} // ['enter', 'change']
+    notifyOn: {type: String, default: 'enter'}, // ['enter', 'change']
+
+    advancePset: {type: Boolean, default: false},
+    showButon: {type: Boolean, default: true},
   },
   computed: {
     isValid(){
@@ -2005,6 +2012,7 @@ Vue.component('input-box', {
       answers: [],
 
       checkedAnswer: false,
+      calledNext: false,
     }
   },
   watch:{
@@ -2040,8 +2048,9 @@ Vue.component('input-box', {
         this.$emit('yay');
 
         const pset = firstAncestorOfComponent(this, 'pset');
-        if (pset && this.advancePset){
+        if (pset && !this.calledNext && this.advancePset){
           pset.next();
+          this.calledNext = true;
         }
       }
 
