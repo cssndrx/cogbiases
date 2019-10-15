@@ -97,6 +97,10 @@ h4{
   font-weight: 500;
 }
 
+.color-change{
+  color: #337ab7;
+}
+
 a{
   color: #337ab7; /* bootstrap blue */
   text-decoration: none;
@@ -391,7 +395,7 @@ button{
       class="container"
       :transform="'translate(' + margin.left + ',' + margin.top + ')'">
         <g v-for="x in xdomain">
-          <rect v-for="countInd in counts[x]"
+          <rect v-if="counts[x]" v-for="countInd in counts[x]"
           :x="xScale(x)"
           :y="chartHeight - yScale(counts[x]) + yScaleBandwidth*(countInd-1)+2"
           :width="xScale.bandwidth()"
@@ -404,14 +408,21 @@ button{
       <text 
         v-for="x in xdomain" 
         :x="xScale(x)+ xScale.bandwidth()/2 - 8"
-        :y="chartHeight - yScale(counts[x]) - (isControllable ? 8 : 2)">
+        :y="Math.max(0, chartHeight - yScale(counts[x]) - 4)">
         {{ prob(x) }}%
       </text>
     </g>
 </svg>
 
 <div>
-<input-box 
+
+<input v-if="isCreated"
+       v-for="x in xdomain" 
+      :key="x" 
+      v-model="counts[x]"
+      style="font-size:28px; width:50px; text-align:center" />
+
+ <!-- <input-box 
     v-if="isCreated"
     notify-on="change"
     input-type="number"
@@ -419,7 +430,7 @@ button{
     :show-buton="false" 
     :input-width="50"
     :key="x" 
-    v-model="counts[x]" />
+    v-model="counts[x]" /> -->
 </div> 
 
 
@@ -755,14 +766,13 @@ Now, begin thinking in distributions instead of magic answers.
   :hypotheses="['Nice', 'Evil']" 
   :config="{prior: {dist: [1, 1], correct: [1, 2], isActive: true, isControllable:true}, likelihood: {dist: [10, 1], isActive: true, isControllable: true}, posterior: {}}"></triple-bayes> -->
 
-<div ref="panes" style="position:fixed; top:50px; left: 0px; font-size:14px; background-color:rgba(255,255,255,0.97); width: 555px; z-index:1;">
+<div ref="panes" class="normal-div" style="position:fixed; top:50px; left: 20px; font-size:14px; width: 555px; z-index:1;">
 
     <div v-if="knowAbout('location')" 
          @click="togglePane('location')" 
-         class="bayes-toggle"
-      style="position:absolute; left: -100px;top:100px">
+         class="bayes-toggle">
       <div ref="location-toggle" 
-        :style="toggleStyle('location')" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:400px;">
+        :style="toggleStyle('location')" style="display:inline-block; font-weight:700; width:400px; background-color:rgba(255,255,255,0.97); margin-bottom:16px">
           Belief: Kahneman's location?
           <inline-img src="cave.png" />
           <inline-img src="tavern.png" />
@@ -772,9 +782,8 @@ Now, begin thinking in distributions instead of magic answers.
     <div v-if="knowAbout('food')"
          class="bayes-toggle"
          @click="togglePane('food')" 
-         :style="toggleStyle('food')" 
-      style="position:absolute; left: -130px;top:100px">
-      <div ref="food-toggle" style="transform:rotate(-90deg); display:inline-block; font-weight:700; width:400px;">
+         :style="toggleStyle('food')">
+      <div ref="food-toggle" style="display:inline-block; font-weight:700; width:400px; margin-bottom:16px; background-color:rgba(255,255,255,0.97);">
         Belief: Food to bring?
         <inline-img src="beer.gif" />
         <inline-img src="cookies.jpg" />
@@ -782,7 +791,7 @@ Now, begin thinking in distributions instead of magic answers.
     </div>
 
     <keep-alive>
-       <triple-bayes v-if="showPane('food')" key="food" style="position:relative; left:120px; top:20px; padding-bottom:24px; background-color:white;"
+       <triple-bayes v-if="showPane('food')" key="food" style="padding-bottom:24px; background-color:white;"
         :hypotheses="['Beer', 'Cookies']" 
         :config="{prior: {dist: [2, 5], isActive:true}, likelihood: {dist: [1, 1], correct: [1, 2],  isActive: true, isControllable:true}, posterior: {isActive: false}}"
         :colors="{bar: '#CB9C44', dot: '#FC8E03'}"
@@ -790,7 +799,7 @@ Now, begin thinking in distributions instead of magic answers.
     </keep-alive>
 
     <keep-alive>
-       <triple-bayes v-if="showPane('location')" key="location" style="position:relative; left:120px; top:20px; padding-bottom:24px; background-color:white;"
+       <triple-bayes v-if="showPane('location')" key="location" style=" padding-bottom:24px; background-color:white;"
         :hypotheses="['Cave', 'Tavern']" 
         :config="{prior: {dist: [2, 3], isActive:true}, likelihood: {dist: [1, 1], correct: [3, 1], isActive: true, isControllable:true}, posterior: {isActive: false}}"
         :colors="{bar: '#D8D8D8', dot: '#2F77A1'}"
@@ -802,7 +811,6 @@ Now, begin thinking in distributions instead of magic answers.
 
 <pset ref="pset">
 
-<!--
 <div>
 <p>
   You have found yourself on a solo journey across the land to gain knowledge and find Kahneman.
@@ -988,7 +996,6 @@ When making guesses, sometimes people use the new evidence and forget to include
 <next>Sounds reasonable</next>
 </div>
 
--->
 
 <div>
 <p>
@@ -1237,7 +1244,7 @@ MAYOR: I'd say that he likes cookies 2 times more than the average person. And h
 </p>
 
 <p class="question">
-Use the mayor's information to update your beliefs about Kahneman.
+  Use the mayor's information to update your belief about what food to bring.
 </p>
 
 </div>
@@ -1484,7 +1491,7 @@ VOICE: I'll let you go... for a price.
 VOICE: How many cookies do you have on you? 
 </p>
 
-<next>Five cookies</next>
+<next><inline-img src="cookie.png" /><inline-img src="cookie.png" /><inline-img src="cookie.png" /><inline-img src="cookie.png" /><inline-img src="cookie.png" /></next>
 </div>
 
 <div>
@@ -1557,13 +1564,13 @@ To better calibrate your certainty, think in terms of the fair bet instead.
 </p>
 
 <p>
-For instance, the bet:
+For instance, this bet
 </p>
 
 <fair-bet :showCertainty="false" style="padding: 8px" />
 
 <p>
-Corresponds to 50% certainty, because if you are correct 50% of the time, this bet would break even.
+corresponds to 50% certainty, because if you are correct 50% of the time, this bet would break even.
 </p>
 
 <next>Hm...</next>
@@ -1571,13 +1578,13 @@ Corresponds to 50% certainty, because if you are correct 50% of the time, this b
 
 <div>
 <p>
-The bet:
+This bet
 </p>
 
 <fair-bet :numLoseIfWrong="4" :showCertainty="false" style="padding: 8px" />
 
 <p>
-Corresponds to 80% certainty, because if you are correct 80% of the time, this bet would break even.
+corresponds to 80% certainty, because if you are correct 80% of the time, this bet would break even.
 </p>
 
 <next>I think I see the relationship between fair bets and certainty</next>
@@ -1649,7 +1656,7 @@ Reader, you should answer honestly. If the cave detects any dishonesty, *cave wa
 Out of the darkness steps...
 </p>
 
-<next @click.native="$root.nextChapter()">Could this be Kahneman?</next>
+<buton @click.native="$root.nextChapter()" :scroll="false">Could this be Kahneman?</buton>
 </div>
 
 </pset>
@@ -2116,6 +2123,7 @@ function hasSlot(name){
 Vue.component('buton', {
   props: {
     nope: {type: String}, // Text for why the answer is wrong. Blocks progression.
+    scroll: {type: Boolean, default: true},
   },
   data: function(){
     return {
@@ -2179,7 +2187,10 @@ Vue.component('buton', {
           pset.next();
         }        
       }
-      this.$root.scrollWindow();
+
+      if (this.scroll){ 
+        this.$root.scrollWindow();             
+      }
 
     },
   },
@@ -2792,7 +2803,7 @@ Vue.component('samples-chart', {
     },
     counts: {
       handler(){
-        this.$emit('dist-changed', {dist: this.counts});  
+        this.$emit('dist-changed', {dist: _.mapValues(this.counts, x => Number(x))});  
       },
       deep: true
     },
@@ -3287,11 +3298,6 @@ new Vue({
     handleResize() {
       this.windowWidth = window.innerWidth;
     },
-    nextChapter: async function(){
-      // this.play('achievement');
-      // await wait(1500);
-      this.chapterInd = Math.min(this.chapters.length-1, this.chapterInd+1);
-    },
     // Given 0.8 --> returns {}
     paramsFromCertainty: function(certainty){
       if (certainty == 1.0){
@@ -3331,7 +3337,7 @@ new Vue({
       }
     },
     nextChapter(){
-      this.chapterInd++;
+      this.chapterInd = Math.min(this.chapters.length-1, this.chapterInd+1);
       window.scrollTo(0, 0);
     },
     async scrollWindow(){
