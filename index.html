@@ -108,13 +108,23 @@ a{
 }
 
 img{
-  max-width: 400px;
+  max-width: 300px;
 }
 
 .small-grey, .small-grey *{
   font-size: 14px;
   color: #777;
 }
+
+/*.container {
+  width: 500px;
+}
+
+@media only screen and (max-width: 500px) {
+  .container {
+    width: 100%;
+  }
+}*/
 
 button{
   cursor: pointer;
@@ -216,7 +226,7 @@ button{
 
 
 <div id="app" @click="mainClick($event)">
-<div style="position:relative; padding: 16px;" :style="appStyle">
+<div class="container" style="position:relative; padding: 16px; max-width:500px;" :style="appStyle">
 
   <h1 class="handwriting" style="font-size:48px">Adventures in Cognitive Biases</h1>
 
@@ -1448,7 +1458,7 @@ The walls are now uncomfortably close around your chest and vital organs.
 </div>
 
 <div>
-<img src="images/eyes.png" style="width:400px">
+<img src="images/eyes.png">
 
 <p>
 VOICE: Welcome to the Cave of Overconfidence.
