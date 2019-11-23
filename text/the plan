@@ -410,3 +410,88 @@ want the post-oracle stuff to be more interactive
 remove the points, or make it persist through the narrative
 enter could scroll -- too much mousing
 
+draggable doesn't work for firefox
+argh firefox:
+https://stackoverflow.com/questions/19055264/why-doesnt-html5-drag-and-drop-work-in-firefox
+https://stackoverflow.com/questions/11656061/event-clientx-showing-as-0-in-firefox-for-dragend-event
+
+
+could just patch this for now -- 
+works in chrome/safari
+
+check that google analytics is logging the data
+demonstrate the problem
+and then show them how to overcome the problem
+
+figure out if you want to commit to releasing more episodes
+what are potential future episodes??
+
+
+-- 
+
+game plan 11/22
+- check that google analytics is logging the data -- hm... i think the way it is currently working doesn't make sense.
+
+
+- check the scroll for mobile  -- seems to work
+- playthrough on safari -- bayes widget doesn't work on safari -- is working
+
+- how might we use this to capture dropoff??
+make unique event labels 
+
+currently it's
+gtag('event', 'cogbiases_v2', {
+'event_category': 'read',
+'event_label': chapterName,
+'value': ind
+});
+
+
+(1)
+change to 
+gtag('event', 'reached checkpoint', {
+'event_category': 'read',
+'event_label': 'cogbiases_v2' + '-' + chapterName + '-' + checkpointName,
+'value': 1
+});
+
+<next @click.native="track('farmer')"><next>
+
+now we should better see the dropoff
+
+
+(2)
+
+This story only works on the desktop version of Chrome or Safari. If it's not, please let me know (___). If you insist on using Firefox, jump ahead to Chapter 2. 
+
+
+(3)
+figure out a view such that on mobile...
+it is full screen
+
+on desktop, it has margins for wide screens and is full screen for narrow screens --> it already works for desktop using px...
+
+what if you just add
+max-width: 100vh so it doesn't exceed the viewport??
+here they use https://savedotorg.org/
+max-width: 58rem;
+width: calc(100% - 4rem)
+rem = root element font size
+but yeah could do like
+
+max-width: calc(100%-10rem)
+or min-width??
+
+
+what we want -- 
+
+on desktop -- 
+margin for wide screene & dull screen for narrow screen
+
+on mobile -- 
+a pixel does not seem to be a pixel
+
+
+decided not to target mobile
+need media queries -- try this on the wizard one
+

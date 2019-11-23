@@ -509,7 +509,7 @@ button{
       Come rid yourself of <a href="//en.wikipedia.org/wiki/List_of_cognitive_biases" target="_blank" style="font-size:24px">cognitive biases</a> — circumstances in which many humans make irrational decisions.
     </div>
 
-    <div>Note: This story is best played on desktop, although it is possible on mobile with some determination.</div>
+    <div>{{ $root.isIncompatibleDevice ? 'Note: This story only works on the desktop version of Chrome or Safari.' : '' }}</div>
 
     <next @click.native="$root.nextChapter()">Knock</next>
 
@@ -536,6 +536,7 @@ button{
     v-if="!isDragging"
     style="position:absolute; background-color:#2F77A1"
     @mousedown="mousedown($event)"
+    @dragstart="dragstart($event)"
     @touchstart="mousedown($event)"
     :style="redDotStyle"
     draggable="true"></div>    
@@ -566,8 +567,8 @@ button{
 
 
 <!--
-
 <draggable-dist ref="dist" :guess1="2" :guess2="16" :answer="16"/>
+
 
 <draggable-dist ref="dist" :guess1="2" :guess2="16" :answer="16"/>
 
@@ -1478,7 +1479,7 @@ VOICE: And one human grossly underestimated the amount of time it would take the
 VOICE: I'm tired of all these little lies humans tell eachother and themselves.
 </p>
 
-<next> Who are you? Please let me go.</next>
+<next> Who are you? Let me go.</next>
 </div>
 
 
@@ -2587,6 +2588,9 @@ Vue.component('draggable-dist', {
         canvasPlotCoords(context, coords, 'orange');      
      },
 
+     dragStart($event){
+      $event.dataTransfer.setData('text/plain', 'anything');  
+     },
      drawAxis(){
         const context = this.context;
         context.setTransform(1, 0, 0, 1, 0, 0);
@@ -3309,7 +3313,36 @@ new Vue({
     appStyle: function(){
       const isWideWindow = this.windowWidth > 500+600;
       return isWideWindow && this.isShowingSidePanel ? {left: '600px'} : {margin: '0 auto'};
-    }
+    },
+    isIncompatibleDevice(){
+      return this.isMobile || ['chrome', 'safari'].indexOf(this.detectedBrowser) == -1;
+    },
+    // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
+    isMobile(){
+      return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    },
+    // https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+    detectedBrowser(){
+      if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) {
+          return 'opera';
+      }
+      else if(navigator.userAgent.indexOf("Chrome") != -1 ){
+          return 'chrome';
+      }
+      else if(navigator.userAgent.indexOf("Safari") != -1){
+          return 'safari';
+      }
+      else if(navigator.userAgent.indexOf("Firefox") != -1 ){
+          return 'firefox';
+      }
+      else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+      {
+        return 'ie'; 
+      }  
+      else {
+         return 'unknown';
+      }
+    },
   },
   created() {
     //https://codepen.io/sethdavis512/pen/EvNKWw
@@ -3401,8 +3434,8 @@ new Vue({
       console.log('reporting ' + chapterName + ' ' + ind);
       gtag('event', 'cogbiases_v2', {
         'event_category': 'read',
-        'event_label': chapterName,
-        'value': ind
+        'event_label': 'cogbiases_v2' + '-' + chapterName + '-' + ind,
+        'value': 1
       });
     },
 
