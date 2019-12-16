@@ -2,6 +2,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-59181255-1"></script>
@@ -126,6 +127,10 @@ button{
   padding: 8px 16px;
   margin: 8px;
 }
+
+button:hover{
+  background-color: #eee;
+}
 .buton:hover,.clicked-button{
   color: white;
   background-color: #555;
@@ -214,6 +219,7 @@ button{
 
 <body>
 
+<a style="position:fixed; bottom:2px; right:2px; font-size:10px; color: #aaa; z-index:2" href="//forms.gle/LV58xe6WEFFWo2hq6">Report bug</a>
 
 <div id="app" @click="mainClick($event)">
 <div class="container" style="position:relative; padding: 16px; max-width:500px;" :style="appStyle">
@@ -1740,11 +1746,15 @@ a
 </p>
 
 <p>
-  Give me your <a href="//eepurl.com/gEx3i1" target="_blank" class="bold">email address</a> to be notified when a new episode comes out.
+  Tell me your <a href="//eepurl.com/gEx3i1" target="_blank" class="bold">email address</a> to be notified when a new episode comes out.
 </p>
 
 <p>
-  Give me <a target="_blank" href="//forms.gle/LV58xe6WEFFWo2hq6" class="bold">feedback</a> on what could have been better, or tell me your ideas for future chapters.
+   Tell me your <a target="_blank" href="//forms.gle/LV58xe6WEFFWo2hq6" class="bold">ideas</a> for what to build.
+</p>
+
+<p>
+  Or, <a href="//www.paypal.com/cgi-bin/webscr?cmd=_donations&business=cssndrx%40gmail.com&currency_code=USD&source=url" target="_blank" class="bold">hand me money</a> to increase motivation.
 </p>
 
 <p style="margin-top: 64px" class="bold">
@@ -1772,7 +1782,7 @@ Anand Babu and Google Kernel friends provided a safe space and the final push of
 </p>
 
 <p>
-On the tech side, <a href="//vuejs.org/" target="_blank">Vue.js</a> greatly simplified the code needed for this project, omgggg try it out. I think it's better than React. I also want to thank jpegslayer who helped me on the friendly Vue forums.
+On the tech side, <a href="//vuejs.org/" target="_blank">Vue.js</a> greatly simplified the code needed for this project. Thank you for being more human friendly than React. I also want to thank jpegslayer who helped me on the friendly Vue forums.
 </p>
 
 <p>
@@ -3288,7 +3298,7 @@ new Vue({
   el: '#app',
   data: {
     chapters: chapters,
-    chapterInd: DEBUG ? 2 : 0,
+    chapterInd: DEBUG ? 4 : 0,
     // Obj property additions do not update DOM, so prepopulate all the keys in the object. Or use lists.
     //soundNameToCount: {},
     show: false,
