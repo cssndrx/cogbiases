@@ -213,17 +213,26 @@ button:hover{
 .fair-bet *{
   font-size: 12px;
 }
+
+.dull-link{
+  color: #aaa;
+}
+
+.dull-link:hover{
+  color: #337ab7; /* bootstrap blue */
+}
 </style>
 
 </head>
 
 <body>
 
-<a style="position:fixed; bottom:2px; right:2px; font-size:10px; color: #aaa; z-index:2" href="//forms.gle/LV58xe6WEFFWo2hq6">Report bug</a>
+<a class="dull-link" style="position:fixed; bottom:2px; right:2px; font-size:10px; z-index:2" href="//forms.gle/LV58xe6WEFFWo2hq6">Report bug</a>
 
 <div id="app" @click="mainClick($event)">
 <div class="container" style="position:relative; padding: 16px; max-width:500px;" :style="appStyle">
 
+  <!--<a class="dull-link small-grey">More stuff at cassandraxia.com</a> -->
   <h1 class="handwriting" style="font-size:48px">Adventures in Cognitive Biases</h1>
 
   <div ref="toc" class="normal-div" style="position: relative; z-index:1; width:240px;">
@@ -235,7 +244,7 @@ button:hover{
            style="max-width:50px; max-height:100px">
 
       <span style="top:60px; font-size:12px; display: inline-block; margin:8px; vertical-align: top">
-        <bold style="font-size:12px">{{ chapterInd < chapters.length-1 ? 'Chapter ' + chapterInd : '?' }}</bold>
+        <bold style="font-size:12px">{{ chapterInd < chapters.length-1 ? 'Chapter ' + chapterInd : 'The End' }}</bold>
         <br> 
         {{currentChapter.description}}
       </span>
@@ -254,7 +263,7 @@ button:hover{
             :src="'images/' + chapter.image" 
             style="max-width:50px; max-height:100px">
         <span style="top:60px; font-size:12px; display: inline-block; margin:8px;">
-          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : '?' }}</bold>
+          <bold style="font-size:12px">{{ ind < chapters.length-1 ? 'Chapter ' + ind : 'The End' }}</bold>
           <br> 
           {{chapter.description}}
         </span>
@@ -1742,51 +1751,64 @@ a
 <div class="thanks">
 
 <p>
-  <bold>To be continued</bold>
+  Alas, this story is not likely to continue...
 </p>
 
 <p>
-  Tell me your <a href="//eepurl.com/gEx3i1" target="_blank" class="bold">email address</a> to be notified when a new episode comes out.
+  I've come to strongly believe that climate change is what I should be working on, and that we need all hands on deck for society to reach net zero emissions within 20 years. I've quit my job and <a href="https://cassandraxia.com">written more</a> on this on my main website. 
 </p>
 
 <p>
-   Tell me your <a target="_blank" href="//forms.gle/LV58xe6WEFFWo2hq6" class="bold">ideas</a> for what to build.
+  If you enjoyed Adventures in Cognitive Biases, please consider the cognitive biases that may prevent society from tackling climate change in a timely manner, and kickstart your own climate journey at <a href="https://workonclimate.org/" target="_blank">Work on Climate</a>. 
 </p>
 
 <p>
-  Or, <a href="//www.paypal.com/cgi-bin/webscr?cmd=_donations&business=cssndrx%40gmail.com&currency_code=USD&source=url" target="_blank" class="bold">hand me money</a> to increase motivation.
+  Consider making a donation to the <a href="https://www.catf.us/" target="_blank">Clean Air Task Force</a>, one of the most effective groups working in climate advocacy as judged by the Founders Pledge. 
+</p>
+
+
+<p style="margin-top: 64px" class="bold">
+For more
+</p>
+
+<p>
+  For more probability concepts applied to daily life, consider my other story <a href="http://cassandraxia.com/wizard/">Wizard's Guide to Statistics</a>.
+</p>
+
+<p>
+  For more exercises in rationalism, check out Spencer Greenberg's collection of <a href="https://www.clearerthinking.org/tools-and-mini-courses" target="_blank">Clearer Thinking</a> tools or Eliezer Yudkowsky's story <a href="http://www.hpmor.com/" target="_blank">Harry Potter and the Methods of Rationality</a>. 
+</p>
+
+<p>
+  For beautiful examples of how to teach through interactive stories, check out Nicky Case's <a href="http://ncase.me/" target="_blank">explorable explanations</a>.  
 </p>
 
 <p style="margin-top: 64px" class="bold">
-People to thank
+Credits
 </p>
 
 <p>
-The original verison of this game was built as part of a masters thesis with the MIT Media Lab's Fluid Interfaces Group headed by Pattie Maes. Ideas in the game were also heavily influenced by two classes at MIT (9.660 by Prof. Josh Tenenbaum) and (6.437 by Prof. Lizhong Zheng). 
+The original verison of this game was built for my masters thesis, as supervised by MIT Media Lab professor Pattie Maes. Ideas in the game came out of two classes: <a href="https://ocw.mit.edu/courses/brain-and-cognitive-sciences/9-66j-computational-cognitive-science-fall-2004/">Computational Cognitive Science</a> by Josh Tenenbaum and <a href="http://web.mit.edu/6.437/www/info16.pdf">Information and Inference</a> by Lizhong Zheng. 
 </p>
 
 <p>
-Many friends and advisors helped with early incarnations of this story... Among them were Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li, Ruwen Liu (who drew the famous monk in this story), Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, Victoria Xia, and Sophia Youn. And BV who set me on this impossible quest.
+I'm so grateful to the many friends and advisors who helped with the first version of this story. Among them were BV, Dor Abrahamson, Ned Burnell, Yasemin Gokce, Cory Li, Ruwen Liu (who drew the famous monk in this story), Paul Medlock-Walton, Kelly Ran, Mitch Resnick, Jacob Steinhardt, Victoria Xia, and Sophia Youn.
 </p>
 
 <p>
-The backers and supporters of Ishaan's Journey, including Vivek Rajkumar, Brienne and Eliezer Yudkowsky, Eric Chisholm, Alia McCutcheon and other folks from the LessWrong scene encouraged me to develop this further and who were very patient with me as I took several unnecessary detours. 
+I'd like to thank the backers and supporters of the crowdfunding campaign I ran to fund an earlier version of this work. Thank you so much for believing in me, and patiently waiting for me to deliver. Among these people were Vivek Rajkumar, Brienne and Eliezer Yudkowsky, Eric Chisholm, and Alia McCutcheon.  
 </p>
 
 <p>
-Nicky Case who created multiple examples for how to make experiences both fun + educational. Spencer Greenberg and Mike Mozer who kept the project alive through their enthuasism and insightful critique on the original version. And thank you to all the folks who emailed in with encouragement and offers to help. 
+Spencer Greenberg and Mike Mozer helped revitalize the project after a multiyear hiatus by offering enthuasism and critique. And, thank you to all the strangers from the internet who emailed in with encouragement and offers to help :) Anand Babu and Google Kernel friends provided the final space and time to rewrite the story into its current form. 
 </p>
 
 <p>
-Anand Babu and Google Kernel friends provided a safe space and the final push of energy to rewrite this. Fred Bertsch and Vivek Sri  greatly improved the story in different ways. Tianyu Liu recommended the perfect pieces of prior work. Boris Smus gave thoughtful and useful playtest feedback. Nathan Martz was the oracle who was right about all the pitfalls.
+On the tech side, <a href="//vuejs.org/" target="_blank">Vue.js</a> greatly simplified the code needed for this project. Try it! It's awesome. Thanks jpegslayer, who helped me on the friendly Vue forums.
 </p>
 
 <p>
-On the tech side, <a href="//vuejs.org/" target="_blank">Vue.js</a> greatly simplified the code needed for this project. Thank you for being more human friendly than React. I also want to thank jpegslayer who helped me on the friendly Vue forums.
-</p>
-
-<p>
-If after all this, you're still here and want to buy me a coffee, that would be a great boost to my ego!
+If after all this, you're still here and want to buy me a coffee, that would be a great boost to my ego! I would love to hear what you liked about the story, or if it was helpful to you.
 </p>
 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -3274,7 +3296,7 @@ const chapters = [
 
 {
   component: 'thanks',
-  description: 'To be continued',
+  description: 'The End',
   image: 'monk_big.png',
 },
 
